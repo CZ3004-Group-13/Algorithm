@@ -12,34 +12,48 @@ class Simulator {
 
   private static JFrame jFrame;
   private static Grid grid;
-  private static Robot robot;
+  private static Robot robotLayer;
   private static HamiltonianPath hPath;
+  private static Dimension enviromentActualSize = new Dimension(200, 200);
+  private static int enviromentScalingFactor = 3;
+
+  private static Dimension robotActualSize = new Dimension(30, 30);
+  private static Point robotActualStartingPoint = new Point(20, 180);
 
   public static void createAndShowGUI() {
     jFrame = new JFrame("Test Window");
     jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+    Dimension environmentModelSize = new Dimension(enviromentActualSize.width * enviromentScalingFactor,
+        enviromentActualSize.height * enviromentScalingFactor);
+
+    Dimension robotModelSize = new Dimension(robotActualSize.width * enviromentScalingFactor,
+    robotActualSize.height * enviromentScalingFactor);
+  
+    Point robotModelStartingPoint = new Point(robotActualStartingPoint.x * enviromentScalingFactor,
+    robotActualStartingPoint.y * enviromentScalingFactor);
+
     JLayeredPane layeredPane = new JLayeredPane();
-    layeredPane.setPreferredSize(new Dimension(600, 600));
+    layeredPane.setPreferredSize(new Dimension(800, 800)); // hardcoded for now
     // use layered pane
     // grid in one layer
     // robot as one layer
     // path as one layer
 
     grid = new Grid();
-    grid.setSize(new Dimension(600, 600));
+    grid.setSize(environmentModelSize);
     // grid.setPreferredSize(new Dimension(600, 600));
     layeredPane.add(grid, 0, 0);
     // (x, y, z) y is layer, z is depth
     // bigger y is higher up
     // smaller z is higher up
 
-    robot = new Robot();
-    robot.setSize(new Dimension(50, 50));
-    layeredPane.add(robot, 1, 0);
+    robotLayer = new Robot(robotModelSize, robotModelStartingPoint);
+    robotLayer.setSize(environmentModelSize);
+    layeredPane.add(robotLayer, 1, 0);
 
     hPath = new HamiltonianPath();
-    hPath.setSize(new Dimension(600, 600));
+    hPath.setSize(environmentModelSize);
     layeredPane.add(hPath, 2, 0);
 
     // add surrounding boxes as margins
@@ -71,7 +85,6 @@ class Simulator {
     downButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-
       }
     });
 

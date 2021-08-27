@@ -9,7 +9,7 @@ public class Grid extends JPanel {
   private Cell[][] cells = new Cell[20][20];
 
   public Grid() {
-    setBorder(BorderFactory.createLineBorder(Color.black));
+    // setBorder(BorderFactory.createLineBorder(Color.black));
     setLayout(new GridLayout(20, 20));
 
     Dimension cellDimension = new Dimension(10, 10); // this is really small but the GridLayout will scale it up
