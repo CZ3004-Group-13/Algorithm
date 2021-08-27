@@ -96,8 +96,8 @@ class Simulator {
         jFrame.setVisible(true); // now frame will be visible, by default not visible
     }
 
-    public static void main(String args[]) {
-        // need to use this ultility to call the initial method that draws GUI
+    public static void main(String[] args) {
+        // need to use this utility to call the initial method that draws GUI
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();

@@ -134,10 +134,10 @@ public class HamiltonianPath extends JComponent {
 
     // to print out the adjacency matrix
     void printAdjacencyMatrix(double[][] adjacencyMatrix) {
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
-            for (int j = 0; j < adjacencyMatrix[i].length; j++) {
+        for (double[] row : adjacencyMatrix) {
+            for (double cell : row) {
                 System.out.print(new DecimalFormat("000.000", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
-                        .format(adjacencyMatrix[i][j]));
+                        .format(cell));
                 System.out.print("   ");
             }
             System.out.println();
@@ -155,6 +155,6 @@ public class HamiltonianPath extends JComponent {
 }
 
 // input of Points
-// need to generate shortest path based on Points
+// need to generate the shortest path based on Points
 // need to generated weighted graph
 //

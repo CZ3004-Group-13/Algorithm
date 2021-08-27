@@ -26,7 +26,7 @@ public class Grid extends JPanel {
     }
 
     public Point[] getObstacleCenters() {
-        ArrayList<Point> obstacleCenters = new ArrayList<Point>();
+        ArrayList<Point> obstacleCenters = new ArrayList<>();
         obstacleCenters.clear();
 
         Dimension size = cells[0][0].getSize();
