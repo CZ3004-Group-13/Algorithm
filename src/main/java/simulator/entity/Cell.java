@@ -78,6 +78,7 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
             imageDirectionPolygon.addPoint(northCenter.x, northCenter.y);
             break;
         case 0:
+            break;
         default:
             break;
         }

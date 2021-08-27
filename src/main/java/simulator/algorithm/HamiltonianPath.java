@@ -63,10 +63,10 @@ public class HamiltonianPath extends JComponent {
     // one implementation to get shortest path
     int[] getShortestPathGreedy(double[][] adjacencyMatrix) {
         // final path to take
-        ArrayList<Integer> path = new ArrayList<Integer>(adjacencyMatrix.length);
+        ArrayList<Integer> path = new ArrayList<>(adjacencyMatrix.length);
 
         // list of nodes to traverse
-        ArrayList<Integer> nodes = new ArrayList<Integer>(adjacencyMatrix.length);
+        ArrayList<Integer> nodes = new ArrayList<>(adjacencyMatrix.length);
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             nodes.add(i);
         }
@@ -96,7 +96,7 @@ public class HamiltonianPath extends JComponent {
                     }
                 }
             }
-            // add index of closest ndoe to final path
+            // add index of closest node to final path
             path.add(minIdx);
 
             // prepare to traverse the next node in path
@@ -105,9 +105,9 @@ public class HamiltonianPath extends JComponent {
             nodes.remove((Integer) minIdx);
         }
 
-        System.out.println("Path index: " + path.toString());
+        System.out.println("Path index: " + path);
 
-        // tranforming arrayList<Integer> to int[]
+        // transforming arrayList<Integer> to int[]
         int[] result = new int[adjacencyMatrix.length];
         for (int ii = 0; ii < adjacencyMatrix.length; ii++) {
             result[ii] = path.get(ii);
