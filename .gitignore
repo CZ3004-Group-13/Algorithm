@@ -2,3 +2,6 @@
 */*.class
 
 run.sh
+
+.idea
+/Algorithm.iml
