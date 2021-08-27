@@ -1,4 +1,4 @@
-package myPackage;
+package simulator.algorithm;
 
 import java.awt.Color;
 import java.awt.Graphics;

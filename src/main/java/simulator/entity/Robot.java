@@ -1,4 +1,4 @@
-package myPackage;
+package simulator.entity;
 
 import java.awt.*;
 import javax.swing.*;

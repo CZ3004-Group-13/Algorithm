@@ -1,11 +1,12 @@
+package simulator;
+
 import javax.swing.*;
 
-import myPackage.Robot;
-import myPackage.Grid;
-import myPackage.HamiltonianPath;
+import simulator.entity.Robot;
+import simulator.entity.Grid;
+import simulator.algorithm.HamiltonianPath;
 
 import java.awt.*;
-import java.awt.geom.*;
 import java.awt.event.*;
 
 class Simulator {

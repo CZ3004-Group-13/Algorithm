@@ -1,7 +1,7 @@
 ### To use
-`javac Simulator.java` to compile
-
-`java Simulator` to run
+1. Locate the _project root directory,_ whose path ends with `Algorithm`.
+2. Type `javac -cp .\lib\*;.\src\main\java -Xlint:none -d .\bin .\src\main\java\simulator\Simulator.java` and press enter to compile the code.
+3. Then, type `java -classpath .\lib\*;.\bin simulator.Simulator` and press enter to run the program.
 
 
 ### Details to note
