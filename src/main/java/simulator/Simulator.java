@@ -11,7 +11,7 @@ class Simulator {
 
     private static JFrame jFrame;
     private static Grid grid;
-    private static Robot robotLayer;
+    private static Robot robot;
     private static HamiltonianPath hPath;
     private static Dimension environmentActualSize = new Dimension(200, 200);
     private static int environmentScalingFactor = 3;
@@ -47,9 +47,9 @@ class Simulator {
         // bigger y is higher up
         // smaller z is higher up
 
-        robotLayer = new Robot(robotModelSize, robotModelStartingPoint);
-        robotLayer.setSize(environmentModelSize);
-        layeredPane.add(robotLayer, 1, 0);
+        robot = new Robot(robotModelSize, robotModelStartingPoint);
+        robot.setSize(environmentModelSize);
+        layeredPane.add(robot, 1, 0);
 
         hPath = new HamiltonianPath();
         hPath.setSize(environmentModelSize);
@@ -77,12 +77,23 @@ class Simulator {
             hPath.getShortestPath(origin, grid.getObstacleCenters());
         });
 
-        JButton downButton = new JButton("Down");
-        downButton.addActionListener(e -> {
-        });
+        JButton forwardButton = new JButton("Forward");
+        forwardButton.addActionListener(e -> robot.moveForward());
+
+        JButton backwardButton = new JButton("Backward");
+        backwardButton.addActionListener(e -> robot.moveBackward());
+
+        JButton leftButton = new JButton("Turn left");
+        leftButton.addActionListener(e -> robot.turnLeft());
+
+        JButton rightButton = new JButton("Turn right");
+        rightButton.addActionListener(e -> robot.turnRight());
 
         rightPanel.add(drawButton);
-        rightPanel.add(downButton);
+        rightPanel.add(forwardButton);
+        rightPanel.add(backwardButton);
+        rightPanel.add(leftButton);
+        rightPanel.add(rightButton);
 
         jFrame.pack();
         jFrame.setVisible(true); // now frame will be visible, by default not visible
