@@ -71,16 +71,15 @@ public class Robot extends JComponent {
         calculateTurningRadius();
         double turningAngle = this.turningRadius == 0 ? 0 : this.distancePerTick / this.turningRadius;
 
-        //double angle2 = this.thetaWheels > 0 ? THETA_CAR + turningAngle : THETA_CAR - turningAngle;
         double angle2 = this.thetaWheels > 0 ? THETA_CAR + turningAngle : THETA_CAR - turningAngle;
 
         double dX = this.distancePerTick * Math.cos(Math.toRadians(angle2));
         double dY = this.distancePerTick * Math.sin(Math.toRadians(angle2));
 
-        logger.log(Level.INFO, "X = " + angle2 + ", Y = " + dY);
-
         this.bodyAffineTransform.translate(dX, dY);
         this.bodyAffineTransform.rotate(Math.toRadians(this.thetaWheels));
+
+        logger.log(Level.INFO, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = " + this.bodyAffineTransform.getTranslateY());
 
         this.repaint();
     }
@@ -89,16 +88,15 @@ public class Robot extends JComponent {
         calculateTurningRadius();
         double turningAngle = this.turningRadius == 0 ? 0 : this.distancePerTick / this.turningRadius;
 
-        //double angle2 = this.thetaWheels > 0 ? THETA_CAR - 180 - turningAngle : THETA_CAR - 180 + turningAngle;
-        double angle2 = this.thetaWheels > 0 ? 360 - (THETA_CAR + turningAngle) : 360 - (THETA_CAR - turningAngle);
+        double angle2 = this.thetaWheels > 0 ? THETA_CAR - 180 - turningAngle : THETA_CAR - 180 + turningAngle;
 
         double dX = this.distancePerTick * Math.cos(Math.toRadians(angle2));
         double dY = this.distancePerTick * Math.sin(Math.toRadians(angle2));
 
-        logger.log(Level.INFO, "X = " + angle2 + ", Y = " + dY);
-
         this.bodyAffineTransform.translate(dX, dY);
         this.bodyAffineTransform.rotate(-Math.toRadians(this.thetaWheels));
+
+        logger.log(Level.INFO, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = " + this.bodyAffineTransform.getTranslateY());
 
         this.repaint();
     }
