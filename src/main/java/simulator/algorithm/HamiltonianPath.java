@@ -5,6 +5,7 @@ import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -40,7 +41,8 @@ public class HamiltonianPath extends JComponent {
         // eg, return [1, 4, 2, 3] means go to
         // 1st -> 4th -> 2nd -> 3rd node of pointsArray
         // pointsArray[0] -> pointsArray[3] -> pointsArray[1] -> pointsArray[2]
-        int[] shortestPathPointIndex = getShortestPathGreedy(adjacencyMatrix);
+        //int[] shortestPathPointIndex = getShortestPathGreedy(adjacencyMatrix);
+        int[] shortestPathPointIndex = getShortestPathEfficiently(adjacencyMatrix);
 
         ////
 
@@ -61,26 +63,58 @@ public class HamiltonianPath extends JComponent {
     }
 
     /**
-     * Get the shortest path by brute force and return it.
+     * Get the shortest path in the shortest hamiltonian path in O(2^N * N^2) and return it.
      *
-     * @param adjacencyMatrix Adjacency Matrix with all the nodes.
+     * @param adjacencyMatrix Adjacency Matrix of the graph.
      * @return Shortest path.
      */
-    int[] getShortestPathBruteForce(double[][] adjacencyMatrix) {
-        // final path to take
-        ArrayList<Integer> path = new ArrayList<>(adjacencyMatrix.length);
+    int[] getShortestPathEfficiently(double[][] adjacencyMatrix) {
+        int numberOfNodes = adjacencyMatrix.length;
 
-        // list of nodes to traverse
-        ArrayList<Integer> nodes = new ArrayList<>(adjacencyMatrix.length);
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
-            nodes.add(i);
+        double[][] dynamicProgramming = new double[1 << numberOfNodes][numberOfNodes];
+        for (double[] d : dynamicProgramming) {
+            Arrays.fill(d, Double.MAX_VALUE / 2);
+        }
+        for (int i = 0; i < numberOfNodes; i++) {
+            dynamicProgramming[1 << i][i] = 0;
+        }
+        for (int mask = 0; mask < 1 << numberOfNodes; mask++) {
+            for (int i = 0; i < numberOfNodes; i++) {
+                if ((mask & 1 << i) != 0) {
+                    for (int j = 0; j < numberOfNodes; j++) {
+                        if ((mask & 1 << j) != 0) {
+                            dynamicProgramming[mask][i] = Math.min(dynamicProgramming[mask][i], dynamicProgramming[mask ^ (1 << i)][j] + adjacencyMatrix[j][i]);
+                        }
+                    }
+                }
+            }
         }
 
-        // TODO: Add TSP problem solving logic
-        // https://sites.google.com/site/indy256/algo/shortest_hamiltonian_path
-        // https://leetcode.com/problems/shortest-path-visiting-all-nodes/
+        double res = Double.MAX_VALUE;
+        for (int i = 0; i < numberOfNodes; i++) {
+            res = Math.min(res, dynamicProgramming[(1 << numberOfNodes) - 1][i]);
+        }
 
-        return path.stream().mapToInt(i -> i).toArray();
+        int cur = (1 << numberOfNodes) - 1;
+        int[] path = new int[numberOfNodes];
+        int last = -1;
+        for (int i = numberOfNodes - 1; i >= 0; i--) {
+            int bj = -1;
+            for (int j = 0; j < numberOfNodes; j++) {
+                if ((cur & 1 << j) != 0 && (bj == -1 || dynamicProgramming[cur][bj] + (last == -1 ? 0 : adjacencyMatrix[bj][last]) > dynamicProgramming[cur][j] + (last == -1 ? 0 : adjacencyMatrix[j][last]))) {
+                    bj = j;
+                }
+            }
+            path[i] = bj;
+            cur ^= 1 << bj;
+            last = bj;
+        }
+
+        System.out.println(res);
+
+        System.out.println(Arrays.toString(path));
+
+        return path;
     }
 
     // one implementation to get (approximately) the shortest path
@@ -98,12 +132,14 @@ public class HamiltonianPath extends JComponent {
         nodes.remove(0); // remove origin
 
         int currentNode = 0; // to track current processing node
-        double min = 99999; // to find min distance from current node
-        int minIdx = 0; // to track index of node with min distance from current node
+        double min; // to find min distance from current node
+        int minIdx; // to track index of node with min distance from current node
+
+        double totalDistance = 0;
 
         // traverse all nodes
         while (!nodes.isEmpty()) {
-            min = 99999;
+            min = Integer.MAX_VALUE;
             minIdx = 0;
 
             // for current node, find the closest node
@@ -120,6 +156,7 @@ public class HamiltonianPath extends JComponent {
                 }
             }
             // add index of the closest node to final path
+            totalDistance += min;
             path.add(minIdx);
 
             // prepare to traverse the next node in path
@@ -129,6 +166,8 @@ public class HamiltonianPath extends JComponent {
         }
 
         System.out.println("Path index: " + path);
+
+        System.out.println("Total Distance: " + totalDistance);
 
         return path.stream().mapToInt(i -> i).toArray();
     }
