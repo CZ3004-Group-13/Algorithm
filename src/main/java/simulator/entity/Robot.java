@@ -5,39 +5,45 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Robot extends JComponent {
     private Rectangle2D body;
     private Rectangle2D leftWheel;
     private Rectangle2D rightWheel;
     private Dimension size;
-    private double distanceBetweenFrontBackWheels;
+    private final double distanceBetweenFrontBackWheels;
     private Point currentLocation;
     private Point currentLocationCenter;
     private AffineTransform bodyAffineTransform = new AffineTransform();
     private AffineTransform leftWheelAffineTransform = new AffineTransform();
     private AffineTransform rightWheelAffineTransform = new AffineTransform();
 
-    private double distancePerTick; // the distance the robot moves per tick
-    private double angleChangePerClick;
+    private final double distancePerTick; // the distance the robot moves per tick
+    private final double angleChangePerClick;
     // need to incorporate concept of speed later
     private double turningRadius = 0;
-    private double thetaCar = 270; // this is facing up
+    private static final double THETA_CAR = 270; // this is facing up
     private double thetaWheels = 0; // with reference to the front of car
     // since the coordinate system is positive x is right, positive y is down,
     // angles work by starting from positive x and going clockwise
 
+    private Logger logger;
+
     private boolean firstTime = true;
 
     public Robot(Dimension size, Point startingPoint) {
+        logger = Logger.getLogger(Robot.class.getName());
+
         this.size = size;
         this.setCurrentLocationCenter(startingPoint);
         body = new Rectangle2D.Double(0, 0, size.getWidth(), size.getHeight());
         leftWheel = new Rectangle2D.Double(0, 0, size.getWidth() / 5, size.getHeight() / 3);
         rightWheel = new Rectangle2D.Double(0, 0, size.getWidth() / 5, size.getHeight() / 3);
 
-        distanceBetweenFrontBackWheels = 2 * size.getHeight() / 3;
-        distancePerTick =  size.getHeight()/ 5;
+        distanceBetweenFrontBackWheels = size.getHeight() * 2 / 3;
+        distancePerTick = size.getHeight() / 5;
         angleChangePerClick = 5;
 
         setOpaque(false);
@@ -65,15 +71,13 @@ public class Robot extends JComponent {
         calculateTurningRadius();
         double turningAngle = this.turningRadius == 0 ? 0 : this.distancePerTick / this.turningRadius;
 
-        double angle2;
-        if (this.thetaWheels > 0) {
-            angle2 = this.thetaCar + turningAngle;
-        } else {
-            angle2 = this.thetaCar - turningAngle;
-        }
+        //double angle2 = this.thetaWheels > 0 ? THETA_CAR + turningAngle : THETA_CAR - turningAngle;
+        double angle2 = this.thetaWheels > 0 ? THETA_CAR + turningAngle : THETA_CAR - turningAngle;
 
         double dX = this.distancePerTick * Math.cos(Math.toRadians(angle2));
         double dY = this.distancePerTick * Math.sin(Math.toRadians(angle2));
+
+        logger.log(Level.INFO, "X = " + angle2 + ", Y = " + dY);
 
         this.bodyAffineTransform.translate(dX, dY);
         this.bodyAffineTransform.rotate(Math.toRadians(this.thetaWheels));
@@ -85,15 +89,13 @@ public class Robot extends JComponent {
         calculateTurningRadius();
         double turningAngle = this.turningRadius == 0 ? 0 : this.distancePerTick / this.turningRadius;
 
-        double angle2;
-        if (this.thetaWheels > 0) {
-            angle2 = this.thetaCar - 180 - turningAngle;
-        } else {
-            angle2 = this.thetaCar - 180 + turningAngle;
-        }
+        //double angle2 = this.thetaWheels > 0 ? THETA_CAR - 180 - turningAngle : THETA_CAR - 180 + turningAngle;
+        double angle2 = this.thetaWheels > 0 ? 360 - (THETA_CAR + turningAngle) : 360 - (THETA_CAR - turningAngle);
 
         double dX = this.distancePerTick * Math.cos(Math.toRadians(angle2));
         double dY = this.distancePerTick * Math.sin(Math.toRadians(angle2));
+
+        logger.log(Level.INFO, "X = " + angle2 + ", Y = " + dY);
 
         this.bodyAffineTransform.translate(dX, dY);
         this.bodyAffineTransform.rotate(-Math.toRadians(this.thetaWheels));
