@@ -74,8 +74,8 @@ public class HamiltonianPath extends JComponent {
         int numberOfNodes = adjacencyMatrix.length;
 
         double[][] dynamicProgramming = new double[1 << numberOfNodes][numberOfNodes];
-        for (double[] d : dynamicProgramming) {
-            Arrays.fill(d, Double.MAX_VALUE / 2);
+        for (double[] row : dynamicProgramming) {
+            Arrays.fill(row, Double.MAX_VALUE / 2);
         }
         for (int i = 0; i < numberOfNodes; i++) {
             dynamicProgramming[1 << i][i] = 0;
@@ -97,19 +97,19 @@ public class HamiltonianPath extends JComponent {
             distance = Math.min(distance, dynamicProgramming[(1 << numberOfNodes) - 1][i]);
         }
 
-        int cur = (1 << numberOfNodes) - 1;
+        int curr = (1 << numberOfNodes) - 1;
         int[] path = new int[numberOfNodes];
         int last = -1;
         for (int i = numberOfNodes - 1; i >= 0; i--) {
-            int bj = -1;
+            int k = -1;
             for (int j = 0; j < numberOfNodes; j++) {
-                if ((cur & 1 << j) != 0 && (bj == -1 || dynamicProgramming[cur][bj] + (last == -1 ? 0 : adjacencyMatrix[bj][last]) > dynamicProgramming[cur][j] + (last == -1 ? 0 : adjacencyMatrix[j][last]))) {
-                    bj = j;
+                if ((curr & 1 << j) != 0 && (k == -1 || dynamicProgramming[curr][k] + (last == -1 ? 0 : adjacencyMatrix[k][last]) > dynamicProgramming[curr][j] + (last == -1 ? 0 : adjacencyMatrix[j][last]))) {
+                    k = j;
                 }
             }
-            path[i] = bj;
-            cur ^= 1 << bj;
-            last = bj;
+            path[i] = k;
+            curr ^= 1 << k;
+            last = k;
         }
 
         System.out.println("Total Distance: " + distance);
