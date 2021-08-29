@@ -7,7 +7,9 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class HamiltonianPath extends JComponent {
 
@@ -41,7 +43,7 @@ public class HamiltonianPath extends JComponent {
         // eg, return [1, 4, 2, 3] means go to
         // 1st -> 4th -> 2nd -> 3rd node of pointsArray
         // pointsArray[0] -> pointsArray[3] -> pointsArray[1] -> pointsArray[2]
-        //int[] shortestPathPointIndex = getShortestPathGreedy(adjacencyMatrix);
+        // int[] shortestPathPointIndex = getShortestPathGreedy(adjacencyMatrix);
         int[] shortestPathPointIndex = getShortestPathEfficiently(adjacencyMatrix);
 
         ////
@@ -90,9 +92,9 @@ public class HamiltonianPath extends JComponent {
             }
         }
 
-        double res = Double.MAX_VALUE;
+        double distance = Double.MAX_VALUE;
         for (int i = 0; i < numberOfNodes; i++) {
-            res = Math.min(res, dynamicProgramming[(1 << numberOfNodes) - 1][i]);
+            distance = Math.min(distance, dynamicProgramming[(1 << numberOfNodes) - 1][i]);
         }
 
         int cur = (1 << numberOfNodes) - 1;
@@ -110,7 +112,7 @@ public class HamiltonianPath extends JComponent {
             last = bj;
         }
 
-        System.out.println(res);
+        System.out.println("Total Distance: " + distance);
 
         System.out.println(Arrays.toString(path));
 
@@ -122,8 +124,8 @@ public class HamiltonianPath extends JComponent {
         // final path to take
         ArrayList<Integer> path = new ArrayList<>(adjacencyMatrix.length);
 
-        // list of nodes to traverse
-        ArrayList<Integer> nodes = new ArrayList<>(adjacencyMatrix.length);
+        // Set of nodes to traverse
+        Set<Integer> nodes = new HashSet<>();
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             nodes.add(i);
         }
@@ -162,7 +164,7 @@ public class HamiltonianPath extends JComponent {
             // prepare to traverse the next node in path
             currentNode = minIdx;
             // remove next node from list of nodes to traverse
-            nodes.remove((Integer) minIdx);
+            nodes.remove(minIdx);
         }
 
         System.out.println("Path index: " + path);
