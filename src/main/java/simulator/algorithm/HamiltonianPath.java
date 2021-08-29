@@ -15,10 +15,10 @@ public class HamiltonianPath extends JComponent {
     public HamiltonianPath() {
     }
 
-    // method to be called by Simulator to generate shortest path
+    // method to be called by Simulator to generate the shortest path
     // this method doesn't actually get the shortest path but will
     // call other methods in this class to do so
-    // this class does handles calling other methods
+    // this class does handle calling other methods
     public Point[] getShortestPath(Point src, Point[] inputs) {
         this.polygon.reset();
 
@@ -60,7 +60,28 @@ public class HamiltonianPath extends JComponent {
         return shortestPath;
     }
 
-    // one implementation to get shortest path
+    /**
+     * Get the shortest path by brute force and return it.
+     *
+     * @param adjacencyMatrix Adjacency Matrix with all the nodes.
+     * @return Shortest path.
+     */
+    int[] getShortestPathBruteForce(double[][] adjacencyMatrix) {
+        // final path to take
+        ArrayList<Integer> path = new ArrayList<>(adjacencyMatrix.length);
+
+        // list of nodes to traverse
+        ArrayList<Integer> nodes = new ArrayList<>(adjacencyMatrix.length);
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            nodes.add(i);
+        }
+
+        // TODO: Add TSP problem solving logic
+
+        return path.stream().mapToInt(i -> i).toArray();
+    }
+
+    // one implementation to get (approximately) the shortest path
     int[] getShortestPathGreedy(double[][] adjacencyMatrix) {
         // final path to take
         ArrayList<Integer> path = new ArrayList<>(adjacencyMatrix.length);
@@ -96,7 +117,7 @@ public class HamiltonianPath extends JComponent {
                     }
                 }
             }
-            // add index of closest node to final path
+            // add index of the closest node to final path
             path.add(minIdx);
 
             // prepare to traverse the next node in path
@@ -107,13 +128,7 @@ public class HamiltonianPath extends JComponent {
 
         System.out.println("Path index: " + path);
 
-        // transforming arrayList<Integer> to int[]
-        int[] result = new int[adjacencyMatrix.length];
-        for (int ii = 0; ii < adjacencyMatrix.length; ii++) {
-            result[ii] = path.get(ii);
-        }
-
-        return result;
+        return path.stream().mapToInt(i -> i).toArray();
     }
 
     // calculate adjacency matrix based on given points
