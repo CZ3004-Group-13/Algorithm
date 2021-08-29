@@ -77,6 +77,8 @@ public class HamiltonianPath extends JComponent {
         }
 
         // TODO: Add TSP problem solving logic
+        // https://sites.google.com/site/indy256/algo/shortest_hamiltonian_path
+        // https://leetcode.com/problems/shortest-path-visiting-all-nodes/
 
         return path.stream().mapToInt(i -> i).toArray();
     }
