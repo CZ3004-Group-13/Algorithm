@@ -9,16 +9,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Robot extends JComponent {
-    private Rectangle2D body;
-    private Rectangle2D leftWheel;
-    private Rectangle2D rightWheel;
-    private Dimension size;
+    private final Rectangle2D body;
+    private final Rectangle2D leftWheel;
+    private final Rectangle2D rightWheel;
+    private final Dimension size;
     private final double distanceBetweenFrontBackWheels;
     private Point currentLocation;
     private Point currentLocationCenter;
-    private AffineTransform bodyAffineTransform = new AffineTransform();
-    private AffineTransform leftWheelAffineTransform = new AffineTransform();
-    private AffineTransform rightWheelAffineTransform = new AffineTransform();
+    private final AffineTransform bodyAffineTransform = new AffineTransform();
+    private final AffineTransform leftWheelAffineTransform = new AffineTransform();
+    private final AffineTransform rightWheelAffineTransform = new AffineTransform();
 
     private final double distancePerTick; // the distance the robot moves per tick
     private final double angleChangePerClick;
@@ -29,7 +29,7 @@ public class Robot extends JComponent {
     // since the coordinate system is positive x is right, positive y is down,
     // angles work by starting from positive x and going clockwise
 
-    private Logger logger;
+    private final Logger logger;
 
     private boolean firstTime = true;
 
