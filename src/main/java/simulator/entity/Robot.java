@@ -20,12 +20,14 @@ public class Robot extends JComponent {
     private final AffineTransform leftWheelAffineTransform = new AffineTransform();
     private final AffineTransform rightWheelAffineTransform = new AffineTransform();
 
+    private double speed;
     private final double distancePerTick; // the distance the robot moves per tick
     private final double angleChangePerClick;
     // need to incorporate concept of speed later
     private double turningRadius = 0;
+    private double turningAngleDegrees = 0;
     private static final double THETA_CAR = 270; // this is facing up
-    private double thetaWheels = 0; // with reference to the front of car
+    private double thetaWheelsDegree = 0; // with reference to the front of car
     // since the coordinate system is positive x is right, positive y is down,
     // angles work by starting from positive x and going clockwise
 
@@ -43,68 +45,71 @@ public class Robot extends JComponent {
         rightWheel = new Rectangle2D.Double(0, 0, size.getWidth() / 5, size.getHeight() / 3);
 
         distanceBetweenFrontBackWheels = size.getHeight() * 2 / 3;
-        distancePerTick = size.getHeight() / 5;
+        distancePerTick = 1;
         angleChangePerClick = 5;
 
         setOpaque(false);
     }
 
+    // can combine with turnRight and accept one parameter for the angle to turn
     public void turnLeft() {
-        if (this.thetaWheels > -20) {
-            this.thetaWheels -= angleChangePerClick;
+        if (this.thetaWheelsDegree > -20) {
+            this.thetaWheelsDegree -= angleChangePerClick;
             this.leftWheelAffineTransform.rotate(Math.toRadians(-angleChangePerClick));
             this.rightWheelAffineTransform.rotate(Math.toRadians(-angleChangePerClick));
+            doWheelsTurned();
             this.repaint();
         }
     }
 
     public void turnRight() {
-        if (this.thetaWheels < 20) {
-            this.thetaWheels += angleChangePerClick;
+        if (this.thetaWheelsDegree < 20) {
+            this.thetaWheelsDegree += angleChangePerClick;
             this.leftWheelAffineTransform.rotate(Math.toRadians(angleChangePerClick));
             this.rightWheelAffineTransform.rotate(Math.toRadians(angleChangePerClick));
+            doWheelsTurned();
             this.repaint();
         }
     }
 
     public void moveForward() {
-        calculateTurningRadius();
-        double turningAngle = this.turningRadius == 0 ? 0 : this.distancePerTick / this.turningRadius;
+        double angleDegrees = THETA_CAR + turningAngleDegrees;
 
-        double angle2 = this.thetaWheels > 0 ? THETA_CAR + turningAngle : THETA_CAR - turningAngle;
-
-        double dX = this.distancePerTick * Math.cos(Math.toRadians(angle2));
-        double dY = this.distancePerTick * Math.sin(Math.toRadians(angle2));
+        double dX = this.distancePerTick * Math.cos(Math.toRadians(angleDegrees));
+        double dY = this.distancePerTick * Math.sin(Math.toRadians(angleDegrees));
 
         this.bodyAffineTransform.translate(dX, dY);
-        this.bodyAffineTransform.rotate(Math.toRadians(this.thetaWheels));
+        this.bodyAffineTransform.rotate(Math.toRadians(this.turningAngleDegrees));
 
-        logger.log(Level.INFO, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = " + this.bodyAffineTransform.getTranslateY());
+        logger.log(Level.INFO, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
+                + this.bodyAffineTransform.getTranslateY());
 
         this.repaint();
     }
 
     public void moveBackward() {
-        calculateTurningRadius();
-        double turningAngle = this.turningRadius == 0 ? 0 : this.distancePerTick / this.turningRadius;
+        double angleDegrees = THETA_CAR - 180 - this.turningAngleDegrees;
 
-        double angle2 = this.thetaWheels > 0 ? THETA_CAR - 180 - turningAngle : THETA_CAR - 180 + turningAngle;
-
-        double dX = this.distancePerTick * Math.cos(Math.toRadians(angle2));
-        double dY = this.distancePerTick * Math.sin(Math.toRadians(angle2));
+        double dX = this.distancePerTick * Math.cos(Math.toRadians(angleDegrees));
+        double dY = this.distancePerTick * Math.sin(Math.toRadians(angleDegrees));
 
         this.bodyAffineTransform.translate(dX, dY);
-        this.bodyAffineTransform.rotate(-Math.toRadians(this.thetaWheels));
+        this.bodyAffineTransform.rotate(-Math.toRadians(this.turningAngleDegrees));
 
-        logger.log(Level.INFO, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = " + this.bodyAffineTransform.getTranslateY());
+        logger.log(Level.INFO, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
+                + this.bodyAffineTransform.getTranslateY());
 
         this.repaint();
     }
 
-    // calculate turning radius based on distance between front and back wheel axis
-    // and angle of wheels
-    private void calculateTurningRadius() {
-        this.turningRadius = Math.abs(this.distanceBetweenFrontBackWheels * Math.tan(Math.PI/2 - this.thetaWheels));
+    // calculate turningRadius and turningAngleDegrees
+    // based on distance between front and back wheel axis
+    private void doWheelsTurned() {
+        this.turningRadius = Math.abs(
+                this.distanceBetweenFrontBackWheels * Math.tan(Math.PI / 2 - Math.toRadians(this.thetaWheelsDegree)));
+
+        this.turningAngleDegrees = this.turningRadius == 0 ? 0 : Math.toDegrees(this.distancePerTick / this.turningRadius);
+        this.turningAngleDegrees = this.thetaWheelsDegree > 0 ? turningAngleDegrees : -turningAngleDegrees;
     }
 
     // using currentLocation, calculate the center point
@@ -188,6 +193,5 @@ public class Robot extends JComponent {
         this.currentLocationCenter = loc;
         this.currentLocation = this.calculateTopLeftPoint();
     }
-
 
 }

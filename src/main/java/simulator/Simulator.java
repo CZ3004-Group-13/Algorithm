@@ -19,6 +19,9 @@ class Simulator {
     private static Dimension robotActualSize = new Dimension(30, 30);
     private static Point robotActualStartingPoint = new Point(20, 180);
 
+    private static Thread gameLoop;
+    private static boolean isRunning = false;
+
     public static void createAndShowGUI() {
         jFrame = new JFrame("Test Window");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,11 +92,24 @@ class Simulator {
         JButton rightButton = new JButton("Turn right");
         rightButton.addActionListener(e -> robot.turnRight());
 
+        JButton startButton = new JButton("Start");
+        startButton.addActionListener(e -> {
+            setupGameLoop();
+            isRunning = true;
+            gameLoop.start();
+            System.out.println("Start");
+        });
+
+        JButton stopButton = new JButton("Stop");
+        stopButton.addActionListener(e -> isRunning = false);
+
         rightPanel.add(drawButton);
         rightPanel.add(forwardButton);
         rightPanel.add(backwardButton);
         rightPanel.add(leftButton);
         rightPanel.add(rightButton);
+        rightPanel.add(startButton);
+        rightPanel.add(stopButton);
 
         jFrame.pack();
         jFrame.setVisible(true); // now frame will be visible, by default not visible
@@ -102,7 +118,21 @@ class Simulator {
     public static void main(String[] args) {
         // need to use this utility to call the initial method that draws GUI
         SwingUtilities.invokeLater(Simulator::createAndShowGUI);
+    }
 
+    public static void setupGameLoop() {
+        gameLoop = new Thread(() -> {
+            System.out.println("Thread");
+            while (isRunning) {
+                System.out.println("Loop");
+                robot.moveForward();
+                robot.repaint();
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException ex) {
+                }
+            }
+        });
     }
 
 }

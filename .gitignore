@@ -1,7 +1,8 @@
 *.class
 */*.class
 
-run.sh
-
 .idea
 /Algorithm.iml
+
+.DS_Store
+.vscode
