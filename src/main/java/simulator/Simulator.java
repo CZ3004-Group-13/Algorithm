@@ -6,8 +6,12 @@ import simulator.entity.Robot;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class Simulator {
+
+    private static final Logger logger = Logger.getLogger(Simulator.class.getName());
 
     private static JFrame jFrame;
     private static Grid grid;
@@ -75,9 +79,9 @@ class Simulator {
         // add buttons
         JButton drawButton = new JButton("Draw");
         drawButton.addActionListener(e -> {
-            System.out.println("Start button clicked");
-            Point origin = new Point(0, 0);
-            hPath.getShortestPath(origin, grid.getObstacleCenters());
+            logger.log(Level.FINE, "Start Button Clicked");
+            // Point origin = new Point(0, 0);
+            hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
         });
 
         JButton forwardButton = new JButton("Forward");
@@ -97,7 +101,7 @@ class Simulator {
             setupGameLoop();
             isRunning = true;
             gameLoop.start();
-            System.out.println("Start");
+            logger.log(Level.FINE, "Start");
         });
 
         JButton stopButton = new JButton("Stop");
@@ -122,9 +126,9 @@ class Simulator {
 
     public static void setupGameLoop() {
         gameLoop = new Thread(() -> {
-            System.out.println("Thread");
+            logger.log(Level.FINEST, "Thread");
             while (isRunning) {
-                System.out.println("Loop");
+                logger.log(Level.FINEST, "Loop");
                 robot.moveForward();
                 robot.repaint();
                 try {

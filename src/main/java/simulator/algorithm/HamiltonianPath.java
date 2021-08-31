@@ -10,12 +10,17 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HamiltonianPath extends JComponent {
+
+    private final Logger logger;
 
     private Polygon polygon = new Polygon();
 
     public HamiltonianPath() {
+        logger = Logger.getLogger(HamiltonianPath.class.getName());
     }
 
     // method to be called by Simulator to generate the shortest path
@@ -57,7 +62,7 @@ public class HamiltonianPath extends JComponent {
         for (Point p : shortestPath) {
             this.polygon.addPoint((int) p.getX(), (int) p.getY());
         }
-        this.polygon.addPoint(0, 0);
+        //this.polygon.addPoint(src.getX(), src.getY());
 
         this.repaint();
 
@@ -112,9 +117,8 @@ public class HamiltonianPath extends JComponent {
             last = k;
         }
 
-        System.out.println("Total Distance: " + distance);
-
-        System.out.println(Arrays.toString(path));
+        logger.log(Level.FINER, "Total Distance: " + distance);
+        logger.log(Level.FINER, Arrays.toString(path));
 
         return path;
     }
@@ -148,9 +152,9 @@ public class HamiltonianPath extends JComponent {
             for (int ii = 0; ii < adjacencyMatrix.length; ii++) {
                 if (currentNode != ii) {
                     if (!path.contains(ii)) {
-                        System.out.println("Calculating for " + currentNode + " " + ii);
+                        logger.log(Level.FINEST, "Calculating for " + currentNode + " " + ii);
                         if (adjacencyMatrix[currentNode][ii] < min) {
-                            System.out.println(currentNode + " " + ii);
+                            logger.log(Level.FINEST, currentNode + " " + ii);
                             minIdx = ii;
                             min = adjacencyMatrix[currentNode][ii];
                         }
@@ -167,9 +171,8 @@ public class HamiltonianPath extends JComponent {
             nodes.remove(minIdx);
         }
 
-        System.out.println("Path index: " + path);
-
-        System.out.println("Total Distance: " + totalDistance);
+        logger.log(Level.FINER, "Path index: " + path);
+        logger.log(Level.FINER, "Total Distance: " + totalDistance);
 
         return path.stream().mapToInt(i -> i).toArray();
     }
@@ -192,6 +195,7 @@ public class HamiltonianPath extends JComponent {
 
     // to print out the adjacency matrix
     void printAdjacencyMatrix(double[][] adjacencyMatrix) {
+        System.out.println("Adjacency Matrix:");
         for (double[] row : adjacencyMatrix) {
             for (double cell : row) {
                 System.out.print(new DecimalFormat("000.000", DecimalFormatSymbols.getInstance(Locale.ENGLISH))

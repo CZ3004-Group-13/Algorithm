@@ -6,8 +6,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Cell extends JComponent implements MouseListener, MouseMotionListener {
+
+    private final Logger logger;
 
     private int id;
     private boolean obstaclePresent = false;
@@ -17,6 +21,8 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
     private Polygon imageDirectionPolygon;
 
     public Cell() {
+        logger = Logger.getLogger(Cell.class.getName());
+
         setBorder(BorderFactory.createLineBorder(Color.lightGray));
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -87,12 +93,12 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        // System.out.println("Mouse clicked");
+        logger.log(Level.FINEST, "Mouse clicked");
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        // System.out.println("Mouse pressed");
+        logger.log(Level.FINEST, "Mouse pressed");
 
         initialClickPoint = e.getPoint();
         this.setObstaclePresent(!this.isObstaclePresent());
@@ -104,23 +110,23 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        // System.out.println("Mouse released");
+        logger.log(Level.FINEST, "Mouse released");
         initialClickPoint = null;
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        // System.out.println("Mouse entered");
+        logger.log(Level.FINEST, "Mouse entered");
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        // System.out.println("Mouse left");
+        logger.log(Level.FINEST, "Mouse left");
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        // System.out.println("Mouse dragged");
+        logger.log(Level.FINEST, "Mouse dragged");
 
         // only trigger if there is an obstacle present and
         // mouse click held down
@@ -152,7 +158,7 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        // System.out.println("Mouse moved");
+        logger.log(Level.FINEST, "Mouse moved");
     }
 
     public int getImageDirection() {
