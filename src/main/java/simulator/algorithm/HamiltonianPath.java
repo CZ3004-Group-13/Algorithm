@@ -2,6 +2,7 @@ package simulator.algorithm;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Path2D;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -17,8 +18,10 @@ public class HamiltonianPath extends JComponent {
 
     private final Logger logger;
 
-    // How to line is currently drawn
+    // Line is currently drawn using polygon
     private Polygon polygon = new Polygon();
+
+    private ArrayList<Path2D> bezierCurves = new ArrayList<>();
 
     public HamiltonianPath() {
         logger = Logger.getLogger(HamiltonianPath.class.getName());
@@ -30,6 +33,7 @@ public class HamiltonianPath extends JComponent {
     // this class does handle calling other methods
     public Point[] getShortestPath(Point src, Point[] inputs) {
         this.polygon.reset();
+        bezierCurves.clear();
 
         int n = inputs.length;
 
@@ -59,10 +63,27 @@ public class HamiltonianPath extends JComponent {
             shortestPath[i] = pointsArray[shortestPathPointIndex[i]];
         }
 
+        Point previousPoint = null;
+        boolean alternate = true;
+
         for (Point p : shortestPath) {
             this.polygon.addPoint((int) p.getX(), (int) p.getY());
+            if (previousPoint != null) {
+                Path2D gPath = new Path2D.Double();
+                gPath.moveTo((int) previousPoint.getX(), (int) previousPoint.getY());
+                if (alternate) {
+                    gPath.quadTo(previousPoint.getX(), p.getY(),  p.getX(), p.getY());
+                } else {
+                    gPath.quadTo(p.getX(), previousPoint.getY(),  p.getX(), p.getY());
+                }
+                alternate = !alternate;
+                bezierCurves.add(gPath);
+            }
+            previousPoint = p;
         }
-        //this.polygon.addPoint(src.getX(), src.getY());
+
+        // Not necessary
+        // this.polygon.addPoint((int) src.getX(), (int) src.getY());
 
         this.repaint();
 
@@ -211,7 +232,10 @@ public class HamiltonianPath extends JComponent {
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.green);
-        g2.drawPolygon(this.polygon);
+        // g2.drawPolygon(this.polygon);
+        for (Path2D curve: bezierCurves) {
+            g2.draw(curve);
+        }
     }
 
 }
