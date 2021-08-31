@@ -17,6 +17,7 @@ public class HamiltonianPath extends JComponent {
 
     private final Logger logger;
 
+    // How to line is currently drawn
     private Polygon polygon = new Polygon();
 
     public HamiltonianPath() {
@@ -37,8 +38,7 @@ public class HamiltonianPath extends JComponent {
         Collections.addAll(pointList, src);
         Collections.addAll(pointList, inputs);
 
-        Point[] pointsArray = new Point[n + 1];
-        pointsArray = pointList.toArray(pointsArray);
+        Point[] pointsArray = pointList.toArray(new Point[0]);
 
         // get adjacency matrix to be used for shortest path algo
         double[][] adjacencyMatrix = getAdjacencyMatrix(pointsArray);

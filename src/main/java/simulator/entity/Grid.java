@@ -30,17 +30,14 @@ public class Grid extends JPanel {
 
         Dimension size = cells[0][0].getSize();
 
-        for (Cell[] cells2 : cells) {
-            for (Cell cell : cells2) {
+        for (Cell[] row : cells) {
+            for (Cell cell : row) {
                 if (cell.isObstaclePresent()) {
                     obstacleCenters.add(new Point(cell.getX() + size.width / 2, cell.getY() + size.height / 2));
                 }
             }
         }
 
-        Point[] array = new Point[obstacleCenters.size()];
-        array = obstacleCenters.toArray(array);
-
-        return array;
+        return obstacleCenters.toArray(new Point[0]);
     }
 }

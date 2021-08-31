@@ -15,8 +15,7 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
 
     private int id;
     private boolean obstaclePresent = false;
-    private int imageDirection = 0;
-    // 0 is no image, 1 North, 2 East, 3 South, 4 West
+    private Direction imageDirection = Direction.NONE;
     private Point initialClickPoint;
     private Polygon imageDirectionPolygon;
 
@@ -63,30 +62,28 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
         westCenter.translate(0, halfHeight);
 
         switch (this.getImageDirection()) {
-        case 1:
+        case NORTH -> {
             imageDirectionPolygon.addPoint(northCenter.x, northCenter.y);
             imageDirectionPolygon.addPoint(eastCenter.x, eastCenter.y);
             imageDirectionPolygon.addPoint(westCenter.x, westCenter.y);
-            break;
-        case 2:
+        }
+        case EAST -> {
             imageDirectionPolygon.addPoint(southCenter.x, southCenter.y);
             imageDirectionPolygon.addPoint(eastCenter.x, eastCenter.y);
             imageDirectionPolygon.addPoint(northCenter.x, northCenter.y);
-            break;
-        case 3:
+        }
+        case SOUTH -> {
             imageDirectionPolygon.addPoint(southCenter.x, southCenter.y);
             imageDirectionPolygon.addPoint(eastCenter.x, eastCenter.y);
             imageDirectionPolygon.addPoint(westCenter.x, westCenter.y);
-            break;
-        case 4:
+        }
+        case WEST -> {
             imageDirectionPolygon.addPoint(southCenter.x, southCenter.y);
             imageDirectionPolygon.addPoint(westCenter.x, westCenter.y);
             imageDirectionPolygon.addPoint(northCenter.x, northCenter.y);
-            break;
-        case 0:
-            break;
-        default:
-            break;
+        }
+        default -> {
+        }
         }
 
     }
@@ -103,7 +100,7 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
         initialClickPoint = e.getPoint();
         this.setObstaclePresent(!this.isObstaclePresent());
         if (this.isObstaclePresent()) {
-            this.setImageDirection(1);
+            this.setImageDirection(Direction.NORTH);
         }
         this.repaint();
     }
@@ -135,21 +132,21 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
 
             if (currentPoint.getX() > initialClickPoint.getX()) {
                 if (currentPoint.getY() < (initialClickPoint.getY() - (currentPoint.getX() - initialClickPoint.getX()))) {
-                    this.setImageDirection(1);
+                    this.setImageDirection(Direction.NORTH);
                 } else if (currentPoint
                         .getY() > (initialClickPoint.getY() + (currentPoint.getX() - initialClickPoint.getX()))) {
-                    this.setImageDirection(3);
+                    this.setImageDirection(Direction.SOUTH);
                 } else {
-                    this.setImageDirection(2);
+                    this.setImageDirection(Direction.EAST);
                 }
             } else {
                 if (currentPoint.getY() < (initialClickPoint.getY() - (initialClickPoint.getX() - currentPoint.getX()))) {
-                    this.setImageDirection(1);
+                    this.setImageDirection(Direction.NORTH);
                 } else if (currentPoint
                         .getY() > (initialClickPoint.getY() + (initialClickPoint.getX() - currentPoint.getX()))) {
-                    this.setImageDirection(3);
+                    this.setImageDirection(Direction.SOUTH);
                 } else {
-                    this.setImageDirection(4);
+                    this.setImageDirection(Direction.WEST);
                 }
             }
         }
@@ -161,12 +158,12 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
         logger.log(Level.FINEST, "Mouse moved");
     }
 
-    public int getImageDirection() {
+    public Direction getImageDirection() {
         return imageDirection;
     }
 
     // when setting image direction, recreate image direction polygon
-    public void setImageDirection(int imageDirection) {
+    public void setImageDirection(Direction imageDirection) {
         this.imageDirection = imageDirection;
         this.createImageDirectionPolygon();
     }
