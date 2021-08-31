@@ -13,27 +13,27 @@ class Simulator {
     private static Grid grid;
     private static Robot robot;
     private static HamiltonianPath hPath;
-    private static Dimension environmentActualSize = new Dimension(200, 200);
-    private static int environmentScalingFactor = 3;
+    private static final Dimension environmentActualSize = new Dimension(200, 200);
+    private static final int ENVIRONMENT_SCALING_FACTOR = 3;
 
-    private static Dimension robotActualSize = new Dimension(30, 30);
-    private static Point robotActualStartingPoint = new Point(20, 180);
+    private static final Dimension robotActualSize = new Dimension(30, 30);
+    private static final Point robotActualStartingPoint = new Point(20, 180);
 
     private static Thread gameLoop;
     private static boolean isRunning = false;
 
     public static void createAndShowGUI() {
-        jFrame = new JFrame("Test Window");
+        jFrame = new JFrame("Simulator");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Dimension environmentModelSize = new Dimension(environmentActualSize.width * environmentScalingFactor,
-                environmentActualSize.height * environmentScalingFactor);
+        Dimension environmentModelSize = new Dimension(environmentActualSize.width * ENVIRONMENT_SCALING_FACTOR,
+                environmentActualSize.height * ENVIRONMENT_SCALING_FACTOR);
 
-        Dimension robotModelSize = new Dimension(robotActualSize.width * environmentScalingFactor,
-                robotActualSize.height * environmentScalingFactor);
+        Dimension robotModelSize = new Dimension(robotActualSize.width * ENVIRONMENT_SCALING_FACTOR,
+                robotActualSize.height * ENVIRONMENT_SCALING_FACTOR);
 
-        Point robotModelStartingPoint = new Point(robotActualStartingPoint.x * environmentScalingFactor,
-                robotActualStartingPoint.y * environmentScalingFactor);
+        Point robotModelStartingPoint = new Point(robotActualStartingPoint.x * ENVIRONMENT_SCALING_FACTOR,
+                robotActualStartingPoint.y * ENVIRONMENT_SCALING_FACTOR);
 
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(800, 800)); // hardcoded for now
@@ -130,6 +130,7 @@ class Simulator {
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException ex) {
+                    ex.printStackTrace();
                 }
             }
         });

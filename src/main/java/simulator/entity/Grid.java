@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Grid extends JPanel {
 
-    private Cell[][] cells = new Cell[20][20];
+    private final Cell[][] cells = new Cell[20][20];
 
     public Grid() {
         // setBorder(BorderFactory.createLineBorder(Color.black));
@@ -27,7 +27,6 @@ public class Grid extends JPanel {
 
     public Point[] getObstacleCenters() {
         ArrayList<Point> obstacleCenters = new ArrayList<>();
-        obstacleCenters.clear();
 
         Dimension size = cells[0][0].getSize();
 
