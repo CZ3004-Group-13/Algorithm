@@ -81,6 +81,8 @@ class Simulator {
         drawButton.addActionListener(e -> {
             logger.log(Level.FINE, "Start Button Clicked");
             // Point origin = new Point(0, 0);
+
+            // TODO: pass obstacle cells as well, to determine direction.
             hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
         });
 

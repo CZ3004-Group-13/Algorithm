@@ -64,13 +64,17 @@ public class HamiltonianPath extends JComponent {
         }
 
         Point previousPoint = null;
-        boolean alternate = true;
+
+        // Alternate between X and Y for more smoothness
+        boolean alternate = false;
 
         for (Point p : shortestPath) {
             this.polygon.addPoint((int) p.getX(), (int) p.getY());
             if (previousPoint != null) {
                 Path2D gPath = new Path2D.Double();
                 gPath.moveTo((int) previousPoint.getX(), (int) previousPoint.getY());
+
+                // Explore curveTo after settling math
                 if (alternate) {
                     gPath.quadTo(previousPoint.getX(), p.getY(),  p.getX(), p.getY());
                 } else {
