@@ -21,6 +21,7 @@ public class Robot extends JComponent {
     private final AffineTransform rightWheelAffineTransform = new AffineTransform();
 
     private double speed;
+    private double directionInRadians;
     private final double distancePerTick; // the distance the robot moves per tick
     private final double angleChangePerClick;
     // need to incorporate concept of speed later
@@ -79,9 +80,13 @@ public class Robot extends JComponent {
         double dY = this.distancePerTick * Math.sin(Math.toRadians(angleDegrees));
 
         this.bodyAffineTransform.translate(dX, dY);
-        this.bodyAffineTransform.rotate(Math.toRadians(this.turningAngleDegrees));
 
-        logger.log(Level.INFO, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
+        double rotation = Math.toRadians(this.turningAngleDegrees);
+        this.bodyAffineTransform.rotate(rotation);
+        directionInRadians += rotation;
+
+
+        logger.log(Level.FINE, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
                 + this.bodyAffineTransform.getTranslateY());
 
         this.repaint();
@@ -94,7 +99,10 @@ public class Robot extends JComponent {
         double dY = this.distancePerTick * Math.sin(Math.toRadians(angleDegrees));
 
         this.bodyAffineTransform.translate(dX, dY);
-        this.bodyAffineTransform.rotate(-Math.toRadians(this.turningAngleDegrees));
+
+        double rotation = -Math.toRadians(this.turningAngleDegrees);
+        this.bodyAffineTransform.rotate(rotation);
+        directionInRadians += rotation;
 
         logger.log(Level.FINE, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
                 + this.bodyAffineTransform.getTranslateY());
@@ -204,6 +212,8 @@ public class Robot extends JComponent {
     }
 
     public void moveSmartly(Point[] shortestPath) {
+        // Make use of directionInRadius
+        logger.log(Level.INFO, "Radians: " + directionInRadians);
         for (Point point : shortestPath) {
             while (Math.abs(point.getX() - this.bodyAffineTransform.getTranslateX()) > 25 || Math.abs(point.getY() - this.bodyAffineTransform.getTranslateY()) > 25) {
                 if (point.getX() > this.bodyAffineTransform.getTranslateX()) {
