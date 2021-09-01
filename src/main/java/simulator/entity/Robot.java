@@ -84,7 +84,11 @@ public class Robot extends JComponent {
         double rotation = Math.toRadians(this.turningAngleDegrees);
         this.bodyAffineTransform.rotate(rotation);
         directionInRadians += rotation;
-
+        if (directionInRadians > Math.PI) {
+            directionInRadians -= 2 * Math.PI;
+        } else if (directionInRadians < -Math.PI) {
+            directionInRadians += 2 * Math.PI;
+        }
 
         logger.log(Level.FINE, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
                 + this.bodyAffineTransform.getTranslateY());
@@ -103,6 +107,11 @@ public class Robot extends JComponent {
         double rotation = -Math.toRadians(this.turningAngleDegrees);
         this.bodyAffineTransform.rotate(rotation);
         directionInRadians += rotation;
+        if (directionInRadians > Math.PI) {
+            directionInRadians -= 2 * Math.PI;
+        } else if (directionInRadians < -Math.PI) {
+            directionInRadians += 2 * Math.PI;
+        }
 
         logger.log(Level.FINE, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
                 + this.bodyAffineTransform.getTranslateY());

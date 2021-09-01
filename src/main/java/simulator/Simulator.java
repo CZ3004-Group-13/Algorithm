@@ -23,11 +23,11 @@ class Simulator {
     private final Dimension robotActualSize = new Dimension(30, 30);
     private final Point robotActualStartingPoint = new Point(20, 180);
 
-    private Point[] shortestPath;
+    private Point[] shortestPath = new Point[0];
     private Thread gameLoop;
     private boolean isRunning = false;
 
-    private static final int DISTANCE_MARGIN_OF_ERROR = 25;
+    private static final int DISTANCE_MARGIN_OF_ERROR = 50;
     private static final double DIRECTION_MARGIN_OF_ERROR = 5;
 
     public void createAndShowGUI() {
@@ -135,7 +135,7 @@ class Simulator {
         gameLoop = new Thread(() -> {
             logger.log(Level.FINEST, "Thread");
             int index = 0;
-            while (isRunning /*&& index < shortestPath.length*/) {
+            while (isRunning/* && index < shortestPath.length - 1*/) {
                 logger.log(Level.FINEST, "Loop");
                 robot.moveForward();
                 /*if (Math.abs(shortestPath[index].getX() - robot.getBodyAffineTransform().getTranslateX()) > DISTANCE_MARGIN_OF_ERROR || Math.abs(shortestPath[index].getY() - robot.getBodyAffineTransform().getTranslateY()) > DISTANCE_MARGIN_OF_ERROR) {
@@ -162,7 +162,7 @@ class Simulator {
         if (point.getX() - robot.getBodyAffineTransform().getTranslateX() > DISTANCE_MARGIN_OF_ERROR) {
             if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
                 // move south-east
-                logger.log(Level.INFO, "South East");
+                logger.log(Level.FINE, "South East");
                 if (robot.getDirectionInRadians() > Math.toRadians(-45) && robot.getDirectionInRadians() < 135) {
                     for (int i = 0; i < 4; i++) {
                         robot.turnRight();
@@ -176,7 +176,7 @@ class Simulator {
 
             } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
                 // move north-east
-                logger.log(Level.INFO, "North East");
+                logger.log(Level.FINE, "North East");
                 if (robot.getDirectionInRadians() > Math.toRadians(-135) && robot.getDirectionInRadians() < 45) {
                     for (int i = 0; i < 4; i++) {
                         robot.turnRight();
@@ -189,7 +189,7 @@ class Simulator {
                 robot.moveForward();
             } else {
                 // move east
-                logger.log(Level.INFO, "East");
+                logger.log(Level.FINE, "East");
                 if (robot.getDirectionInRadians() > Math.toRadians(-90) && robot.getDirectionInRadians() < 90) {
                     for (int i = 0; i < 4; i++) {
                         robot.turnRight();
@@ -204,7 +204,7 @@ class Simulator {
         } else if (robot.getBodyAffineTransform().getTranslateX() - point.getX() > DISTANCE_MARGIN_OF_ERROR) {
             if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
                 // move south-west
-                logger.log(Level.INFO, "South West");
+                logger.log(Level.FINE, "South West");
                 if (robot.getDirectionInRadians() > Math.toRadians(-135) && robot.getDirectionInRadians() < 45) {
                     for (int i = 0; i < 4; i++) {
                         robot.turnLeft();
@@ -217,7 +217,7 @@ class Simulator {
                 robot.moveForward();
             } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
                 // move north-west
-                logger.log(Level.INFO, "North West");
+                logger.log(Level.FINE, "North West");
                 if (robot.getDirectionInRadians() > Math.toRadians(-45) && robot.getDirectionInRadians() < 135) {
                     for (int i = 0; i < 4; i++) {
                         robot.turnLeft();
@@ -227,11 +227,10 @@ class Simulator {
                         robot.turnRight();
                     }
                 }
-                System.out.println("wat");
                 robot.moveForward();
             } else {
                 // move west
-                logger.log(Level.INFO, "West");
+                logger.log(Level.FINE, "West");
                 if (robot.getDirectionInRadians() > Math.toRadians(-90) && robot.getDirectionInRadians() < 90) {
                     for (int i = 0; i < 4; i++) {
                         robot.turnLeft();
@@ -246,7 +245,7 @@ class Simulator {
         } else {
             if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
                 // move south
-                logger.log(Level.INFO, "South");
+                logger.log(Level.FINE, "South");
                 if (robot.getDirectionInRadians() > Math.toRadians(-180) && robot.getDirectionInRadians() < 180) {
                     for (int i = 0; i < 4; i++) {
                         robot.turnLeft();
@@ -259,7 +258,7 @@ class Simulator {
                 robot.moveForward();
             } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
                 // move north
-                logger.log(Level.INFO, "North");
+                logger.log(Level.FINE, "North");
                 if (robot.getDirectionInRadians() > Math.toRadians(-180) && robot.getDirectionInRadians() < 180) {
                     for (int i = 0; i < 4; i++) {
                         robot.turnRight();
