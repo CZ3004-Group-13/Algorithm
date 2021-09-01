@@ -11,22 +11,23 @@ import java.util.logging.Logger;
 
 class Simulator {
 
-    private static final Logger logger = Logger.getLogger(Simulator.class.getName());
+    private final Logger logger = Logger.getLogger(Simulator.class.getName());
 
-    private static JFrame jFrame;
-    private static Grid grid;
-    private static Robot robot;
-    private static HamiltonianPath hPath;
-    private static final Dimension environmentActualSize = new Dimension(200, 200);
+    private JFrame jFrame;
+    private Grid grid;
+    private Robot robot;
+    private HamiltonianPath hPath;
+    private final Dimension environmentActualSize = new Dimension(200, 200);
     private static final int ENVIRONMENT_SCALING_FACTOR = 3;
 
-    private static final Dimension robotActualSize = new Dimension(30, 30);
-    private static final Point robotActualStartingPoint = new Point(20, 180);
+    private final Dimension robotActualSize = new Dimension(30, 30);
+    private final Point robotActualStartingPoint = new Point(20, 180);
 
-    private static Thread gameLoop;
-    private static boolean isRunning = false;
+    private Point[] shortestPath;
+    private Thread gameLoop;
+    private boolean isRunning = false;
 
-    public static void createAndShowGUI() {
+    public void createAndShowGUI() {
         jFrame = new JFrame("Simulator");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -83,7 +84,8 @@ class Simulator {
             // Point origin = new Point(0, 0);
 
             // TODO: pass obstacle cells as well, to determine direction.
-            hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
+            //hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
+            shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleCenters());
         });
 
         JButton forwardButton = new JButton("Forward");
@@ -103,6 +105,7 @@ class Simulator {
             setupGameLoop();
             isRunning = true;
             gameLoop.start();
+            //robot.moveSmartly(shortestPath);
             logger.log(Level.FINE, "Start");
         });
 
@@ -123,10 +126,10 @@ class Simulator {
 
     public static void main(String[] args) {
         // need to use this utility to call the initial method that draws GUI
-        SwingUtilities.invokeLater(Simulator::createAndShowGUI);
+        SwingUtilities.invokeLater(() -> new Simulator().createAndShowGUI());
     }
 
-    public static void setupGameLoop() {
+    public void setupGameLoop() {
         gameLoop = new Thread(() -> {
             logger.log(Level.FINEST, "Thread");
             while (isRunning) {

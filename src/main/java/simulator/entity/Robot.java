@@ -96,7 +96,7 @@ public class Robot extends JComponent {
         this.bodyAffineTransform.translate(dX, dY);
         this.bodyAffineTransform.rotate(-Math.toRadians(this.turningAngleDegrees));
 
-        logger.log(Level.INFO, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
+        logger.log(Level.FINE, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
                 + this.bodyAffineTransform.getTranslateY());
 
         this.repaint();
@@ -182,6 +182,15 @@ public class Robot extends JComponent {
         g2.fill(rightWheel);
     }
 
+    /**
+     * Get the centre point of the robot.
+     *
+     * @return Point object of the centre of the robot.
+     */
+    public Point getCurrentLocation() {
+        return new Point((int) this.bodyAffineTransform.getTranslateX(), (int) this.bodyAffineTransform.getTranslateY());
+    }
+
     // when setting currentLocation, calculate and set currentLocationCenter
     public void setCurrentLocation(Point loc) {
         this.currentLocation = loc;
@@ -194,4 +203,38 @@ public class Robot extends JComponent {
         this.currentLocation = this.calculateTopLeftPoint();
     }
 
+    public void moveSmartly(Point[] shortestPath) {
+        for (Point point : shortestPath) {
+            while (Math.abs(point.getX() - this.bodyAffineTransform.getTranslateX()) > 25 || Math.abs(point.getY() - this.bodyAffineTransform.getTranslateY()) > 25) {
+                if (point.getX() > this.bodyAffineTransform.getTranslateX()) {
+                    // move east
+                    if (point.getY() > this.bodyAffineTransform.getTranslateY()) {
+                        // move south-east
+
+                    } else if (point.getY() < this.bodyAffineTransform.getTranslateY()) {
+                        // move north-east
+                    } else {
+                        // move east
+                    }
+                } else if (point.getX() < this.bodyAffineTransform.getTranslateX()) {
+                    // move west
+                    if (point.getY() > this.bodyAffineTransform.getTranslateY()) {
+                        // move south-west
+
+                    } else if (point.getY() < this.bodyAffineTransform.getTranslateY()) {
+                        // move north-west
+                    } else {
+                        // move west
+                    }
+                } else {
+                    if (point.getY() > this.bodyAffineTransform.getTranslateY()) {
+                        // move south
+
+                    } else if (point.getY() < this.bodyAffineTransform.getTranslateY()) {
+                        // move north
+                    }
+                }
+            }
+        }
+    }
 }
