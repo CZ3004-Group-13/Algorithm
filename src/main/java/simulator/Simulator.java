@@ -27,6 +27,9 @@ class Simulator {
     private Thread gameLoop;
     private boolean isRunning = false;
 
+    private static final int DISTANCE_MARGIN_OF_ERROR = 25;
+    private static final double DIRECTION_MARGIN_OF_ERROR = 5;
+
     public void createAndShowGUI() {
         jFrame = new JFrame("Simulator");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -105,7 +108,6 @@ class Simulator {
             setupGameLoop();
             isRunning = true;
             gameLoop.start();
-            //robot.moveSmartly(shortestPath);
             logger.log(Level.FINE, "Start");
         });
 
@@ -132,9 +134,16 @@ class Simulator {
     public void setupGameLoop() {
         gameLoop = new Thread(() -> {
             logger.log(Level.FINEST, "Thread");
-            while (isRunning) {
+            int index = 0;
+            while (isRunning /*&& index < shortestPath.length*/) {
                 logger.log(Level.FINEST, "Loop");
                 robot.moveForward();
+                /*if (Math.abs(shortestPath[index].getX() - robot.getBodyAffineTransform().getTranslateX()) > DISTANCE_MARGIN_OF_ERROR || Math.abs(shortestPath[index].getY() - robot.getBodyAffineTransform().getTranslateY()) > DISTANCE_MARGIN_OF_ERROR) {
+                    moveSmartly(shortestPath[index]);
+                } else {
+                    index++;
+                }*/
+
                 robot.repaint();
                 try {
                     Thread.sleep(15);
@@ -145,4 +154,123 @@ class Simulator {
         });
     }
 
+    public void moveSmartly(Point point) {
+        if (point == null) {
+            return;
+        }
+
+        if (point.getX() - robot.getBodyAffineTransform().getTranslateX() > DISTANCE_MARGIN_OF_ERROR) {
+            if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
+                // move south-east
+                logger.log(Level.INFO, "South East");
+                if (robot.getDirectionInRadians() > Math.toRadians(-45) && robot.getDirectionInRadians() < 135) {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnRight();
+                    }
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnLeft();
+                    }
+                }
+                robot.moveForward();
+
+            } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
+                // move north-east
+                logger.log(Level.INFO, "North East");
+                if (robot.getDirectionInRadians() > Math.toRadians(-135) && robot.getDirectionInRadians() < 45) {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnRight();
+                    }
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnLeft();
+                    }
+                }
+                robot.moveForward();
+            } else {
+                // move east
+                logger.log(Level.INFO, "East");
+                if (robot.getDirectionInRadians() > Math.toRadians(-90) && robot.getDirectionInRadians() < 90) {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnRight();
+                    }
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnLeft();
+                    }
+                }
+                robot.moveForward();
+            }
+        } else if (robot.getBodyAffineTransform().getTranslateX() - point.getX() > DISTANCE_MARGIN_OF_ERROR) {
+            if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
+                // move south-west
+                logger.log(Level.INFO, "South West");
+                if (robot.getDirectionInRadians() > Math.toRadians(-135) && robot.getDirectionInRadians() < 45) {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnLeft();
+                    }
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnRight();
+                    }
+                }
+                robot.moveForward();
+            } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
+                // move north-west
+                logger.log(Level.INFO, "North West");
+                if (robot.getDirectionInRadians() > Math.toRadians(-45) && robot.getDirectionInRadians() < 135) {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnLeft();
+                    }
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnRight();
+                    }
+                }
+                System.out.println("wat");
+                robot.moveForward();
+            } else {
+                // move west
+                logger.log(Level.INFO, "West");
+                if (robot.getDirectionInRadians() > Math.toRadians(-90) && robot.getDirectionInRadians() < 90) {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnLeft();
+                    }
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnRight();
+                    }
+                }
+                robot.moveForward();
+            }
+        } else {
+            if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
+                // move south
+                logger.log(Level.INFO, "South");
+                if (robot.getDirectionInRadians() > Math.toRadians(-180) && robot.getDirectionInRadians() < 180) {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnLeft();
+                    }
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnRight();
+                    }
+                }
+                robot.moveForward();
+            } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
+                // move north
+                logger.log(Level.INFO, "North");
+                if (robot.getDirectionInRadians() > Math.toRadians(-180) && robot.getDirectionInRadians() < 180) {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnRight();
+                    }
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        robot.turnLeft();
+                    }
+                }
+                robot.moveForward();
+            }
+        }
+    }
 }

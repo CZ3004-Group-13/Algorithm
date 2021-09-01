@@ -211,40 +211,11 @@ public class Robot extends JComponent {
         this.currentLocation = this.calculateTopLeftPoint();
     }
 
-    public void moveSmartly(Point[] shortestPath) {
-        // Make use of directionInRadius
-        logger.log(Level.INFO, "Radians: " + directionInRadians);
-        for (Point point : shortestPath) {
-            while (Math.abs(point.getX() - this.bodyAffineTransform.getTranslateX()) > 25 || Math.abs(point.getY() - this.bodyAffineTransform.getTranslateY()) > 25) {
-                if (point.getX() > this.bodyAffineTransform.getTranslateX()) {
-                    // move east
-                    if (point.getY() > this.bodyAffineTransform.getTranslateY()) {
-                        // move south-east
+    public AffineTransform getBodyAffineTransform() {
+        return bodyAffineTransform;
+    }
 
-                    } else if (point.getY() < this.bodyAffineTransform.getTranslateY()) {
-                        // move north-east
-                    } else {
-                        // move east
-                    }
-                } else if (point.getX() < this.bodyAffineTransform.getTranslateX()) {
-                    // move west
-                    if (point.getY() > this.bodyAffineTransform.getTranslateY()) {
-                        // move south-west
-
-                    } else if (point.getY() < this.bodyAffineTransform.getTranslateY()) {
-                        // move north-west
-                    } else {
-                        // move west
-                    }
-                } else {
-                    if (point.getY() > this.bodyAffineTransform.getTranslateY()) {
-                        // move south
-
-                    } else if (point.getY() < this.bodyAffineTransform.getTranslateY()) {
-                        // move north
-                    }
-                }
-            }
-        }
+    public double getDirectionInRadians() {
+        return directionInRadians;
     }
 }
