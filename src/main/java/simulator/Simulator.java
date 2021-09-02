@@ -1,6 +1,7 @@
 package simulator;
 
 import simulator.algorithm.HamiltonianPath;
+import simulator.connection.Connection;
 import simulator.entity.Grid;
 import simulator.entity.Robot;
 
@@ -10,6 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class Simulator {
+
+    public static String host = "192.168.13.13";
+	public static int port = 3053;
 
     private final Logger logger = Logger.getLogger(Simulator.class.getName());
 
@@ -127,6 +131,14 @@ class Simulator {
     }
 
     public static void main(String[] args) {
+
+        boolean rpiConnect = false;
+
+        if (rpiConnect) {
+            Connection connection = Connection.getConnection();
+            connection.openConnection(host, port);
+        }
+
         // need to use this utility to call the initial method that draws GUI
         SwingUtilities.invokeLater(() -> new Simulator().createAndShowGUI());
     }
