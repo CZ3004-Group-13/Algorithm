@@ -88,7 +88,7 @@ class Simulator {
 
             // TODO: pass obstacle cells as well, to determine direction.
             //hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
-            shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleCenters());
+            shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
         });
 
         JButton forwardButton = new JButton("Forward");
