@@ -21,7 +21,7 @@ public class Robot extends JComponent {
     private final AffineTransform rightWheelAffineTransform = new AffineTransform();
 
     private double speed;
-    private double directionInRadians;
+    private double directionInDegrees = -90;
     private final double distancePerTick; // the distance the robot moves per tick
     private final double angleChangePerClick;
     // need to incorporate concept of speed later
@@ -81,13 +81,12 @@ public class Robot extends JComponent {
 
         this.bodyAffineTransform.translate(dX, dY);
 
-        double rotation = Math.toRadians(this.turningAngleDegrees);
-        this.bodyAffineTransform.rotate(rotation);
-        directionInRadians += rotation;
-        if (directionInRadians > Math.PI) {
-            directionInRadians -= 2 * Math.PI;
-        } else if (directionInRadians < -Math.PI) {
-            directionInRadians += 2 * Math.PI;
+        this.bodyAffineTransform.rotate(Math.toRadians(this.turningAngleDegrees));
+        directionInDegrees += this.turningAngleDegrees;
+        if (directionInDegrees > 180) {
+            directionInDegrees -= 360;
+        } else if (directionInDegrees < -180) {
+            directionInDegrees += 360;
         }
 
         logger.log(Level.FINE, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
@@ -104,13 +103,12 @@ public class Robot extends JComponent {
 
         this.bodyAffineTransform.translate(dX, dY);
 
-        double rotation = -Math.toRadians(this.turningAngleDegrees);
-        this.bodyAffineTransform.rotate(rotation);
-        directionInRadians += rotation;
-        if (directionInRadians > Math.PI) {
-            directionInRadians -= 2 * Math.PI;
-        } else if (directionInRadians < -Math.PI) {
-            directionInRadians += 2 * Math.PI;
+        this.bodyAffineTransform.rotate(-Math.toRadians(this.turningAngleDegrees));
+        directionInDegrees -= this.turningAngleDegrees;
+        if (directionInDegrees > 180) {
+            directionInDegrees -= 360;
+        } else if (directionInDegrees < -180) {
+            directionInDegrees += 360;
         }
 
         logger.log(Level.FINE, "X = " + this.bodyAffineTransform.getTranslateX() + ", Y = "
@@ -224,7 +222,21 @@ public class Robot extends JComponent {
         return bodyAffineTransform;
     }
 
-    public double getDirectionInRadians() {
-        return directionInRadians;
+    public double getDirectionInDegrees() {
+        return directionInDegrees;
+    }
+
+    public Direction getGeneralDirection() {
+        if (directionInDegrees >= -45 && directionInDegrees <= 45) {
+            return Direction.EAST;
+        } else if (directionInDegrees >= -135 && directionInDegrees <= -45) {
+            return Direction.NORTH;
+        } else if (directionInDegrees >= 45 && directionInDegrees <= 135) {
+            return Direction.SOUTH;
+        } else if ((directionInDegrees >= 135 && directionInDegrees <= 180) || (directionInDegrees >= -180 && directionInDegrees <= -135)) {
+            return Direction.WEST;
+        }
+
+        return Direction.NONE;
     }
 }
