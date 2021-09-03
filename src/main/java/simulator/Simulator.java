@@ -2,7 +2,9 @@ package simulator;
 
 import simulator.algorithm.HamiltonianPath;
 import simulator.connection.Connection;
+import simulator.entity.Direction
 import simulator.entity.Grid;
+import simulator.entity.MyPoint;
 import simulator.entity.Robot;
 
 import javax.swing.*;
@@ -27,7 +29,7 @@ class Simulator {
     private final Dimension robotActualSize = new Dimension(30, 30);
     private final Point robotActualStartingPoint = new Point(20, 180);
 
-    private Point[] shortestPath = new Point[0];
+    private MyPoint[] shortestPath = new MyPoint[0];
     private Thread gameLoop;
     private boolean isRunning = false;
 
@@ -92,7 +94,7 @@ class Simulator {
 
             // TODO: pass obstacle cells as well, to determine direction.
             //hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
-            shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleCenters());
+            shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
         });
 
         JButton forwardButton = new JButton("Forward");
@@ -147,14 +149,21 @@ class Simulator {
         gameLoop = new Thread(() -> {
             logger.log(Level.FINEST, "Thread");
             int index = 0;
-            while (isRunning/* && index < shortestPath.length - 1*/) {
+            /*while (isRunning) {
                 logger.log(Level.FINEST, "Loop");
                 robot.moveForward();
-                /*if (Math.abs(shortestPath[index].getX() - robot.getBodyAffineTransform().getTranslateX()) > DISTANCE_MARGIN_OF_ERROR || Math.abs(shortestPath[index].getY() - robot.getBodyAffineTransform().getTranslateY()) > DISTANCE_MARGIN_OF_ERROR) {
-                    moveSmartly(shortestPath[index]);
-                } else {
-                    index++;
-                }*/
+
+                robot.repaint();
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }*/
+
+            while (isRunning && index < shortestPath.length - 1) {
+                logger.log(Level.FINEST, "Loop");
+                moveByPath(shortestPath[index]);
 
                 robot.repaint();
                 try {
@@ -166,122 +175,25 @@ class Simulator {
         });
     }
 
-    public void moveSmartly(Point point) {
-        if (point == null) {
-            return;
-        }
+    /**
+     * Choose correct path and follow that path.
+     * @param currPoint Point to move to.
+     */
+    private void moveByPath(MyPoint currPoint) {
+        Direction robotDirection = robot.getGeneralDirection();
+        Direction pointDirection = currPoint.getDirection();
 
-        if (point.getX() - robot.getBodyAffineTransform().getTranslateX() > DISTANCE_MARGIN_OF_ERROR) {
-            if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
-                // move south-east
-                logger.log(Level.FINE, "South East");
-                if (robot.getDirectionInRadians() > Math.toRadians(-45) && robot.getDirectionInRadians() < 135) {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnRight();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnLeft();
-                    }
-                }
-                robot.moveForward();
-
-            } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
-                // move north-east
-                logger.log(Level.FINE, "North East");
-                if (robot.getDirectionInRadians() > Math.toRadians(-135) && robot.getDirectionInRadians() < 45) {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnRight();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnLeft();
-                    }
-                }
-                robot.moveForward();
-            } else {
-                // move east
-                logger.log(Level.FINE, "East");
-                if (robot.getDirectionInRadians() > Math.toRadians(-90) && robot.getDirectionInRadians() < 90) {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnRight();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnLeft();
-                    }
-                }
-                robot.moveForward();
-            }
-        } else if (robot.getBodyAffineTransform().getTranslateX() - point.getX() > DISTANCE_MARGIN_OF_ERROR) {
-            if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
-                // move south-west
-                logger.log(Level.FINE, "South West");
-                if (robot.getDirectionInRadians() > Math.toRadians(-135) && robot.getDirectionInRadians() < 45) {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnLeft();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnRight();
-                    }
-                }
-                robot.moveForward();
-            } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
-                // move north-west
-                logger.log(Level.FINE, "North West");
-                if (robot.getDirectionInRadians() > Math.toRadians(-45) && robot.getDirectionInRadians() < 135) {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnLeft();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnRight();
-                    }
-                }
-                robot.moveForward();
-            } else {
-                // move west
-                logger.log(Level.FINE, "West");
-                if (robot.getDirectionInRadians() > Math.toRadians(-90) && robot.getDirectionInRadians() < 90) {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnLeft();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnRight();
-                    }
-                }
-                robot.moveForward();
-            }
-        } else {
-            if (point.getY() - robot.getBodyAffineTransform().getTranslateY() > DISTANCE_MARGIN_OF_ERROR) {
-                // move south
-                logger.log(Level.FINE, "South");
-                if (robot.getDirectionInRadians() > Math.toRadians(-180) && robot.getDirectionInRadians() < 180) {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnLeft();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnRight();
-                    }
-                }
-                robot.moveForward();
-            } else if (robot.getBodyAffineTransform().getTranslateY() - point.getY() > DISTANCE_MARGIN_OF_ERROR) {
-                // move north
-                logger.log(Level.FINE, "North");
-                if (robot.getDirectionInRadians() > Math.toRadians(-180) && robot.getDirectionInRadians() < 180) {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnRight();
-                    }
-                } else {
-                    for (int i = 0; i < 4; i++) {
-                        robot.turnLeft();
-                    }
-                }
-                robot.moveForward();
-            }
+        // 1) Robot and image facing opposite directions
+        if (Math.abs(pointDirection.ordinal() - robotDirection.ordinal()) == 2) {
+            // (a)
         }
+    }
+
+    public void movePathA() {
+        robot.moveForward();
+    }
+
+    public void movePathB() {
+
     }
 }

@@ -1,6 +1,6 @@
 package simulator.entity;
 
-enum Direction {
+public enum Direction {
     NONE,
     NORTH,
     EAST,

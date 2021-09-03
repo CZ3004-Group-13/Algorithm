@@ -25,19 +25,44 @@ public class Grid extends JPanel {
         }
     }
 
-    public Point[] getObstacleCenters() {
-        ArrayList<Point> obstacleCenters = new ArrayList<>();
+    public MyPoint[] getObstacleFronts() {
+        ArrayList<MyPoint> obstacleFront = new ArrayList<>();
 
         Dimension size = cells[0][0].getSize();
+
+        int offset = 50;
 
         for (Cell[] row : cells) {
             for (Cell cell : row) {
                 if (cell.isObstaclePresent()) {
-                    obstacleCenters.add(new Point(cell.getX() + size.width / 2, cell.getY() + size.height / 2));
+                    switch (cell.getImageDirection()) {
+                        case NONE:
+                            break;
+                        case NORTH:
+                            obstacleFront.add(new MyPoint(cell.getX() + size.width / 2,
+                                    cell.getY() + size.height / 2 - offset, cell.getImageDirection()));
+                            break;
+                        case SOUTH:
+                            obstacleFront.add(new MyPoint(cell.getX() + size.width / 2,
+                                    cell.getY() + size.height / 2 + offset, cell.getImageDirection()));
+                            break;
+                        case EAST:
+                            obstacleFront.add(new MyPoint(cell.getX() + size.width / 2 + offset,
+                                    cell.getY() + size.height / 2, cell.getImageDirection()));
+                            break;
+                        case WEST:
+                            obstacleFront.add(new MyPoint(cell.getX() + size.width / 2 - offset,
+                                    cell.getY() + size.height / 2, cell.getImageDirection()));
+                            break;
+                        default:
+                            break;
+
+                    }
+
                 }
             }
         }
 
-        return obstacleCenters.toArray(new Point[0]);
+        return obstacleFront.toArray(new MyPoint[0]);
     }
 }

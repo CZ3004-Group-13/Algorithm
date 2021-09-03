@@ -1,5 +1,7 @@
 package simulator.algorithm;
 
+import simulator.entity.MyPoint;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -31,18 +33,18 @@ public class HamiltonianPath extends JComponent {
     // this method doesn't actually get the shortest path but will
     // call other methods in this class to do so
     // this class does handle calling other methods
-    public Point[] getShortestPath(Point src, Point[] inputs) {
+    public MyPoint[] getShortestPath(MyPoint src, MyPoint[] inputs) {
         this.polygon.reset();
         bezierCurves.clear();
 
         int n = inputs.length;
 
         // adds origin and all input points into single ArrayList
-        ArrayList<Point> pointList = new ArrayList<>(1 + n);
+        ArrayList<MyPoint> pointList = new ArrayList<>(1 + n);
         Collections.addAll(pointList, src);
         Collections.addAll(pointList, inputs);
 
-        Point[] pointsArray = pointList.toArray(new Point[0]);
+        MyPoint[] pointsArray = pointList.toArray(new MyPoint[0]);
 
         // get adjacency matrix to be used for shortest path algo
         double[][] adjacencyMatrix = getAdjacencyMatrix(pointsArray);
@@ -58,7 +60,7 @@ public class HamiltonianPath extends JComponent {
         ////
 
         // create new Point[] to be returned
-        Point[] shortestPath = new Point[n + 1];
+        MyPoint[] shortestPath = new MyPoint[n + 1];
         for (int i = 0; i < n + 1; i++) {
             shortestPath[i] = pointsArray[shortestPathPointIndex[i]];
         }
