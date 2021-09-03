@@ -2,8 +2,9 @@ package simulator;
 
 import simulator.algorithm.HamiltonianPath;
 import simulator.connection.Connection;
-import simulator.entity.Direction
+import simulator.entity.Direction;
 import simulator.entity.Grid;
+import simulator.entity.Instruction;
 import simulator.entity.MyPoint;
 import simulator.entity.Robot;
 
@@ -32,7 +33,9 @@ class Simulator {
     private MyPoint[] shortestPath = new MyPoint[0];
     private Thread gameLoop;
     private boolean isRunning = false;
+    private boolean newPath = true;
 
+    private static final double ROBOT_SIZE = 20;
     private static final int DISTANCE_MARGIN_OF_ERROR = 50;
     private static final double DIRECTION_MARGIN_OF_ERROR = 5;
 
@@ -149,7 +152,7 @@ class Simulator {
         gameLoop = new Thread(() -> {
             logger.log(Level.FINEST, "Thread");
             int index = 0;
-            /*while (isRunning) {
+            while (isRunning) {
                 logger.log(Level.FINEST, "Loop");
                 robot.moveForward();
 
@@ -159,19 +162,18 @@ class Simulator {
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
-            }*/
+            }
 
-            while (isRunning && index < shortestPath.length - 1) {
+            /*while (isRunning && index < shortestPath.length - 1) {
                 logger.log(Level.FINEST, "Loop");
                 moveByPath(shortestPath[index]);
-
                 robot.repaint();
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
-            }
+            }*/
         });
     }
 
@@ -179,14 +181,53 @@ class Simulator {
      * Choose correct path and follow that path.
      * @param currPoint Point to move to.
      */
-    private void moveByPath(MyPoint currPoint) {
+    private Instruction moveByPath(MyPoint currPoint) {
         Direction robotDirection = robot.getGeneralDirection();
         Direction pointDirection = currPoint.getDirection();
 
-        // 1) Robot and image facing opposite directions
+        MyPoint robotLocation = robot.getCurrentLocation();
+
+        assert robotDirection.ordinal() != 0 && pointDirection.ordinal() != 0;
+
         if (Math.abs(pointDirection.ordinal() - robotDirection.ordinal()) == 2) {
-            // (a)
+            // 1) Robot and image facing opposite directions
+            logger.log(Level.INFO, "OPPOSITE");
+
+            switch (robotDirection) {
+            case NORTH:
+                if (robotLocation.getX() - ROBOT_SIZE / 2 <= currPoint.getX() && robotLocation.getX() + ROBOT_SIZE / 2 >= currPoint.getX() && robotLocation.getY() <= robotLocation.getY()) {
+                    // (a)
+                } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && robotLocation.getY() <= robotLocation.getY()) {
+                    // (b)
+                } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && robotLocation.getY() <= robotLocation.getY()) {
+                    // (c)
+                } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && robotLocation.getY() >= robotLocation.getY()) {
+                    // (d)
+                } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && robotLocation.getY() >= robotLocation.getY()) {
+                    // (e)
+                }
+                break;
+            case SOUTH:
+                break;
+            case EAST:
+                break;
+            case WEST:
+                break;
+            }
+
+
+
+
+        } else if (Math.abs(pointDirection.ordinal() - robotDirection.ordinal()) == 1 || Math.abs(pointDirection.ordinal() - robotDirection.ordinal()) == 3) {
+            // 2) Robot and image facing has a difference of pi/2 or -pi/2
+            logger.log(Level.INFO, "pi/2 & -pi/2");
+        } else if (pointDirection.ordinal() == robotDirection.ordinal()) {
+            // 3) Robot and image facing the same direction
+            logger.log(Level.INFO, "SAME");
+
         }
+
+        return Instruction.BACKWARD;
     }
 
     public void movePathA() {
