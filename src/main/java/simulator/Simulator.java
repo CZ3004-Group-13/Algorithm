@@ -1,7 +1,9 @@
 package simulator;
 
 import simulator.algorithm.HamiltonianPath;
+import simulator.entity.Direction;
 import simulator.entity.Grid;
+import simulator.entity.MyPoint;
 import simulator.entity.Robot;
 
 import javax.swing.*;
@@ -23,7 +25,7 @@ class Simulator {
     private final Dimension robotActualSize = new Dimension(30, 30);
     private final Point robotActualStartingPoint = new Point(20, 180);
 
-    private Point[] shortestPath = new Point[0];
+    private MyPoint[] shortestPath = new MyPoint[0];
     private Thread gameLoop;
     private boolean isRunning = false;
 
@@ -163,10 +165,12 @@ class Simulator {
 
     /**
      * Choose correct path and follow that path.
-     * @param point
+     * @param currPoint Point to move to.
      */
-    private void moveByPath(Point point) {
-        /*if (Math.abs(robot.getGeneralDirection() - point) == 2) {
+    private void moveByPath(MyPoint currPoint) {
+        Direction robotDirection = robot.getGeneralDirection();
+        Direction pointDirection = currPoint.getDirection();
+        /*if () {
 
         }*/
     }

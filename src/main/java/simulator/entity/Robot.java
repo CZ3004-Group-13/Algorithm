@@ -202,8 +202,8 @@ public class Robot extends JComponent {
      *
      * @return Point object of the centre of the robot.
      */
-    public Point getCurrentLocation() {
-        return new Point((int) this.bodyAffineTransform.getTranslateX(), (int) this.bodyAffineTransform.getTranslateY());
+    public MyPoint getCurrentLocation() {
+        return new MyPoint((int) this.bodyAffineTransform.getTranslateX(), (int) this.bodyAffineTransform.getTranslateY(), getGeneralDirection());
     }
 
     // when setting currentLocation, calculate and set currentLocationCenter
