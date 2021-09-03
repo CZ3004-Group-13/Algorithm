@@ -2,7 +2,7 @@ package simulator;
 
 import simulator.algorithm.HamiltonianPath;
 import simulator.connection.Connection;
-import simulator.entity.Direction
+import simulator.entity.Direction;
 import simulator.entity.Grid;
 import simulator.entity.MyPoint;
 import simulator.entity.Robot;
