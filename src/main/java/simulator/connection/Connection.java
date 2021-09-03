@@ -8,11 +8,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Connection {
 
 	private static Connection connection = null;
 	private static Socket socket = null;
+
+	private final Logger logger = Logger.getLogger(Connection.class.getName());
 
 	private BufferedWriter writer;
 	public BufferedReader reader;
@@ -27,36 +31,34 @@ public class Connection {
 	}
 
 	public void openConnection(String host, int port) {
-		System.out.println("Opening connection...");
+		logger.log(Level.FINE, "Opening connection...");
 
 		try {
-			String HOST = host;
-			int PORT = port;
 			// String HOST = "192.168.13.13";
 			// int PORT = 3053;
-			socket = new Socket(HOST, PORT);
+			socket = new Socket(host, port);
 
 			writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(socket.getOutputStream())));
 			InputStreamReader instream = new InputStreamReader(socket.getInputStream());
 			reader = new BufferedReader(instream);
 			
-			System.out.println("openConnection() --> " + "Connection established successfully!");
+			logger.log(Level.FINE, "openConnection() --> " + "Connection established successfully!");
 
 			return;
 		} catch (UnknownHostException e) {
-			System.out.println("openConnection() --> UnknownHostException");
+			logger.log(Level.FINE, "openConnection() --> UnknownHostException");
 		} catch (IOException e) {
-			System.out.println("openConnection() --> IOException");
+			logger.log(Level.FINE, "openConnection() --> IOException");
 		} catch (Exception e) {
-			System.out.println("openConnection() --> Exception");
-			System.out.println(e.toString());
+			logger.log(Level.FINE, "openConnection() --> Exception");
+			logger.log(Level.FINE, e.toString());
 		}
 
-		System.out.println("Failed to establish connection!");
+		logger.log(Level.FINE, "Failed to establish connection!");
 	}
 
 	public void closeConnection() {
-		System.out.println("Closing connection...");
+		logger.log(Level.FINE, "Closing connection...");
 
 		try {
 			reader.close();
@@ -64,32 +66,32 @@ public class Connection {
 				socket.close();
 				socket = null;
 			}
-			System.out.println("Connection closed!");
+			logger.log(Level.FINE, "Connection closed!");
 		} catch (IOException e) {
-			System.out.println("closeConnection() --> IOException");
+			logger.log(Level.FINE, "closeConnection() --> IOException");
 		} catch (NullPointerException e) {
-			System.out.println("closeConnection() --> NullPointerException");
+			logger.log(Level.FINE, "closeConnection() --> NullPointerException");
 		} catch (Exception e) {
-			System.out.println("closeConnection() --> Exception");
-			System.out.println(e.toString());
+			logger.log(Level.FINE, "closeConnection() --> Exception");
+			logger.log(Level.FINE, e.toString());
 		}
 	}
 
 	public void sendMsg(String msg, String msgType) {
-		// System.out.println("Sending a message...");
+		// logger.log(Level.FINE, "Sending a message...");
 
 		try {
 			String outputMsg = "";
 			// TODO: Define string tokens for sending messages
 
-			// System.out.println("Sending out message: " + outputMsg);
+			// logger.log(Level.FINE, "Sending out message: " + outputMsg);
 			writer.write(outputMsg);
 			writer.flush();
 		} catch (IOException e) {
-			System.out.println("sendMsg() --> IOException");
+			logger.log(Level.FINE, "sendMsg() --> IOException");
 		} catch (Exception e) {
-			System.out.println("sendMsg() --> Exception");
-			System.out.println(e.toString());
+			logger.log(Level.FINE, "sendMsg() --> Exception");
+			logger.log(Level.FINE, e.toString());
 		}
 	}
 
@@ -99,14 +101,14 @@ public class Connection {
 			String input = reader.readLine();
 			if (input != null && input.length() > 0) {
 				sb.append(input);
-				// System.out.println("message received: " + sb.toString());
+				// logger.log(Level.FINE, "message received: " + sb.toString());
 				return sb.toString();
 			}
 		} catch (IOException e) {
-			System.out.println("recvMsg() --> IOException");
+			logger.log(Level.FINE, "recvMsg() --> IOException");
 		} catch (Exception e) {
-			System.out.println("recvMsg() --> Exception");
-			System.out.println(e.toString());
+			logger.log(Level.FINE, "recvMsg() --> Exception");
+			logger.log(Level.FINE, e.toString());
 		}
 
 		return null;
