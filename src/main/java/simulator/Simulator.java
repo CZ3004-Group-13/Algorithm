@@ -170,9 +170,11 @@ class Simulator {
     private void moveByPath(MyPoint currPoint) {
         Direction robotDirection = robot.getGeneralDirection();
         Direction pointDirection = currPoint.getDirection();
-        /*if () {
 
-        }*/
+        // 1) Robot and image facing opposite directions
+        if (Math.abs(pointDirection.ordinal() - robotDirection.ordinal()) == 2) {
+            // (a)
+        }
     }
 
     public void movePathA() {
