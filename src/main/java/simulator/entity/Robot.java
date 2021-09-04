@@ -32,6 +32,8 @@ public class Robot extends JComponent {
     // since the coordinate system is positive x is right, positive y is down,
     // angles work by starting from positive x and going clockwise
 
+    private static final double DIRECTION_MARGIN_OF_ERROR = 5;
+
     private final Logger logger;
 
     private boolean firstTime = true;
@@ -115,6 +117,98 @@ public class Robot extends JComponent {
                 + this.bodyAffineTransform.getTranslateY());
 
         this.repaint();
+    }
+
+    public boolean moveForwardWithChecking(MyPoint myPoint, int distanceMarginOfError) {
+        switch (getGeneralDirection()) {
+        case NORTH:
+        case SOUTH:
+            if (Math.abs(myPoint.getY() - getY()) < distanceMarginOfError) {
+                return true;
+            }
+            break;
+        case EAST:
+        case WEST:
+            if (Math.abs(myPoint.getX() - getX()) < distanceMarginOfError) {
+                return true;
+            }
+            break;
+        }
+        moveForward();
+        return false;
+    }
+
+    public boolean moveBackwardWithChecking(MyPoint myPoint, int distanceMarginOfError) {
+        switch (getGeneralDirection()) {
+        case NORTH:
+        case SOUTH:
+            if (Math.abs(myPoint.getY() - getY()) < distanceMarginOfError) {
+                return true;
+            }
+            break;
+        case EAST:
+        case WEST:
+            if (Math.abs(myPoint.getX() - getX()) < distanceMarginOfError) {
+                return true;
+            }
+            break;
+        }
+        moveBackward();
+        return false;
+    }
+
+    public boolean moveForwardLeftWithChecking(Direction finalDirection) {
+        switch (finalDirection) {
+        case NORTH:
+            if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                return true;
+            }
+            break;
+        case SOUTH:
+            if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                return true;
+            }
+            break;
+        case EAST:
+            if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
+                return true;
+            }
+            break;
+        case WEST:
+            if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
+                return true;
+            }
+            break;
+        }
+        moveForward();
+        return false;
+    }
+
+    public boolean moveForwardRightWithChecking(Direction finalDirection) {
+        switch (finalDirection) {
+        case NORTH:
+            if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                return true;
+            }
+            break;
+        case SOUTH:
+            if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                return true;
+            }
+            break;
+        case EAST:
+            if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
+                return true;
+            }
+            break;
+        case WEST:
+            if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
+                return true;
+            }
+            break;
+        }
+        moveForward();
+        return false;
     }
 
     // calculate turningRadius and turningAngleDegrees
