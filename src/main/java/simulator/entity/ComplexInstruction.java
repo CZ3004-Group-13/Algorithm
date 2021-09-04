@@ -3,8 +3,9 @@ package simulator.entity;
 
 public class ComplexInstruction {
 
-    private Direction finalDirection;
-    private Instruction instruction;
+    private final Direction finalDirection;
+    private final Instruction instruction;
+    private double distance = 0;
 
     public Instruction getInstruction() {
         return instruction;
@@ -12,6 +13,14 @@ public class ComplexInstruction {
 
     public Direction getFinalDirection() {
         return finalDirection;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void subtractDistance(double offset) {
+        distance -= offset;
     }
 
     public enum Instruction {
@@ -25,6 +34,12 @@ public class ComplexInstruction {
         this.instruction = instruction;
         this.finalDirection = finalDirection;
 
+    }
+
+    public ComplexInstruction(Instruction instruction, Direction finalDirection, double distance) {
+        this.instruction = instruction;
+        this.finalDirection = finalDirection;
+        this.distance = distance;
     }
 
 }

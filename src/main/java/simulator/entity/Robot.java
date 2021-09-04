@@ -144,26 +144,11 @@ public class Robot extends JComponent {
         return false;
     }
 
-    public boolean moveBackwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection) {
-        switch (finalDirection) {
-        case NORTH:
-        case SOUTH:
-            if (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError) { // TODO: FIX
-                return true;
-            }
-            break;
-        case EAST:
-        case WEST:
-            if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError) { // TODO: FIX
-                return true;
-            }
-            break;
-        case NONE:
-            if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError && (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError)) {
-                return true;
-            }
-            break;
+    public boolean moveBackwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection, ComplexInstruction instruction) {
+        if (instruction.getDistance() < 0) {
+            return true;
         }
+        instruction.subtractDistance(distancePerTick);
 
         moveBackward();
         return false;
