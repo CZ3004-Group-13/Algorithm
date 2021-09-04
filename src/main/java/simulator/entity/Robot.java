@@ -123,18 +123,18 @@ public class Robot extends JComponent {
         switch (finalDirection) {
         case NORTH:
         case SOUTH:
-            if (Math.abs(myPoint.getY() - this.bodyAffineTransform.getTranslateY()) < distanceMarginOfError * 4) {
+            if (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError * 4) {
                 return true;
             }
             break;
         case EAST:
         case WEST:
-            if (Math.abs(myPoint.getX() - this.bodyAffineTransform.getTranslateX()) < distanceMarginOfError * 4) {
+            if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError * 4) {
                 return true;
             }
             break;
         case NONE:
-            if (Math.abs(myPoint.getX() - this.bodyAffineTransform.getTranslateX()) < distanceMarginOfError / 2.0 && (Math.abs(myPoint.getY() - this.bodyAffineTransform.getTranslateY()) < distanceMarginOfError / 2.0)) {
+            if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError / 2.0 && (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError / 2.0)) {
                 return true;
             }
             break;
@@ -148,18 +148,18 @@ public class Robot extends JComponent {
         switch (finalDirection) {
         case NORTH:
         case SOUTH:
-            if (Math.abs(myPoint.getY() - this.bodyAffineTransform.getTranslateY()) < distanceMarginOfError) { // TODO: FIX
+            if (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError) { // TODO: FIX
                 return true;
             }
             break;
         case EAST:
         case WEST:
-            if (Math.abs(myPoint.getX() - this.bodyAffineTransform.getTranslateX()) < distanceMarginOfError) { // TODO: FIX
+            if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError) { // TODO: FIX
                 return true;
             }
             break;
         case NONE:
-            if (Math.abs(myPoint.getX() - this.bodyAffineTransform.getTranslateX()) < distanceMarginOfError && (Math.abs(myPoint.getY() - this.bodyAffineTransform.getTranslateY()) < distanceMarginOfError)) {
+            if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError && (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError)) {
                 return true;
             }
             break;

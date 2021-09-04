@@ -39,7 +39,7 @@ class Simulator {
 
     private final Queue<ComplexInstruction> instructions = new LinkedList<>();
 
-    private static final double ROBOT_SIZE = 20;
+    private static final double ROBOT_SIZE = 60;
     private static final int DISTANCE_MARGIN_OF_ERROR = 40;
 
     public void createAndShowGUI() {
@@ -211,7 +211,7 @@ class Simulator {
                 }
 
 
-                System.out.println("Robot's Instruction: " + nextInstruction.getInstruction().name());
+                //System.out.println("Robot's Instruction: " + nextInstruction.getInstruction().name());
 
                 robot.repaint();
                 try {
@@ -247,21 +247,25 @@ class Simulator {
             case NORTH:
                 if (robotLocation.getX() - ROBOT_SIZE / 2 <= currPoint.getX() && robotLocation.getX() + ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
                     // (a)
+                    System.out.println("(a)");
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
                     // (b)
+                    System.out.println("(b)");
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
                     // (c)
+                    System.out.println("(c)");
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
                     // (d)
+                    System.out.println("(d)");
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
@@ -269,6 +273,7 @@ class Simulator {
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
                     // (e)
+                    System.out.println("(e)");
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
