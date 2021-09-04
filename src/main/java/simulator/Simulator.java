@@ -195,22 +195,17 @@ class Simulator {
                         reached = robot.moveBackwardWithChecking(shortestPath[index], DISTANCE_MARGIN_OF_ERROR);
                         break;
                     case FORWARD_LEFT:
-                        // Full left turn
-                        for (int i = 0; i < 4; i++) {
-                            robot.turnLeft();
-                        }
-                        robot.moveForwardLeftWithChecking(nextInstruction.getFinalDirection());
+                        reached = robot.moveForwardLeftWithChecking(nextInstruction.getFinalDirection());
                         break;
                     case FORWARD_RIGHT:
-                        // Full right turn
-                        for (int i = 0; i < 4; i++) {
-                            robot.turnRight();
-                        }
-                        robot.moveForward();
-                        robot.moveForwardRightWithChecking(nextInstruction.getFinalDirection());
+                        reached = robot.moveForwardRightWithChecking(nextInstruction.getFinalDirection());
                         break;
                     }
                 }
+                if (nextInstruction != null) {
+                    System.out.println(nextInstruction.getInstruction().name());
+                }
+
 
                 robot.repaint();
                 try {

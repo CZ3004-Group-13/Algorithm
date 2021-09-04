@@ -32,7 +32,7 @@ public class Robot extends JComponent {
     // since the coordinate system is positive x is right, positive y is down,
     // angles work by starting from positive x and going clockwise
 
-    private static final double DIRECTION_MARGIN_OF_ERROR = 5;
+    private static final double DIRECTION_MARGIN_OF_ERROR = 1;
 
     private final Logger logger;
 
@@ -158,24 +158,40 @@ public class Robot extends JComponent {
     }
 
     public boolean moveForwardLeftWithChecking(Direction finalDirection) {
+        // Full left turn
+        for (int i = 0; i < 4; i++) {
+            turnLeft();
+        }
         switch (finalDirection) {
         case NORTH:
             if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                for (int i = 0; i < 4; i++) {
+                    turnRight();
+                }
                 return true;
             }
             break;
         case SOUTH:
             if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                for (int i = 0; i < 4; i++) {
+                    turnRight();
+                }
                 return true;
             }
             break;
         case EAST:
             if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
+                for (int i = 0; i < 4; i++) {
+                    turnRight();
+                }
                 return true;
             }
             break;
         case WEST:
             if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
+                for (int i = 0; i < 4; i++) {
+                    turnRight();
+                }
                 return true;
             }
             break;
@@ -185,24 +201,40 @@ public class Robot extends JComponent {
     }
 
     public boolean moveForwardRightWithChecking(Direction finalDirection) {
+        // Full right turn
+        for (int i = 0; i < 4; i++) {
+            turnRight();
+        }
         switch (finalDirection) {
         case NORTH:
             if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                for (int i = 0; i < 4; i++) {
+                    turnLeft();
+                }
                 return true;
             }
             break;
         case SOUTH:
             if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                for (int i = 0; i < 4; i++) {
+                    turnLeft();
+                }
                 return true;
             }
             break;
         case EAST:
             if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
+                for (int i = 0; i < 4; i++) {
+                    turnLeft();
+                }
                 return true;
             }
             break;
         case WEST:
             if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
+                for (int i = 0; i < 4; i++) {
+                    turnLeft();
+                }
                 return true;
             }
             break;
