@@ -119,40 +119,52 @@ public class Robot extends JComponent {
         this.repaint();
     }
 
-    public boolean moveForwardWithChecking(MyPoint myPoint, int distanceMarginOfError) {
-        switch (getGeneralDirection()) {
+    public boolean moveForwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection) {
+        switch (finalDirection) {
         case NORTH:
         case SOUTH:
-            if (Math.abs(myPoint.getY() - getY()) < distanceMarginOfError) {
+            if (Math.abs(myPoint.getY() - this.bodyAffineTransform.getTranslateY()) < distanceMarginOfError * 4) {
                 return true;
             }
             break;
         case EAST:
         case WEST:
-            if (Math.abs(myPoint.getX() - getX()) < distanceMarginOfError) {
+            if (Math.abs(myPoint.getX() - this.bodyAffineTransform.getTranslateX()) < distanceMarginOfError * 4) {
+                return true;
+            }
+            break;
+        case NONE:
+            if (Math.abs(myPoint.getX() - this.bodyAffineTransform.getTranslateX()) < distanceMarginOfError / 2.0 && (Math.abs(myPoint.getY() - this.bodyAffineTransform.getTranslateY()) < distanceMarginOfError / 2.0)) {
                 return true;
             }
             break;
         }
+
         moveForward();
         return false;
     }
 
-    public boolean moveBackwardWithChecking(MyPoint myPoint, int distanceMarginOfError) {
-        switch (getGeneralDirection()) {
+    public boolean moveBackwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection) {
+        switch (finalDirection) {
         case NORTH:
         case SOUTH:
-            if (Math.abs(myPoint.getY() - getY()) < distanceMarginOfError) {
+            if (Math.abs(myPoint.getY() - this.bodyAffineTransform.getTranslateY()) < distanceMarginOfError) { // TODO: FIX
                 return true;
             }
             break;
         case EAST:
         case WEST:
-            if (Math.abs(myPoint.getX() - getX()) < distanceMarginOfError) {
+            if (Math.abs(myPoint.getX() - this.bodyAffineTransform.getTranslateX()) < distanceMarginOfError) { // TODO: FIX
+                return true;
+            }
+            break;
+        case NONE:
+            if (Math.abs(myPoint.getX() - this.bodyAffineTransform.getTranslateX()) < distanceMarginOfError && (Math.abs(myPoint.getY() - this.bodyAffineTransform.getTranslateY()) < distanceMarginOfError)) {
                 return true;
             }
             break;
         }
+
         moveBackward();
         return false;
     }

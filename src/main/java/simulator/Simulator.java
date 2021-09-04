@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 class Simulator {
 
     public static String host = "192.168.13.13";
-	public static int port = 3053;
+    public static int port = 3053;
 
     private final Logger logger = Logger.getLogger(Simulator.class.getName());
 
@@ -167,45 +167,51 @@ class Simulator {
             }*/
 
             int index = 0;
-            boolean reached = true;
+            boolean reached = false;
             ComplexInstruction nextInstruction = null;
+
+
+            // First iteration
+            moveByPath(shortestPath[index]);
+            nextInstruction = instructions.peek();
+
             while (isRunning && index < shortestPath.length - 1) {
                 logger.log(Level.FINEST, "Loop");
 
-                // Check if point reached
-                if (Math.abs(shortestPath[index].getX() - robot.getX()) < DISTANCE_MARGIN_OF_ERROR && Math.abs(shortestPath[index].getY() - robot.getY()) < DISTANCE_MARGIN_OF_ERROR) {
-                    logger.log(Level.INFO, "Reached!");
-                    index++;
-                    instructions.clear();
-                }
 
-                // If no instruction
-                if (instructions.isEmpty()) {
-                    moveByPath(shortestPath[index]);
-                } else {
-                    if (reached) {
-                        nextInstruction = instructions.poll();
-                        reached = false;
-                    }
-                    switch (nextInstruction.getInstruction()) {
-                    case FORWARD:
-                        reached = robot.moveForwardWithChecking(shortestPath[index], DISTANCE_MARGIN_OF_ERROR);
-                        break;
-                    case REVERSE:
-                        reached = robot.moveBackwardWithChecking(shortestPath[index], DISTANCE_MARGIN_OF_ERROR);
-                        break;
-                    case FORWARD_LEFT:
-                        reached = robot.moveForwardLeftWithChecking(nextInstruction.getFinalDirection());
-                        break;
-                    case FORWARD_RIGHT:
-                        reached = robot.moveForwardRightWithChecking(nextInstruction.getFinalDirection());
-                        break;
+                if (reached) {
+                    //nextInstruction = instructions.poll();
+                    instructions.poll();
+                    nextInstruction = instructions.peek();
+                    reached = false;
+
+
+                    if (instructions.isEmpty()) {
+                        index++;
+                        if (index >= shortestPath.length - 1) {
+                            System.out.println("Reached point!");
+                            break;
+                        }
+                        moveByPath(shortestPath[index]);
                     }
                 }
-                if (nextInstruction != null) {
-                    System.out.println(nextInstruction.getInstruction().name());
+                switch (nextInstruction.getInstruction()) {
+                case FORWARD:
+                    reached = robot.moveForwardWithChecking(shortestPath[index], DISTANCE_MARGIN_OF_ERROR, nextInstruction.getFinalDirection());
+                    break;
+                case REVERSE:
+                    reached = robot.moveBackwardWithChecking(shortestPath[index], DISTANCE_MARGIN_OF_ERROR, nextInstruction.getFinalDirection());
+                    break;
+                case FORWARD_LEFT:
+                    reached = robot.moveForwardLeftWithChecking(nextInstruction.getFinalDirection());
+                    break;
+                case FORWARD_RIGHT:
+                    reached = robot.moveForwardRightWithChecking(nextInstruction.getFinalDirection());
+                    break;
                 }
 
+
+                System.out.println("Robot's Instruction: " + nextInstruction.getInstruction().name());
 
                 robot.repaint();
                 try {
@@ -219,6 +225,7 @@ class Simulator {
 
     /**
      * Choose correct path and follow that path.
+     *
      * @param currPoint Point to move to.
      */
     private void moveByPath(MyPoint currPoint) {
@@ -240,33 +247,33 @@ class Simulator {
             case NORTH:
                 if (robotLocation.getX() - ROBOT_SIZE / 2 <= currPoint.getX() && robotLocation.getX() + ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
                     // (a)
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
                     // (b)
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, robotDirection));
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
                     // (c)
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, robotDirection));
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
                     // (d)
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, robotDirection));
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
                     // (e)
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, robotDirection));
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
                 }
                 break;
             case SOUTH:
@@ -368,8 +375,6 @@ class Simulator {
             }
 
 
-
-
         } else if (Math.abs(pointDirection.ordinal() - robotDirection.ordinal()) == 1 || Math.abs(pointDirection.ordinal() - robotDirection.ordinal()) == 3) {
             // 2) Robot and image facing has a difference of pi/2 or -pi/2
             logger.log(Level.INFO, "pi/2 & -pi/2");
@@ -380,7 +385,7 @@ class Simulator {
 
         }
 
-       // return instructions;
+        // return instructions;
     }
 
     public void movePathA() {
