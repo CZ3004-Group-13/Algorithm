@@ -192,6 +192,7 @@ class Simulator {
                             break;
                         }
                         moveByPath(shortestPath[index]);
+                        nextInstruction = instructions.peek();
                     }
                 }
                 switch (nextInstruction.getInstruction()) {
