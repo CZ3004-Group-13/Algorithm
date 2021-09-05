@@ -33,6 +33,8 @@ public class Robot extends JComponent {
     // angles work by starting from positive x and going clockwise
 
     private static final double DIRECTION_MARGIN_OF_ERROR = 1;
+    private final double MAX_TURNING_ANGLE = 45;
+    private double MAX_TURNING_RADIUS;
 
     private final Logger logger;
 
@@ -51,12 +53,15 @@ public class Robot extends JComponent {
         distancePerTick = 1;
         angleChangePerClick = 5;
 
+        this.MAX_TURNING_RADIUS = Math.abs(
+                this.distanceBetweenFrontBackWheels * Math.tan(Math.PI / 2 - Math.toRadians(this.MAX_TURNING_ANGLE)));
+
         setOpaque(false);
     }
 
     // can combine with turnRight and accept one parameter for the angle to turn
     public void turnLeft() {
-        if (this.thetaWheelsDegree > -20) {
+        if (this.thetaWheelsDegree > -this.MAX_TURNING_ANGLE) {
             this.thetaWheelsDegree -= angleChangePerClick;
             this.leftWheelAffineTransform.rotate(Math.toRadians(-angleChangePerClick));
             this.rightWheelAffineTransform.rotate(Math.toRadians(-angleChangePerClick));
@@ -66,7 +71,7 @@ public class Robot extends JComponent {
     }
 
     public void turnRight() {
-        if (this.thetaWheelsDegree < 20) {
+        if (this.thetaWheelsDegree < this.MAX_TURNING_ANGLE) {
             this.thetaWheelsDegree += angleChangePerClick;
             this.leftWheelAffineTransform.rotate(Math.toRadians(angleChangePerClick));
             this.rightWheelAffineTransform.rotate(Math.toRadians(angleChangePerClick));
@@ -121,30 +126,32 @@ public class Robot extends JComponent {
 
     public boolean moveForwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection) {
         switch (finalDirection) {
-        case NORTH:
-        case SOUTH:
-            if (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError * 4) {
-                return true;
-            }
-            break;
-        case EAST:
-        case WEST:
-            if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError * 4) {
-                return true;
-            }
-            break;
-        case NONE:
-            if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError / 2.0 && (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError / 2.0)) {
-                return true;
-            }
-            break;
+            case NORTH:
+            case SOUTH:
+                if (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < this.MAX_TURNING_RADIUS) {
+                    return true;
+                }
+                break;
+            case EAST:
+            case WEST:
+                if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < this.MAX_TURNING_RADIUS) {
+                    return true;
+                }
+                break;
+            case NONE:
+                if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError / 2.0
+                        && (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError / 2.0)) {
+                    return true;
+                }
+                break;
         }
 
         moveForward();
         return false;
     }
 
-    public boolean moveBackwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection, ComplexInstruction instruction) {
+    public boolean moveBackwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection,
+            ComplexInstruction instruction) {
         if (instruction.getDistance() < 0) {
             return true;
         }
@@ -156,42 +163,43 @@ public class Robot extends JComponent {
 
     public boolean moveForwardLeftWithChecking(Direction finalDirection) {
         // Full left turn
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 9; i++) {
             turnLeft();
         }
         switch (finalDirection) {
-        case NORTH:
-            if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
-                for (int i = 0; i < 4; i++) {
-                    turnRight();
+            case NORTH:
+                if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                    for (int i = 0; i < 9; i++) {
+                        turnRight();
+                    }
+                    return true;
                 }
-                return true;
-            }
-            break;
-        case SOUTH:
-            if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
-                for (int i = 0; i < 4; i++) {
-                    turnRight();
+                break;
+            case SOUTH:
+                if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                    for (int i = 0; i < 9; i++) {
+                        turnRight();
+                    }
+                    return true;
                 }
-                return true;
-            }
-            break;
-        case EAST:
-            if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
-                for (int i = 0; i < 4; i++) {
-                    turnRight();
+                break;
+            case EAST:
+                if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
+                    for (int i = 0; i < 9; i++) {
+                        turnRight();
+                    }
+                    return true;
                 }
-                return true;
-            }
-            break;
-        case WEST:
-            if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
-                for (int i = 0; i < 4; i++) {
-                    turnRight();
+                break;
+            case WEST:
+                if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR
+                        || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
+                    for (int i = 0; i < 9; i++) {
+                        turnRight();
+                    }
+                    return true;
                 }
-                return true;
-            }
-            break;
+                break;
         }
         moveForward();
         return false;
@@ -199,42 +207,43 @@ public class Robot extends JComponent {
 
     public boolean moveForwardRightWithChecking(Direction finalDirection) {
         // Full right turn
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 9; i++) {
             turnRight();
         }
         switch (finalDirection) {
-        case NORTH:
-            if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
-                for (int i = 0; i < 4; i++) {
-                    turnLeft();
+            case NORTH:
+                if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                    for (int i = 0; i < 9; i++) {
+                        turnLeft();
+                    }
+                    return true;
                 }
-                return true;
-            }
-            break;
-        case SOUTH:
-            if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
-                for (int i = 0; i < 4; i++) {
-                    turnLeft();
+                break;
+            case SOUTH:
+                if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
+                    for (int i = 0; i < 9; i++) {
+                        turnLeft();
+                    }
+                    return true;
                 }
-                return true;
-            }
-            break;
-        case EAST:
-            if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
-                for (int i = 0; i < 4; i++) {
-                    turnLeft();
+                break;
+            case EAST:
+                if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
+                    for (int i = 0; i < 9; i++) {
+                        turnLeft();
+                    }
+                    return true;
                 }
-                return true;
-            }
-            break;
-        case WEST:
-            if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
-                for (int i = 0; i < 4; i++) {
-                    turnLeft();
+                break;
+            case WEST:
+                if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR
+                        || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
+                    for (int i = 0; i < 9; i++) {
+                        turnLeft();
+                    }
+                    return true;
                 }
-                return true;
-            }
-            break;
+                break;
         }
         moveForward();
         return false;
@@ -246,7 +255,8 @@ public class Robot extends JComponent {
         this.turningRadius = Math.abs(
                 this.distanceBetweenFrontBackWheels * Math.tan(Math.PI / 2 - Math.toRadians(this.thetaWheelsDegree)));
 
-        this.turningAngleDegrees = this.turningRadius == 0 ? 0 : Math.toDegrees(this.distancePerTick / this.turningRadius);
+        this.turningAngleDegrees = this.turningRadius == 0 ? 0
+                : Math.toDegrees(this.distancePerTick / this.turningRadius);
         this.turningAngleDegrees = this.thetaWheelsDegree > 0 ? turningAngleDegrees : -turningAngleDegrees;
     }
 
@@ -326,7 +336,8 @@ public class Robot extends JComponent {
      * @return Point object of the centre of the robot.
      */
     public MyPoint getCurrentLocation() {
-        return new MyPoint((int) this.bodyAffineTransform.getTranslateX(), (int) this.bodyAffineTransform.getTranslateY(), getGeneralDirection());
+        return new MyPoint((int) this.bodyAffineTransform.getTranslateX(),
+                (int) this.bodyAffineTransform.getTranslateY(), getGeneralDirection());
     }
 
     // when setting currentLocation, calculate and set currentLocationCenter
@@ -356,7 +367,8 @@ public class Robot extends JComponent {
             return Direction.NORTH;
         } else if (directionInDegrees >= 45 && directionInDegrees <= 135) {
             return Direction.SOUTH;
-        } else if ((directionInDegrees >= 135 && directionInDegrees <= 180) || (directionInDegrees >= -180 && directionInDegrees <= -135)) {
+        } else if ((directionInDegrees >= 135 && directionInDegrees <= 180)
+                || (directionInDegrees >= -180 && directionInDegrees <= -135)) {
             return Direction.WEST;
         }
 
