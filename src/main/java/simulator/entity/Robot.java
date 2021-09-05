@@ -34,7 +34,7 @@ public class Robot extends JComponent {
 
     private static final double DIRECTION_MARGIN_OF_ERROR = 1;
     private final double MAX_TURNING_ANGLE = 45;
-    private double MAX_TURNING_RADIUS;
+    private final double MAX_TURNING_RADIUS;
 
     private final Logger logger;
 
@@ -57,6 +57,10 @@ public class Robot extends JComponent {
                 this.distanceBetweenFrontBackWheels * Math.tan(Math.PI / 2 - Math.toRadians(this.MAX_TURNING_ANGLE)));
 
         setOpaque(false);
+    }
+
+    public double getMaxTurningRadius() {
+        return MAX_TURNING_RADIUS;
     }
 
     // can combine with turnRight and accept one parameter for the angle to turn

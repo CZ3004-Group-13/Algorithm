@@ -30,7 +30,7 @@ class Simulator {
     private static final int ENVIRONMENT_SCALING_FACTOR = 3;
 
     private final Dimension robotActualSize = new Dimension(30, 30);
-    private final Point robotActualStartingPoint = new Point(20, 180);
+    private final Point robotActualStartingPoint = new Point(20, 100);
 
     private MyPoint[] shortestPath = new MyPoint[0];
     private Thread gameLoop;
@@ -265,7 +265,7 @@ class Simulator {
                 } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
                     // (d)
                     System.out.println("(d)");
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, currPoint.getY() + robotLocation.getY() + ROBOT_SIZE));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, currPoint.getY() - robotLocation.getY() + robot.getMaxTurningRadius() * 2.5));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, robotDirection));
@@ -273,7 +273,7 @@ class Simulator {
                 } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
                     // (e)
                     System.out.println("(e)");
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, currPoint.getY() + robotLocation.getY() + ROBOT_SIZE));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, currPoint.getY() - robotLocation.getY() + robot.getMaxTurningRadius() * 2.5));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, robotDirection));
@@ -298,14 +298,14 @@ class Simulator {
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
                 } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
                     // (d)
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, robotLocation.getY() - currPoint.getY() + ROBOT_SIZE));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, robotLocation.getY() - currPoint.getY() + robot.getMaxTurningRadius() * 2.5));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
                 } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
                     // (e)
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, robotLocation.getY() - currPoint.getY() + ROBOT_SIZE));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, robotLocation.getY() - currPoint.getY() + robot.getMaxTurningRadius() * 2.5));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, robotDirection));
@@ -330,14 +330,14 @@ class Simulator {
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
                 } else if (robotLocation.getY() + ROBOT_SIZE / 2 <= currPoint.getY() && robotLocation.getX() >= robotLocation.getX()) {
                     // (d)
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, robotLocation.getX() - currPoint.getX() + ROBOT_SIZE));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, robotLocation.getX() - currPoint.getX() + robot.getMaxTurningRadius() * 2.5));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
                 } else if (robotLocation.getY() - ROBOT_SIZE / 2 >= currPoint.getY() && robotLocation.getX() >= robotLocation.getX()) {
                     // (e)
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, robotLocation.getX() - currPoint.getX() + ROBOT_SIZE));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, robotLocation.getX() - currPoint.getX() + robot.getMaxTurningRadius() * 2.5));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, robotDirection));
@@ -362,14 +362,14 @@ class Simulator {
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
                 } else if (robotLocation.getY() + ROBOT_SIZE / 2 <= currPoint.getY() && robotLocation.getX() <= robotLocation.getX()) {
                     // (d)
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, currPoint.getX() - robotLocation.getX() + ROBOT_SIZE));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, currPoint.getX() - robotLocation.getX() + robot.getMaxTurningRadius() * 2.5));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, robotDirection));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robotDirection));
                 } else if (robotLocation.getY() - ROBOT_SIZE / 2 >= currPoint.getY() && robotLocation.getX() <= robotLocation.getX()) {
                     // (e)
-                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, currPoint.getX() - robotLocation.getX() + ROBOT_SIZE));
+                    instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, robotDirection, currPoint.getX() - robotLocation.getX() + robot.getMaxTurningRadius() * 2.5));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH));
                     instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, robotDirection));
