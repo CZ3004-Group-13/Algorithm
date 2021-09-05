@@ -59,8 +59,8 @@ public class Robot extends JComponent {
         setOpaque(false);
     }
 
-    public double getMaxTurningRadius() {
-        return MAX_TURNING_RADIUS;
+    public double getTwoTurnsDistance() {
+        return MAX_TURNING_RADIUS * 2.5;
     }
 
     // can combine with turnRight and accept one parameter for the angle to turn
