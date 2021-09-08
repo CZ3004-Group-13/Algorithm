@@ -32,9 +32,14 @@ public class Robot extends JComponent {
     // since the coordinate system is positive x is right, positive y is down,
     // angles work by starting from positive x and going clockwise
 
-    private static final double DIRECTION_MARGIN_OF_ERROR = 1;
+    private static final double DIRECTION_MARGIN_OF_ERROR = 1.2;
     private final double MAX_TURNING_ANGLE = 45;
     private final double MAX_TURNING_RADIUS;
+
+    private int avoidingPhase = 0;
+    private Direction directionToTurnFrom = Direction.NONE;
+    private Direction directionToTurn = Direction.NONE;
+    private Rectangle2D avoidingObstacle;
 
     private final Logger logger;
 
@@ -128,27 +133,28 @@ public class Robot extends JComponent {
         this.repaint();
     }
 
-    public boolean moveForwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection, ComplexInstruction instruction) {
+    public boolean moveForwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection,
+            ComplexInstruction instruction, Rectangle2D[] obstacles) {
         if (instruction.getDistance() == Double.MIN_VALUE) {
             switch (finalDirection) {
-            case NORTH:
-            case SOUTH:
-                if (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < this.MAX_TURNING_RADIUS) {
-                    return true;
-                }
-                break;
-            case EAST:
-            case WEST:
-                if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < this.MAX_TURNING_RADIUS) {
-                    return true;
-                }
-                break;
-            case NONE:
-                if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError / 2.0
-                        && (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError / 2.0)) {
-                    return true;
-                }
-                break;
+                case NORTH:
+                case SOUTH:
+                    if (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < this.MAX_TURNING_RADIUS) {
+                        return true;
+                    }
+                    break;
+                case EAST:
+                case WEST:
+                    if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < this.MAX_TURNING_RADIUS) {
+                        return true;
+                    }
+                    break;
+                case NONE:
+                    if (Math.abs(myPoint.getX() - getCurrentLocation().getX()) < distanceMarginOfError / 2.0
+                            && (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < distanceMarginOfError / 2.0)) {
+                        return true;
+                    }
+                    break;
             }
         } else {
             if (instruction.getDistance() < 0) {
@@ -157,7 +163,194 @@ public class Robot extends JComponent {
             instruction.subtractDistance(distancePerTick);
         }
 
-        moveForward();
+        // 0 is detection
+        // 1 is first turn
+        // 2 is second turn to go straight again
+        // 3 is going straight and detecting when to turn again
+        // 4 is third turn
+        // 5 is fourth turn
+        if (avoidingPhase == 0) {
+            moveForward();
+            directionToTurnFrom = this.getGeneralDirection();
+            double x = 0, y = 0;
+            switch (directionToTurnFrom) {
+                case NORTH:
+                    x = 0;
+                    y = -this.MAX_TURNING_RADIUS;
+                    break;
+                case SOUTH:
+                    x = 0;
+                    y = this.MAX_TURNING_RADIUS;
+                    break;
+                case EAST:
+                    x = this.MAX_TURNING_RADIUS;
+                    y = 0;
+                    break;
+                case WEST:
+                    x = -this.MAX_TURNING_RADIUS;
+                    y = 0;
+                    break;
+                case NONE:
+                    break;
+
+            }
+
+            for (Rectangle2D o : obstacles) {
+                MyPoint p = this.getCurrentLocation();
+                p.translate((int) x, (int) y);
+
+                if (o.contains(p) && !o.contains(myPoint)) {
+                    System.out.println("Colliding");
+                    this.avoidingObstacle = o;
+                    this.avoidingPhase = 1;
+                    switch (directionToTurnFrom) {
+                        case NORTH:
+                            if (p.getX() > o.getCenterX()) {
+                                directionToTurn = Direction.EAST;
+                            } else {
+                                directionToTurn = Direction.WEST;
+                            }
+                            break;
+                        case SOUTH:
+                            if (p.getX() > o.getCenterX()) {
+                                directionToTurn = Direction.EAST;
+                            } else {
+                                directionToTurn = Direction.WEST;
+                            }
+                            break;
+                        case EAST:
+                            if (p.getY() > o.getCenterY()) {
+                                directionToTurn = Direction.SOUTH;
+                            } else {
+                                directionToTurn = Direction.NORTH;
+                            }
+                            break;
+                        case WEST:
+                            if (p.getY() > o.getCenterY()) {
+                                directionToTurn = Direction.SOUTH;
+                            } else {
+                                directionToTurn = Direction.NORTH;
+                            }
+                            break;
+                        case NONE:
+                        default:
+                            directionToTurn = Direction.NONE;
+                            break;
+
+                    }
+                }
+            }
+        } else if (this.avoidingPhase == 1
+                || this.avoidingPhase == 2 | this.avoidingPhase == 4 | this.avoidingPhase == 5) {
+            boolean turned = false;
+            switch (directionToTurnFrom) {
+                case NORTH:
+                    if (directionToTurn == Direction.EAST) {
+                        turned = this.moveForwardRightWithChecking(directionToTurn);
+                    } else if (directionToTurn == Direction.WEST) {
+                        turned = this.moveForwardLeftWithChecking(directionToTurn);
+                    }
+                    break;
+                case SOUTH:
+                    if (directionToTurn == Direction.EAST) {
+                        turned = this.moveForwardLeftWithChecking(directionToTurn);
+                    } else if (directionToTurn == Direction.WEST) {
+                        turned = this.moveForwardRightWithChecking(directionToTurn);
+                    }
+                    break;
+                case EAST:
+                    if (directionToTurn == Direction.SOUTH) {
+                        turned = this.moveForwardRightWithChecking(directionToTurn);
+                    } else if (directionToTurn == Direction.NORTH) {
+                        turned = this.moveForwardLeftWithChecking(directionToTurn);
+                    }
+                    break;
+                case WEST:
+                    if (directionToTurn == Direction.SOUTH) {
+                        turned = this.moveForwardLeftWithChecking(directionToTurn);
+                    } else if (directionToTurn == Direction.NORTH) {
+                        turned = this.moveForwardRightWithChecking(directionToTurn);
+                    }
+                    break;
+                case NONE:
+                default:
+                    directionToTurn = Direction.NONE;
+                    break;
+
+            }
+            if (turned) {
+                if (this.avoidingPhase == 1) {
+                    Direction temp = directionToTurnFrom;
+                    directionToTurnFrom = directionToTurn;
+                    directionToTurn = temp;
+                    avoidingPhase = 2;
+                } else if (this.avoidingPhase == 2) {
+                    avoidingPhase = 3;
+                } else if (this.avoidingPhase == 4) {
+                    Direction temp = directionToTurnFrom;
+                    directionToTurnFrom = directionToTurn;
+                    directionToTurn = temp;
+                    avoidingPhase = 5;
+                } else if (this.avoidingPhase == 5) {
+                    this.avoidingPhase = 0;
+                    this.directionToTurn = Direction.NONE;
+                    this.directionToTurnFrom = Direction.NONE;
+                    this.avoidingObstacle = null;
+                }
+            }
+        } else if (this.avoidingPhase == 3) {
+            // calculate a relative point from the robot's center,
+            // to see when that relative point no longer will collide
+            moveForward();
+            double x = 0, y = 0;
+            switch (directionToTurnFrom) {
+                case NORTH:
+                    x = 0;
+                    y = this.MAX_TURNING_RADIUS * 2;
+                    break;
+                case SOUTH:
+                    x = 0;
+                    y = -this.MAX_TURNING_RADIUS * 2;
+                    break;
+                case EAST:
+                    x = -this.MAX_TURNING_RADIUS * 2;
+                    y = 0;
+                    break;
+                case WEST:
+                    x = this.MAX_TURNING_RADIUS * 2;
+                    y = 0;
+                    break;
+                case NONE:
+                    break;
+            }
+
+            MyPoint p = this.getCurrentLocation();
+            p.translate((int) x, (int) y);
+
+            if (!avoidingObstacle.contains(p)) {
+                this.avoidingPhase = 4;
+                Direction temp = directionToTurn;
+                switch (directionToTurnFrom) {
+                    case NORTH:
+                        directionToTurn = Direction.SOUTH;
+                        break;
+                    case SOUTH:
+                        directionToTurn = Direction.NORTH;
+                        break;
+                    case EAST:
+                        directionToTurn = Direction.WEST;
+                        break;
+                    case WEST:
+                        directionToTurn = Direction.EAST;
+                        break;
+                    default:
+                        break;
+                }
+                directionToTurnFrom = temp;
+            }
+        } else {
+            moveForward();
+        }
         return false;
     }
 
@@ -239,7 +432,7 @@ public class Robot extends JComponent {
                 }
                 break;
             case EAST:
-                if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
+                if (Math.abs(directionInDegrees) % 360 <= DIRECTION_MARGIN_OF_ERROR) {
                     for (int i = 0; i < 9; i++) {
                         turnLeft();
                     }

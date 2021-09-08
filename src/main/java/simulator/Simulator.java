@@ -10,6 +10,7 @@ import simulator.entity.Robot;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.*;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
@@ -29,7 +30,7 @@ class Simulator {
     private final Dimension environmentActualSize = new Dimension(200, 200);
     private static final int ENVIRONMENT_SCALING_FACTOR = 3;
 
-    private final Dimension robotActualSize = new Dimension(30, 30);
+    private final Dimension robotActualSize = new Dimension(20, 20);
     private final Point robotActualStartingPoint = new Point(20, 180);
 
     private MyPoint[] shortestPath = new MyPoint[0];
@@ -101,6 +102,7 @@ class Simulator {
             // TODO: pass obstacle cells as well, to determine direction.
             //hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
             shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
+            grid.repaint();
         });
 
         JButton forwardButton = new JButton("Forward");
@@ -169,6 +171,7 @@ class Simulator {
             int index = 0;
             boolean reached = false;
 
+            Rectangle2D[] obstacleBoundaries = grid.getObstacleBoundaries();
 
             // First iteration
             moveByPath(shortestPath[index]);
@@ -197,7 +200,7 @@ class Simulator {
                 }
                 switch (nextInstruction.getInstruction()) {
                 case FORWARD:
-                    reached = robot.moveForwardWithChecking(shortestPath[index], DISTANCE_MARGIN_OF_ERROR, nextInstruction.getFinalDirection(), nextInstruction);
+                    reached = robot.moveForwardWithChecking(shortestPath[index], DISTANCE_MARGIN_OF_ERROR, nextInstruction.getFinalDirection(), nextInstruction, obstacleBoundaries);
                     break;
                 case REVERSE:
                     reached = robot.moveBackwardWithChecking(shortestPath[index], DISTANCE_MARGIN_OF_ERROR, nextInstruction.getFinalDirection(), nextInstruction);
@@ -210,7 +213,7 @@ class Simulator {
                     break;
                 }
 
-
+                
                 //System.out.println("Robot's Instruction: " + nextInstruction.getInstruction().name());
 
                 robot.repaint();
