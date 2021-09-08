@@ -464,10 +464,241 @@ class Simulator {
                 }
                 break;
             case SOUTH:
+                if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
+                    // (a)
+                    System.out.println("(a)");
+                    switch (pointDirection) {
+                    case EAST:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST, currPoint.getX() - robotLocation.getX() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH, robotLocation.getY() - currPoint.getY() - robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case WEST:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+
+
+                } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
+                    // (b)
+                    System.out.println("(b)");
+                    switch (pointDirection) {
+                    case EAST:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case WEST:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST, robotLocation.getX() - currPoint.getX()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
+                    // (c)
+                    System.out.println("(c)");
+                    switch (pointDirection) {
+                    case EAST:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST, currPoint.getX() - robotLocation.getX()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case WEST:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, Direction.SOUTH, robotLocation.getY() - currPoint.getY() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
+                    // (c)
+                    System.out.println("(c)");
+                    switch (pointDirection) {
+                    case EAST:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, Direction.SOUTH, robotLocation.getY() - currPoint.getY() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case WEST:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST, robotLocation.getX() - currPoint.getX()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                }
                 break;
             case EAST:
+                if (robotLocation.getY() - ROBOT_SIZE / 2 >= currPoint.getY() && currPoint.getX() >= robotLocation.getX()) {
+                    // (a)
+                    System.out.println("(a)");
+                    switch (pointDirection) {
+                    case NORTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH, robotLocation.getY() - currPoint.getY() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST, currPoint.getX() - robotLocation.getX() - robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case SOUTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+
+
+                } else if (robotLocation.getY() + ROBOT_SIZE / 2 <= currPoint.getY() && currPoint.getX() >= robotLocation.getX()) {
+                    // (b)
+                    System.out.println("(b)");
+                    switch (pointDirection) {
+                    case NORTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case SOUTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH, currPoint.getY() - robotLocation.getY()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
+                    // (c)
+                    System.out.println("(c)");
+                    switch (pointDirection) {
+                    case NORTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH, robotLocation.getY() - currPoint.getY()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case SOUTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, Direction.EAST, robotLocation.getX() - currPoint.getX() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                } else if (robotLocation.getX() - ROBOT_SIZE / 2 >= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
+                    // (c)
+                    System.out.println("(c)");
+                    switch (pointDirection) {
+                    case NORTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, Direction.EAST, robotLocation.getX() - currPoint.getX() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case SOUTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH, currPoint.getY() - robotLocation.getY()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                }
                 break;
             case WEST:
+                if (robotLocation.getY() + ROBOT_SIZE / 2 <= currPoint.getY() && currPoint.getX() <= robotLocation.getX()) {
+                    // (a)
+                    System.out.println("(a)");
+                    switch (pointDirection) {
+                    case NORTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case SOUTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH, currPoint.getY() - robotLocation.getY() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST, robotLocation.getX() - currPoint.getX() - robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+
+
+                } else if (robotLocation.getY() - ROBOT_SIZE / 2 >= currPoint.getY() && currPoint.getX() <= robotLocation.getX()) {
+                    // (b)
+                    System.out.println("(b)"); // RESUME!!!!
+                    switch (pointDirection) {
+                    case NORTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH, robotLocation.getY() - currPoint.getY()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case SOUTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() >= robotLocation.getY()) {
+                    // (c)
+                    System.out.println("(c)");
+                    switch (pointDirection) {
+                    case NORTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, Direction.WEST, currPoint.getX() - robotLocation.getX() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case SOUTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH, currPoint.getY() - robotLocation.getY()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                } else if (robotLocation.getX() + ROBOT_SIZE / 2 <= currPoint.getX() && currPoint.getY() <= robotLocation.getY()) {
+                    // (c)
+                    System.out.println("(c)");
+                    switch (pointDirection) {
+                    case NORTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH, robotLocation.getY() - currPoint.getY()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.EAST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    case SOUTH:
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.REVERSE, Direction.WEST, currPoint.getX() - robotLocation.getX() + robot.getTwoTurnsDistance()));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.WEST));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH));
+                        instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NONE));
+                        break;
+                    }
+                }
                 break;
             }
 
