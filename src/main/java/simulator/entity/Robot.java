@@ -128,8 +128,9 @@ public class Robot extends JComponent {
         this.repaint();
     }
 
-    public boolean moveForwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection) {
-        switch (finalDirection) {
+    public boolean moveForwardWithChecking(MyPoint myPoint, int distanceMarginOfError, Direction finalDirection, ComplexInstruction instruction) {
+        if (instruction.getDistance() == Double.MIN_VALUE) {
+            switch (finalDirection) {
             case NORTH:
             case SOUTH:
                 if (Math.abs(myPoint.getY() - getCurrentLocation().getY()) < this.MAX_TURNING_RADIUS) {
@@ -148,6 +149,12 @@ public class Robot extends JComponent {
                     return true;
                 }
                 break;
+            }
+        } else {
+            if (instruction.getDistance() < 0) {
+                return true;
+            }
+            instruction.subtractDistance(distancePerTick);
         }
 
         moveForward();

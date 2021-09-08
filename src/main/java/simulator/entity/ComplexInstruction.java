@@ -33,7 +33,7 @@ public class ComplexInstruction {
     public ComplexInstruction(Instruction instruction, Direction finalDirection) {
         this.instruction = instruction;
         this.finalDirection = finalDirection;
-
+        this.distance = Double.MIN_VALUE;
     }
 
     public ComplexInstruction(Instruction instruction, Direction finalDirection, double distance) {
