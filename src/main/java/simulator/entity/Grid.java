@@ -3,6 +3,7 @@ package simulator.entity;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.awt.geom.*;
 
 public class Grid extends JPanel {
 
@@ -64,5 +65,39 @@ public class Grid extends JPanel {
         }
 
         return obstacleFront.toArray(new MyPoint[0]);
+    }
+
+    public Rectangle2D[] getObstacleBoundaries() {
+        ArrayList<Rectangle2D> obstacleBoundaries = new ArrayList<>();
+
+        Dimension size = new Dimension((int) (cells[0][0].getSize().width * 4),
+                (int) (cells[0][0].getSize().height * 4));
+        // obstacle size 10x10, robot size 20x20, so
+        // buffer of 15 is enough?
+        // 40 x 40
+        for (Cell[] row : cells) {
+            for (Cell cell : row) {
+                if (cell.isObstaclePresent()) {
+                    obstacleBoundaries.add(
+                            new Rectangle2D.Double(cell.getX() + cell.getSize().getWidth() / 2 - size.getWidth() / 2,
+                                    cell.getY() + cell.getSize().getHeight() / 2 - size.getHeight() / 2,
+                                    size.getWidth(), size.getHeight()));
+                }
+            }
+        }
+        return obstacleBoundaries.toArray(new Rectangle2D[0]);
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(Color.cyan);
+
+        if (true) {
+            Rectangle2D[] boundaries = this.getObstacleBoundaries();
+            for (Rectangle2D b : boundaries) {
+                g2.draw(b);
+            }
+        }
     }
 }
