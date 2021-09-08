@@ -705,7 +705,22 @@ class Simulator {
         } else if (pointDirection.ordinal() == robotDirection.ordinal()) {
             // 3) Robot and image facing the same direction
             logger.log(Level.INFO, "SAME");
-
+            switch (robotDirection) {
+            case NORTH:
+                instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH, robotLocation.getY() - currPoint.getY()));
+                instructions.add(robot.getX() > currPoint.getX() ? new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.WEST) : new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.EAST));
+                instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robot.getX() > currPoint.getX() ? Direction.WEST : Direction.EAST));
+                instructions.add(robot.getX() > currPoint.getX() ? new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.SOUTH) : new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.SOUTH));
+                instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH));
+                break;
+            case SOUTH:
+                instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.SOUTH, currPoint.getY() - robotLocation.getY()));
+                instructions.add(robot.getX() > currPoint.getX() ? new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.WEST) : new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.EAST));
+                instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, robot.getX() > currPoint.getX() ? Direction.WEST : Direction.EAST));
+                instructions.add(robot.getX() > currPoint.getX() ? new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_RIGHT, Direction.NORTH) : new ComplexInstruction(ComplexInstruction.Instruction.FORWARD_LEFT, Direction.NORTH));
+                instructions.add(new ComplexInstruction(ComplexInstruction.Instruction.FORWARD, Direction.NORTH));
+                break;
+            }
         }
 
         // return instructions;
