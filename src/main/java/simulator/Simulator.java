@@ -30,7 +30,7 @@ class Simulator {
     private static final int ENVIRONMENT_SCALING_FACTOR = 3;
 
     private final Dimension robotActualSize = new Dimension(30, 30);
-    private final Point robotActualStartingPoint = new Point(100, 100);
+    private final Point robotActualStartingPoint = new Point(20, 180);
 
     private MyPoint[] shortestPath = new MyPoint[0];
     private Thread gameLoop;

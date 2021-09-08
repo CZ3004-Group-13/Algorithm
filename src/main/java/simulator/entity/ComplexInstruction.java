@@ -5,7 +5,7 @@ public class ComplexInstruction {
 
     private final Direction finalDirection;
     private final Instruction instruction;
-    private double distance = 0;
+    private double distance;
 
     public Instruction getInstruction() {
         return instruction;
