@@ -102,6 +102,10 @@ class Simulator {
             // TODO: pass obstacle cells as well, to determine direction.
             //hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
             shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
+            for (int i = 0, shortestPathLength = shortestPath.length; i < shortestPathLength; i++) {
+                MyPoint a = shortestPath[i];
+                System.out.println("cool  " + i + " " + a.getX() + " " + a.getY());
+            }
             grid.repaint();
         });
 
@@ -168,7 +172,7 @@ class Simulator {
                 }
             }*/
 
-            int index = 0;
+            int index = 1;
             boolean reached = false;
 
             Rectangle2D[] obstacleBoundaries = grid.getObstacleBoundaries();
@@ -177,7 +181,7 @@ class Simulator {
             moveByPath(shortestPath[index]);
             ComplexInstruction nextInstruction = instructions.peek();
 
-            while (isRunning && index < shortestPath.length - 1) {
+            while (isRunning && index < shortestPath.length) {
                 logger.log(Level.FINEST, "Loop");
 
 
@@ -190,7 +194,7 @@ class Simulator {
 
                     if (instructions.isEmpty()) {
                         index++;
-                        if (index >= shortestPath.length - 1) {
+                        if (index >= shortestPath.length) {
                             System.out.println("Reached point!");
                             break;
                         }

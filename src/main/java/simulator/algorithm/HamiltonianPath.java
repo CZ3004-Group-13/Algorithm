@@ -21,9 +21,7 @@ public class HamiltonianPath extends JComponent {
     private final Logger logger;
 
     // Line is currently drawn using polygon
-    private Polygon polygon = new Polygon();
-
-    private ArrayList<Path2D> bezierCurves = new ArrayList<>();
+    private final Polygon polygon = new Polygon();
 
     public HamiltonianPath() {
         logger = Logger.getLogger(HamiltonianPath.class.getName());
@@ -35,7 +33,6 @@ public class HamiltonianPath extends JComponent {
     // this class does handle calling other methods
     public MyPoint[] getShortestPath(MyPoint src, MyPoint[] inputs) {
         this.polygon.reset();
-        bezierCurves.clear();
 
         int n = inputs.length;
 
@@ -54,8 +51,7 @@ public class HamiltonianPath extends JComponent {
         // eg, return [1, 4, 2, 3] means go to
         // 1st -> 4th -> 2nd -> 3rd node of pointsArray
         // pointsArray[0] -> pointsArray[3] -> pointsArray[1] -> pointsArray[2]
-        // int[] shortestPathPointIndex = getShortestPathGreedy(adjacencyMatrix);
-        int[] shortestPathPointIndex = getShortestPathEfficiently(adjacencyMatrix);
+        int[] shortestPathPointIndex = getShortestPathGreedy(adjacencyMatrix);
 
         ////
 
@@ -65,27 +61,8 @@ public class HamiltonianPath extends JComponent {
             shortestPath[i] = pointsArray[shortestPathPointIndex[i]];
         }
 
-        Point previousPoint = null;
-
-        // Alternate between X and Y for more smoothness
-        boolean alternate = false;
-
         for (Point p : shortestPath) {
             this.polygon.addPoint((int) p.getX(), (int) p.getY());
-            if (previousPoint != null) {
-                Path2D gPath = new Path2D.Double();
-                gPath.moveTo((int) previousPoint.getX(), (int) previousPoint.getY());
-
-                // Explore curveTo after settling math
-                if (alternate) {
-                    gPath.quadTo(previousPoint.getX(), p.getY(),  p.getX(), p.getY());
-                } else {
-                    gPath.quadTo(p.getX(), previousPoint.getY(),  p.getX(), p.getY());
-                }
-                alternate = !alternate;
-                bezierCurves.add(gPath);
-            }
-            previousPoint = p;
         }
 
         // Not necessary
@@ -238,10 +215,7 @@ public class HamiltonianPath extends JComponent {
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.green);
-        // g2.drawPolygon(this.polygon);
-        for (Path2D curve: bezierCurves) {
-            g2.draw(curve);
-        }
+        g2.drawPolygon(this.polygon);
     }
 
 }
