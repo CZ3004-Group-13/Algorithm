@@ -97,15 +97,9 @@ class Simulator {
         JButton drawButton = new JButton("Draw");
         drawButton.addActionListener(e -> {
             logger.log(Level.FINE, "Start Button Clicked");
-            // Point origin = new Point(0, 0);
 
-            // TODO: pass obstacle cells as well, to determine direction.
             //hPath.getShortestPath(robotModelStartingPoint, grid.getObstacleCenters());
             shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
-            for (int i = 0, shortestPathLength = shortestPath.length; i < shortestPathLength; i++) {
-                MyPoint a = shortestPath[i];
-                System.out.println("cool  " + i + " " + a.getX() + " " + a.getY());
-            }
             grid.repaint();
         });
 
