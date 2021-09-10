@@ -45,7 +45,7 @@ public class Robot extends JComponent {
 
     private boolean firstTime = true;
 
-    public Robot(Dimension size, Point startingPoint) {
+    public Robot(Dimension size, Point startingPoint, double distanceBetweenFrontBackWheels) {
         logger = Logger.getLogger(Robot.class.getName());
 
         this.size = size;
@@ -54,7 +54,7 @@ public class Robot extends JComponent {
         leftWheel = new Rectangle2D.Double(0, 0, size.getWidth() / 5, size.getHeight() / 3);
         rightWheel = new Rectangle2D.Double(0, 0, size.getWidth() / 5, size.getHeight() / 3);
 
-        distanceBetweenFrontBackWheels = size.getHeight() * 2 / 3;
+        this.distanceBetweenFrontBackWheels = distanceBetweenFrontBackWheels;
         distancePerTick = 1;
         angleChangePerClick = 5;
 

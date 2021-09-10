@@ -31,6 +31,7 @@ class Simulator {
     private static final int ENVIRONMENT_SCALING_FACTOR = 3;
 
     private final Dimension robotActualSize = new Dimension(20, 20);
+    private final double robotActualDistanceBetweenFrontBackWheels = 14.5;
     private final Point robotActualStartingPoint = new Point(20, 180);
 
     private MyPoint[] shortestPath = new MyPoint[0];
@@ -55,6 +56,8 @@ class Simulator {
 
         Point robotModelStartingPoint = new Point(robotActualStartingPoint.x * ENVIRONMENT_SCALING_FACTOR,
                 robotActualStartingPoint.y * ENVIRONMENT_SCALING_FACTOR);
+        
+        double robotModelDistanceBetweenFrontBackWheels = robotActualDistanceBetweenFrontBackWheels * ENVIRONMENT_SCALING_FACTOR;
 
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(800, 800)); // hardcoded for now
@@ -71,7 +74,7 @@ class Simulator {
         // bigger y is higher up
         // smaller z is higher up
 
-        robot = new Robot(robotModelSize, robotModelStartingPoint);
+        robot = new Robot(robotModelSize, robotModelStartingPoint, robotModelDistanceBetweenFrontBackWheels);
         robot.setSize(environmentModelSize);
         layeredPane.add(robot, 1, 0);
 
