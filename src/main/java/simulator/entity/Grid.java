@@ -138,6 +138,7 @@ public class Grid extends JPanel {
     }
 
     public boolean checkIfNeedReverse(MyPoint p, int turningRadius) {
+        p = (MyPoint) p.clone();
         switch (p.getDirection()) {
             case NONE:
                 break;

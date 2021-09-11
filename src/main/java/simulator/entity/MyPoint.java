@@ -10,6 +10,11 @@ public class MyPoint extends Point {
     this.setDirection(d);
   }
 
+  public MyPoint(double i, double j, Direction d) {
+    super((int) i, (int) j);
+    this.setDirection(d);
+  }
+
   public Direction getDirection() {
     return direction;
   }

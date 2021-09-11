@@ -147,6 +147,7 @@ class Simulator {
             hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts(), true);
             hPath.generatePlannedPath(grid, robot);
             hPath.printPlannedPath();
+            robot.generateMovements(hPath.getPlannedPath());
             grid.repaint();
         });
         
@@ -1058,12 +1059,12 @@ class Simulator {
             final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
             long lastFpsTime = 0;
 
-            double timeFor90DegTurn = robot.getTimeFor90DegTurn();
-            System.out.println(timeFor90DegTurn);
-            // add instructions
-            robot.addToQueue("Forward", 10.0);
-            robot.addToQueue("Right", 1);
-            robot.addToQueue("Forward", timeFor90DegTurn);
+        //     double timeFor90DegTurn = robot.getTimeFor90DegTurn();
+        //     System.out.println(timeFor90DegTurn);
+        //     // add instructions
+        //     robot.addToQueue("Forward", 10.0);
+        //     robot.addToQueue("Right", 1);
+        //     robot.addToQueue("Forward", timeFor90DegTurn);
 
             while (isRunning2) {
                 logger.log(Level.FINEST, "Start Movements");

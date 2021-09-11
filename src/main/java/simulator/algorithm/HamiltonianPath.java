@@ -290,7 +290,7 @@ public class HamiltonianPath extends JComponent {
         int i = 1;
         while (i < workingPath.size()) {
             // sp = source point (absolute point)
-            sp = i == 1 ? workingPath.get(i - 1) : this.plannedPath.get(this.plannedPath.size() - 1);
+            sp = this.plannedPath.get(this.plannedPath.size() - 1);
             // if start, take first point of workingPath AKA robot starting point
             // else, that the last planned step as source
             MyPoint point = workingPath.get(i);
@@ -1171,6 +1171,10 @@ public class HamiltonianPath extends JComponent {
         System.out.println("-------------");
     }
 
+    public ArrayList<MyPoint> getPlannedPath() {
+        return this.plannedPath;
+    }
+    
     public void reset() {
         this.plannedPath.clear();
         this.plannedPPolygon.reset();
