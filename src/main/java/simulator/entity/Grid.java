@@ -8,8 +8,11 @@ import java.awt.geom.*;
 public class Grid extends JPanel {
 
     private final Cell[][] cells = new Cell[20][20];
+    private Dimension envModelSize;
+    private Dimension cellModelSize;
+    private double boundaryLength;
 
-    public Grid() {
+    public Grid(Dimension envModelSize) {
         // setBorder(BorderFactory.createLineBorder(Color.black));
         setLayout(new GridLayout(20, 20));
 
@@ -24,6 +27,9 @@ public class Grid extends JPanel {
                 add(cells[i][j]);
             }
         }
+        this.envModelSize = envModelSize;
+        this.cellModelSize = new Dimension((int) envModelSize.getWidth() / 20, (int) envModelSize.getHeight() / 20);
+        this.boundaryLength = cellModelSize.getWidth() * 1.2;
     }
 
     public MyPoint[] getObstacleFronts() {
@@ -31,7 +37,7 @@ public class Grid extends JPanel {
 
         Dimension size = cells[0][0].getSize();
 
-        int offset = 50;
+        int offset = (int) this.boundaryLength + 5 + size.width / 2;
 
         for (Cell[] row : cells) {
             for (Cell cell : row) {
@@ -70,8 +76,8 @@ public class Grid extends JPanel {
     public Rectangle2D[] getObstacleBoundaries() {
         ArrayList<Rectangle2D> obstacleBoundaries = new ArrayList<>();
 
-        Dimension size = new Dimension((int) (cells[0][0].getSize().width * 4),
-                (int) (cells[0][0].getSize().height * 4));
+        Dimension size = new Dimension((int) (cells[0][0].getSize().width + 2 * this.boundaryLength),
+                (int) (cells[0][0].getSize().height + 2 * this.boundaryLength));
         // obstacle size 10x10, robot size 20x20, so
         // buffer of 15 is enough?
         // 40 x 40
@@ -86,6 +92,73 @@ public class Grid extends JPanel {
             }
         }
         return obstacleBoundaries.toArray(new Rectangle2D[0]);
+    }
+
+    public boolean checkIfPointCollides(Point p) {
+        Rectangle2D[] obs = this.getObstacleBoundaries();
+
+        for (Rectangle2D o : obs) {
+            if (o.contains(p)) {
+                return true;
+            }
+        }
+        return checkIfExceedsBorders(p);
+    }
+
+    public boolean checkIfLineCollides(Point p1, Point p2) {
+        Rectangle2D[] obs = this.getObstacleBoundaries();
+        Line2D line = new Line2D.Double(p1, p2);
+
+        for (Rectangle2D o : obs) {
+            if (o.intersectsLine(line)) {
+                return true;
+            }
+        }
+        return checkIfExceedsBorders(p1) || checkIfExceedsBorders(p2);
+    }
+
+    public boolean checkIfPathCollides(Point[] pArray) {
+        boolean flag = false;
+        for (int i = 0; i < pArray.length - 1; i++) {
+            flag = flag || this.checkIfLineCollides(pArray[i], pArray[i + 1]);
+        }
+
+        return flag;
+    }
+
+    private boolean checkIfExceedsBorders(Point p) {
+        // since p will be center of robot, need give boundary buffer
+        if (p.getX() < 0 + this.boundaryLength || p.getY() < 0 + this.boundaryLength
+                || p.getX() > this.envModelSize.getWidth() - this.boundaryLength
+                || p.getY() > this.envModelSize.getHeight() - this.boundaryLength) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkIfNeedReverse(MyPoint p, int turningRadius) {
+        switch (p.getDirection()) {
+            case NONE:
+                break;
+            case NORTH:
+                p.translate(0, (int) -turningRadius);
+                return this.checkIfPointCollides(p);
+            case SOUTH:
+                p.translate(0, (int) turningRadius);
+                return this.checkIfPointCollides(p);
+            case EAST:
+                p.translate((int) turningRadius, 0);
+                return this.checkIfPointCollides(p);
+            case WEST:
+                p.translate((int) -turningRadius, 0);
+                return this.checkIfPointCollides(p);
+            default:
+                break;
+
+        }
+
+        return false;
     }
 
     public void paintComponent(Graphics g) {

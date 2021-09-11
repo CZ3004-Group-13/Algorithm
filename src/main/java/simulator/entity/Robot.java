@@ -4,7 +4,9 @@ package simulator.entity;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,11 +16,12 @@ public class Robot extends JComponent {
     private final Rectangle2D rightWheel;
     private final Dimension size;
     private final double distanceBetweenFrontBackWheels;
+    private Point startingPoint;
     private Point currentLocation;
     private Point currentLocationCenter;
-    private final AffineTransform bodyAffineTransform = new AffineTransform();
-    private final AffineTransform leftWheelAffineTransform = new AffineTransform();
-    private final AffineTransform rightWheelAffineTransform = new AffineTransform();
+    private AffineTransform bodyAffineTransform = new AffineTransform();
+    private AffineTransform leftWheelAffineTransform = new AffineTransform();
+    private AffineTransform rightWheelAffineTransform = new AffineTransform();
 
     private double speed;
     private double directionInDegrees = -90;
@@ -34,7 +37,7 @@ public class Robot extends JComponent {
 
     private static final double DIRECTION_MARGIN_OF_ERROR = 1.2;
     private final double MAX_TURNING_ANGLE = 45;
-    private final double MAX_TURNING_RADIUS;
+    public final double MAX_TURNING_RADIUS;
 
     private int avoidingPhase = 0;
     private Direction directionToTurnFrom = Direction.NONE;
@@ -49,6 +52,7 @@ public class Robot extends JComponent {
         logger = Logger.getLogger(Robot.class.getName());
 
         this.size = size;
+        this.startingPoint = startingPoint;
         this.setCurrentLocationCenter(startingPoint);
         body = new Rectangle2D.Double(0, 0, size.getWidth(), size.getHeight());
         leftWheel = new Rectangle2D.Double(0, 0, size.getWidth() / 5, size.getHeight() / 3);
@@ -62,6 +66,24 @@ public class Robot extends JComponent {
                 this.distanceBetweenFrontBackWheels * Math.tan(Math.PI / 2 - Math.toRadians(this.MAX_TURNING_ANGLE)));
 
         setOpaque(false);
+    }
+
+    public void reset() {
+        this.setCurrentLocationCenter(this.startingPoint);
+        firstTime = true;
+        bodyAffineTransform = new AffineTransform();
+        leftWheelAffineTransform = new AffineTransform();
+        rightWheelAffineTransform = new AffineTransform();
+        directionInDegrees = -90;
+        turningRadius = 0;
+        turningAngleDegrees = 0;
+        thetaWheelsDegree = 0;
+        avoidingPhase = 0;
+        directionToTurnFrom = Direction.NONE;
+        directionToTurn = Direction.NONE;
+        avoidingObstacle = null;
+
+        this.repaint();
     }
 
     public double getTwoTurnsDistance() {
@@ -169,188 +191,189 @@ public class Robot extends JComponent {
         // 3 is going straight and detecting when to turn again
         // 4 is third turn
         // 5 is fourth turn
-        if (avoidingPhase == 0) {
-            moveForward();
-            directionToTurnFrom = this.getGeneralDirection();
-            double x = 0, y = 0;
-            switch (directionToTurnFrom) {
-                case NORTH:
-                    x = 0;
-                    y = -this.MAX_TURNING_RADIUS;
-                    break;
-                case SOUTH:
-                    x = 0;
-                    y = this.MAX_TURNING_RADIUS;
-                    break;
-                case EAST:
-                    x = this.MAX_TURNING_RADIUS;
-                    y = 0;
-                    break;
-                case WEST:
-                    x = -this.MAX_TURNING_RADIUS;
-                    y = 0;
-                    break;
-                case NONE:
-                    break;
+        // if (avoidingPhase == 0) {
+        // moveForward();
+        // directionToTurnFrom = this.getGeneralDirection();
+        // double x = 0, y = 0;
+        // switch (directionToTurnFrom) {
+        // case NORTH:
+        // x = 0;
+        // y = -this.MAX_TURNING_RADIUS;
+        // break;
+        // case SOUTH:
+        // x = 0;
+        // y = this.MAX_TURNING_RADIUS;
+        // break;
+        // case EAST:
+        // x = this.MAX_TURNING_RADIUS;
+        // y = 0;
+        // break;
+        // case WEST:
+        // x = -this.MAX_TURNING_RADIUS;
+        // y = 0;
+        // break;
+        // case NONE:
+        // break;
 
-            }
+        // }
 
-            for (Rectangle2D o : obstacles) {
-                MyPoint p = this.getCurrentLocation();
-                p.translate((int) x, (int) y);
+        // for (Rectangle2D o : obstacles) {
+        // MyPoint p = this.getCurrentLocation();
+        // p.translate((int) x, (int) y);
 
-                if (o.contains(p) && !o.contains(myPoint)) {
-                    System.out.println("Colliding");
-                    this.avoidingObstacle = o;
-                    this.avoidingPhase = 1;
-                    switch (directionToTurnFrom) {
-                        case NORTH:
-                            if (p.getX() > o.getCenterX()) {
-                                directionToTurn = Direction.EAST;
-                            } else {
-                                directionToTurn = Direction.WEST;
-                            }
-                            break;
-                        case SOUTH:
-                            if (p.getX() > o.getCenterX()) {
-                                directionToTurn = Direction.EAST;
-                            } else {
-                                directionToTurn = Direction.WEST;
-                            }
-                            break;
-                        case EAST:
-                            if (p.getY() > o.getCenterY()) {
-                                directionToTurn = Direction.SOUTH;
-                            } else {
-                                directionToTurn = Direction.NORTH;
-                            }
-                            break;
-                        case WEST:
-                            if (p.getY() > o.getCenterY()) {
-                                directionToTurn = Direction.SOUTH;
-                            } else {
-                                directionToTurn = Direction.NORTH;
-                            }
-                            break;
-                        case NONE:
-                        default:
-                            directionToTurn = Direction.NONE;
-                            break;
+        // if (o.contains(p) && !o.contains(myPoint)) {
+        // System.out.println("Colliding");
+        // this.avoidingObstacle = o;
+        // this.avoidingPhase = 1;
+        // switch (directionToTurnFrom) {
+        // case NORTH:
+        // if (p.getX() > o.getCenterX()) {
+        // directionToTurn = Direction.EAST;
+        // } else {
+        // directionToTurn = Direction.WEST;
+        // }
+        // break;
+        // case SOUTH:
+        // if (p.getX() > o.getCenterX()) {
+        // directionToTurn = Direction.EAST;
+        // } else {
+        // directionToTurn = Direction.WEST;
+        // }
+        // break;
+        // case EAST:
+        // if (p.getY() > o.getCenterY()) {
+        // directionToTurn = Direction.SOUTH;
+        // } else {
+        // directionToTurn = Direction.NORTH;
+        // }
+        // break;
+        // case WEST:
+        // if (p.getY() > o.getCenterY()) {
+        // directionToTurn = Direction.SOUTH;
+        // } else {
+        // directionToTurn = Direction.NORTH;
+        // }
+        // break;
+        // case NONE:
+        // default:
+        // directionToTurn = Direction.NONE;
+        // break;
 
-                    }
-                }
-            }
-        } else if (this.avoidingPhase == 1
-                || this.avoidingPhase == 2 | this.avoidingPhase == 4 | this.avoidingPhase == 5) {
-            boolean turned = false;
-            switch (directionToTurnFrom) {
-                case NORTH:
-                    if (directionToTurn == Direction.EAST) {
-                        turned = this.moveForwardRightWithChecking(directionToTurn);
-                    } else if (directionToTurn == Direction.WEST) {
-                        turned = this.moveForwardLeftWithChecking(directionToTurn);
-                    }
-                    break;
-                case SOUTH:
-                    if (directionToTurn == Direction.EAST) {
-                        turned = this.moveForwardLeftWithChecking(directionToTurn);
-                    } else if (directionToTurn == Direction.WEST) {
-                        turned = this.moveForwardRightWithChecking(directionToTurn);
-                    }
-                    break;
-                case EAST:
-                    if (directionToTurn == Direction.SOUTH) {
-                        turned = this.moveForwardRightWithChecking(directionToTurn);
-                    } else if (directionToTurn == Direction.NORTH) {
-                        turned = this.moveForwardLeftWithChecking(directionToTurn);
-                    }
-                    break;
-                case WEST:
-                    if (directionToTurn == Direction.SOUTH) {
-                        turned = this.moveForwardLeftWithChecking(directionToTurn);
-                    } else if (directionToTurn == Direction.NORTH) {
-                        turned = this.moveForwardRightWithChecking(directionToTurn);
-                    }
-                    break;
-                case NONE:
-                default:
-                    directionToTurn = Direction.NONE;
-                    break;
+        // }
+        // }
+        // }
+        // } else if (this.avoidingPhase == 1
+        // || this.avoidingPhase == 2 | this.avoidingPhase == 4 | this.avoidingPhase ==
+        // 5) {
+        // boolean turned = false;
+        // switch (directionToTurnFrom) {
+        // case NORTH:
+        // if (directionToTurn == Direction.EAST) {
+        // turned = this.moveForwardRightWithChecking(directionToTurn);
+        // } else if (directionToTurn == Direction.WEST) {
+        // turned = this.moveForwardLeftWithChecking(directionToTurn);
+        // }
+        // break;
+        // case SOUTH:
+        // if (directionToTurn == Direction.EAST) {
+        // turned = this.moveForwardLeftWithChecking(directionToTurn);
+        // } else if (directionToTurn == Direction.WEST) {
+        // turned = this.moveForwardRightWithChecking(directionToTurn);
+        // }
+        // break;
+        // case EAST:
+        // if (directionToTurn == Direction.SOUTH) {
+        // turned = this.moveForwardRightWithChecking(directionToTurn);
+        // } else if (directionToTurn == Direction.NORTH) {
+        // turned = this.moveForwardLeftWithChecking(directionToTurn);
+        // }
+        // break;
+        // case WEST:
+        // if (directionToTurn == Direction.SOUTH) {
+        // turned = this.moveForwardLeftWithChecking(directionToTurn);
+        // } else if (directionToTurn == Direction.NORTH) {
+        // turned = this.moveForwardRightWithChecking(directionToTurn);
+        // }
+        // break;
+        // case NONE:
+        // default:
+        // directionToTurn = Direction.NONE;
+        // break;
 
-            }
-            if (turned) {
-                if (this.avoidingPhase == 1) {
-                    Direction temp = directionToTurnFrom;
-                    directionToTurnFrom = directionToTurn;
-                    directionToTurn = temp;
-                    avoidingPhase = 2;
-                } else if (this.avoidingPhase == 2) {
-                    avoidingPhase = 3;
-                } else if (this.avoidingPhase == 4) {
-                    Direction temp = directionToTurnFrom;
-                    directionToTurnFrom = directionToTurn;
-                    directionToTurn = temp;
-                    avoidingPhase = 5;
-                } else if (this.avoidingPhase == 5) {
-                    this.avoidingPhase = 0;
-                    this.directionToTurn = Direction.NONE;
-                    this.directionToTurnFrom = Direction.NONE;
-                    this.avoidingObstacle = null;
-                }
-            }
-        } else if (this.avoidingPhase == 3) {
-            // calculate a relative point from the robot's center,
-            // to see when that relative point no longer will collide
-            moveForward();
-            double x = 0, y = 0;
-            switch (directionToTurnFrom) {
-                case NORTH:
-                    x = 0;
-                    y = this.MAX_TURNING_RADIUS * 2;
-                    break;
-                case SOUTH:
-                    x = 0;
-                    y = -this.MAX_TURNING_RADIUS * 2;
-                    break;
-                case EAST:
-                    x = -this.MAX_TURNING_RADIUS * 2;
-                    y = 0;
-                    break;
-                case WEST:
-                    x = this.MAX_TURNING_RADIUS * 2;
-                    y = 0;
-                    break;
-                case NONE:
-                    break;
-            }
+        // }
+        // if (turned) {
+        // if (this.avoidingPhase == 1) {
+        // Direction temp = directionToTurnFrom;
+        // directionToTurnFrom = directionToTurn;
+        // directionToTurn = temp;
+        // avoidingPhase = 2;
+        // } else if (this.avoidingPhase == 2) {
+        // avoidingPhase = 3;
+        // } else if (this.avoidingPhase == 4) {
+        // Direction temp = directionToTurnFrom;
+        // directionToTurnFrom = directionToTurn;
+        // directionToTurn = temp;
+        // avoidingPhase = 5;
+        // } else if (this.avoidingPhase == 5) {
+        // this.avoidingPhase = 0;
+        // this.directionToTurn = Direction.NONE;
+        // this.directionToTurnFrom = Direction.NONE;
+        // this.avoidingObstacle = null;
+        // }
+        // }
+        // } else if (this.avoidingPhase == 3) {
+        // // calculate a relative point from the robot's center,
+        // // to see when that relative point no longer will collide
+        // moveForward();
+        // double x = 0, y = 0;
+        // switch (directionToTurnFrom) {
+        // case NORTH:
+        // x = 0;
+        // y = this.MAX_TURNING_RADIUS * 2;
+        // break;
+        // case SOUTH:
+        // x = 0;
+        // y = -this.MAX_TURNING_RADIUS * 2;
+        // break;
+        // case EAST:
+        // x = -this.MAX_TURNING_RADIUS * 2;
+        // y = 0;
+        // break;
+        // case WEST:
+        // x = this.MAX_TURNING_RADIUS * 2;
+        // y = 0;
+        // break;
+        // case NONE:
+        // break;
+        // }
 
-            MyPoint p = this.getCurrentLocation();
-            p.translate((int) x, (int) y);
+        // MyPoint p = this.getCurrentLocation();
+        // p.translate((int) x, (int) y);
 
-            if (!avoidingObstacle.contains(p)) {
-                this.avoidingPhase = 4;
-                Direction temp = directionToTurn;
-                switch (directionToTurnFrom) {
-                    case NORTH:
-                        directionToTurn = Direction.SOUTH;
-                        break;
-                    case SOUTH:
-                        directionToTurn = Direction.NORTH;
-                        break;
-                    case EAST:
-                        directionToTurn = Direction.WEST;
-                        break;
-                    case WEST:
-                        directionToTurn = Direction.EAST;
-                        break;
-                    default:
-                        break;
-                }
-                directionToTurnFrom = temp;
-            }
-        } else {
-            moveForward();
-        }
+        // if (!avoidingObstacle.contains(p)) {
+        // this.avoidingPhase = 4;
+        // Direction temp = directionToTurn;
+        // switch (directionToTurnFrom) {
+        // case NORTH:
+        // directionToTurn = Direction.SOUTH;
+        // break;
+        // case SOUTH:
+        // directionToTurn = Direction.NORTH;
+        // break;
+        // case EAST:
+        // directionToTurn = Direction.WEST;
+        // break;
+        // case WEST:
+        // directionToTurn = Direction.EAST;
+        // break;
+        // default:
+        // break;
+        // }
+        // directionToTurnFrom = temp;
+        // }
+        // } else {
+        moveForward();
+        // }
         return false;
     }
 
@@ -577,5 +600,139 @@ public class Robot extends JComponent {
         }
 
         return Direction.NONE;
+    }
+
+    public Point2D getLeftEdgeCenter() {
+        Point2D leftEdgeCenter = new Point2D.Double(0, 0);
+
+        AffineTransform af = (AffineTransform) this.bodyAffineTransform.clone();
+        af.translate(-this.size.getWidth() / 2, 0);
+        af.transform(leftEdgeCenter, leftEdgeCenter);
+
+        return leftEdgeCenter;
+    }
+
+    public Point2D getRightEdgeCenter() {
+
+        Point2D rightEdgeCenter = new Point2D.Double(0, 0);
+
+        AffineTransform af = (AffineTransform) this.bodyAffineTransform.clone();
+        af.translate(this.size.getWidth() / 2, 0);
+        af.transform(rightEdgeCenter, rightEdgeCenter);
+
+        return rightEdgeCenter;
+    }
+
+    public Point2D getTopEdgeCenter() {
+        Point2D topEdgeCenter = new Point2D.Double(0, 0);
+
+        AffineTransform af = (AffineTransform) this.bodyAffineTransform.clone();
+        af.translate(-this.size.getHeight() / 2, 0);
+        af.transform(topEdgeCenter, topEdgeCenter);
+
+        return topEdgeCenter;
+    }
+
+    public Point2D getBottomEdgeCenter() {
+        Point2D bottomEdgeCenter = new Point2D.Double(0, 0);
+
+        AffineTransform af = (AffineTransform) this.bodyAffineTransform.clone();
+        af.translate(this.size.getHeight() / 2, 0);
+        af.transform(bottomEdgeCenter, bottomEdgeCenter);
+
+        return bottomEdgeCenter;
+    }
+
+    public RelativeDirection getRelativeDirection(MyPoint p1, MyPoint p2) {
+        // find p2's relative direction from p1
+        // meaning, from p1's POV, where is p2?
+        MyPoint pp = (MyPoint) p2.clone();
+        pp.translate((int) -p1.getX(), (int) -p1.getY());
+
+        AffineTransform af = new AffineTransform();
+        af.setToIdentity();
+        switch (p1.getDirection()) {
+            case NORTH:
+                af.rotate(Math.toRadians(0));
+                break;
+            case SOUTH:
+                af.rotate(Math.toRadians(180));
+                break;
+            case EAST:
+                af.rotate(Math.toRadians(-90));
+                break;
+            case WEST:
+                af.rotate(Math.toRadians(90));
+                break;
+            case NONE:
+                break;
+            default:
+                break;
+
+        }
+
+        af.transform(pp, pp);
+
+        if (-this.size.width / 2 <= pp.getX() && this.size.width / 2 >= pp.getX()) {
+            if (pp.getY() <= 0) {
+                return RelativeDirection.FRONT;
+            } else if (pp.getY() >= 0) {
+                return RelativeDirection.BACK;
+            }
+        } else if (-this.getTwoTurnsDistance() >= pp.getY()) {
+            // point in front within two turn margin
+            if (pp.getX() <= this.getTwoTurnsDistance() && pp.getX() >= 0) {
+                // difference between x less than two turn
+                return RelativeDirection.FRONT_SLIGHT_RIGHT;
+            } else if (pp.getX() >= -this.getTwoTurnsDistance() && pp.getX() <= 0) {
+                return RelativeDirection.FRONT_SLIGHT_LEFT;
+            } else if (pp.getX() >= 0) {
+                return RelativeDirection.FRONT_RIGHT;
+            } else if (pp.getX() <= 0) {
+                return RelativeDirection.FRONT_LEFT;
+            }
+        } else if (this.getTwoTurnsDistance() <= pp.getY()) {
+            // point is behind
+            if (pp.getX() <= this.getTwoTurnsDistance() && pp.getX() >= 0) {
+                // difference between x less than two turn
+                return RelativeDirection.BACK_SLIGHT_RIGHT;
+            } else if (pp.getX() >= -this.getTwoTurnsDistance() && pp.getX() <= 0) {
+                return RelativeDirection.BACK_SLIGHT_LEFT;
+            } else if (pp.getX() >= 0) {
+                return RelativeDirection.BACK_RIGHT;
+            } else if (pp.getX() <= 0) {
+                return RelativeDirection.BACK_LEFT;
+            }
+        } else if (0 <= pp.getY() + this.getTwoTurnsDistance()) {
+            // within the 2 turn margin of front and back
+            if (0 <= pp.getX()) {
+                return RelativeDirection.CENTER_RIGHT;
+            } else if (0 >= pp.getX()) {
+                return RelativeDirection.CENTER_LEFT;
+            }
+
+        }
+
+        return null;
+    }
+
+    public Direction getRelativeOrientation(MyPoint p1, MyPoint p2) {
+        // compare two points directions and from p2's relative orientation to p1
+        // meaning, assuming from p1's POV of facing forward = NORTH
+        int a = p2.getDirection().ordinal() - p1.getDirection().ordinal();
+        switch (a) {
+            case 0:
+                return Direction.NORTH;
+            case 1:
+            case -3:
+                return Direction.EAST;
+            case 2:
+            case -2:
+                return Direction.SOUTH;
+            case 3:
+            case -1:
+                return Direction.WEST;
+        }
+        return null;
     }
 }
