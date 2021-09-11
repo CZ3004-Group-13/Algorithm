@@ -135,6 +135,7 @@ class Simulator {
         resetButton.addActionListener(e -> {
             robot.reset();
             isRunning = false;
+            isRunning2 = false;
             instructions = new LinkedList<>();
             hPath.reset();
         });
@@ -143,7 +144,7 @@ class Simulator {
         drawButton2.addActionListener(e -> {
             logger.log(Level.FINE, "Start Button Clicked");
 
-            shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
+        //     shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
             hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts(), true);
             hPath.generatePlannedPath(grid, robot);
             hPath.printPlannedPath();
