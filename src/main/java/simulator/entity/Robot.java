@@ -7,6 +7,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +26,8 @@ public class Robot extends JComponent {
     private AffineTransform leftWheelAffineTransform = new AffineTransform();
     private AffineTransform rightWheelAffineTransform = new AffineTransform();
 
-    private double speed;
+    private double speed = 10 * 3; // 3 is the environment scaling factor (lazy so I just manually set here)
+
     private double directionInDegrees = -90;
     private final double distancePerTick; // the distance the robot moves per tick
     private final double angleChangePerClick;
@@ -47,6 +51,11 @@ public class Robot extends JComponent {
     private final Logger logger;
 
     private boolean firstTime = true;
+
+    private long startTime;
+    private boolean started = false;
+    private ArrayList<String> movementQueue = new ArrayList<>();
+    private ArrayList<Long> durationQueue = new ArrayList<>(); // in seconds?
 
     public Robot(Dimension size, Point startingPoint, double distanceBetweenFrontBackWheels) {
         logger = Logger.getLogger(Robot.class.getName());
@@ -476,6 +485,123 @@ public class Robot extends JComponent {
         return false;
     }
 
+    public void letsGo(long timeDelta) {
+        if (!this.durationQueue.isEmpty()) {
+            long durationLeft = this.durationQueue.get(0) - timeDelta;
+
+            if (durationLeft > 0) {
+                this.durationQueue.set(0, durationLeft);
+                switch (this.movementQueue.get(0)) {
+                    default:
+                        break;
+                    case "Forward":
+                        this.moveForwardTime(timeDelta);
+                        break;
+                    case "Right":
+                        this.turnRightTime(timeDelta);
+                        break;
+                    case "Left":
+                        this.turnLeftTime(timeDelta);
+                        break;
+                    case "Center":
+                        this.turnCenterTime(timeDelta);
+                        break;
+                    case "Reverse":
+                        this.moveBackwardTime(timeDelta);
+                        break;
+                }
+            } else {
+                this.durationQueue.remove(0);
+                this.movementQueue.remove(0);
+            }
+        }
+
+    }
+
+    public void addToQueue(String command, double durationInSecs) {
+        movementQueue.add(command);
+        durationQueue.add((long) durationInSecs * 1000000000);
+    }
+
+    public void moveForwardTime(long timeDelta) {
+        double angleDegrees = THETA_CAR + turningAngleDegrees;
+        double distance = this.speed * timeDelta / 1000000000;
+
+        double dX = distance * Math.cos(Math.toRadians(angleDegrees));
+        double dY = distance * Math.sin(Math.toRadians(angleDegrees));
+
+        this.bodyAffineTransform.translate(dX, dY);
+
+        double rotation = (this.turningAngleDegrees);
+        this.bodyAffineTransform.rotate(Math.toRadians(rotation));
+        directionInDegrees += rotation;
+        if (directionInDegrees > 180) {
+            directionInDegrees -= 2 * 180;
+        } else if (directionInDegrees < -180) {
+            directionInDegrees += 2 * 180;
+        }
+
+        this.repaint();
+    }
+
+    public void turnRightTime(long timeDelta) {
+        if (this.thetaWheelsDegree < this.MAX_TURNING_ANGLE) {
+            this.thetaWheelsDegree += this.MAX_TURNING_ANGLE;
+            this.leftWheelAffineTransform.rotate(Math.toRadians(this.MAX_TURNING_ANGLE));
+            this.rightWheelAffineTransform.rotate(Math.toRadians(this.MAX_TURNING_ANGLE));
+            doWheelsTurned();
+            this.repaint();
+        }
+    }
+
+    public void turnLeftTime(long timeDelta) {
+        if (this.thetaWheelsDegree > -this.MAX_TURNING_ANGLE) {
+            this.thetaWheelsDegree = -this.MAX_TURNING_ANGLE;
+            this.leftWheelAffineTransform.rotate(Math.toRadians(-this.MAX_TURNING_ANGLE));
+            this.rightWheelAffineTransform.rotate(Math.toRadians(-this.MAX_TURNING_ANGLE));
+            doWheelsTurned();
+            this.repaint();
+        }
+
+    }
+
+    public void turnCenterTime(long timeDelta) {
+        if (this.thetaWheelsDegree > 0) {
+            this.thetaWheelsDegree = 0;
+            this.leftWheelAffineTransform.rotate(Math.toRadians(-this.MAX_TURNING_ANGLE));
+            this.rightWheelAffineTransform.rotate(Math.toRadians(-this.MAX_TURNING_ANGLE));
+        }
+        if (this.thetaWheelsDegree < 0) {
+            this.thetaWheelsDegree = 0;
+            this.leftWheelAffineTransform.rotate(Math.toRadians(this.MAX_TURNING_ANGLE));
+            this.rightWheelAffineTransform.rotate(Math.toRadians(this.MAX_TURNING_ANGLE));
+        }
+
+        doWheelsTurned();
+        this.repaint();
+    }
+
+    public void moveBackwardTime(long timeDelta) {
+        double angleDegrees = THETA_CAR - 180 - this.turningAngleDegrees;
+        double distance = this.speed * timeDelta / 1000000000;
+
+        double dX = distance * Math.cos(Math.toRadians(angleDegrees));
+        double dY = distance * Math.sin(Math.toRadians(angleDegrees));
+
+        this.bodyAffineTransform.translate(dX, dY);
+
+        double rotation = this.turningAngleDegrees;
+        this.bodyAffineTransform.rotate(-Math.toRadians(rotation));
+        directionInDegrees += rotation;
+        if (directionInDegrees > 180) {
+            directionInDegrees -= 2 * 180;
+        } else if (directionInDegrees < -180) {
+            directionInDegrees += 2 * 180;
+        }
+
+        this.repaint();
+    }
+
     // calculate turningRadius and turningAngleDegrees
     // based on distance between front and back wheel axis
     private void doWheelsTurned() {
@@ -734,5 +860,13 @@ public class Robot extends JComponent {
                 return Direction.WEST;
         }
         return null;
+    }
+
+    public double getSpeed() {
+        return this.speed;
+    }
+
+    public double getTimeFor90DegTurn() {
+        return 0.25 * 2 * Math.PI * this.MAX_TURNING_RADIUS / this.speed;
     }
 }
