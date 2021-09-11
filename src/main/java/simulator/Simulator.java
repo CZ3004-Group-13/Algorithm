@@ -41,6 +41,9 @@ class Simulator {
 
     private Queue<ComplexInstruction> instructions = new LinkedList<>();
 
+    private Thread movementsLoop;
+    private boolean isRunning2 = false;
+
     private static final double ROBOT_SIZE = 60;
     private static final int DISTANCE_MARGIN_OF_ERROR = 40;
 
@@ -146,6 +149,14 @@ class Simulator {
             hPath.printPlannedPath();
             grid.repaint();
         });
+        
+        JButton startMovementsButton = new JButton("Start Movements");
+        startMovementsButton.addActionListener(e -> {
+            startMovements();
+            isRunning2 = true;
+            movementsLoop.start();
+            logger.log(Level.FINE, "Start");
+        });
 
         rightPanel.add(drawButton);
         rightPanel.add(forwardButton);
@@ -156,6 +167,7 @@ class Simulator {
         rightPanel.add(stopButton);
         rightPanel.add(resetButton);
         rightPanel.add(drawButton2);
+        rightPanel.add(startMovementsButton);
 
         jFrame.pack();
         jFrame.setVisible(true); // now frame will be visible, by default not visible
@@ -1035,5 +1047,49 @@ class Simulator {
         }
 
         // return instructions;
+    }
+
+    public void startMovements() {
+        movementsLoop = new Thread(() -> {
+            logger.log(Level.FINEST, "Thread");
+
+            long lastLoopTime = System.nanoTime();
+            final int TARGET_FPS = 30;
+            final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
+            long lastFpsTime = 0;
+
+            double timeFor90DegTurn = robot.getTimeFor90DegTurn();
+            System.out.println(timeFor90DegTurn);
+            // add instructions
+            robot.addToQueue("Forward", 10.0);
+            robot.addToQueue("Right", 1);
+            robot.addToQueue("Forward", timeFor90DegTurn);
+
+            while (isRunning2) {
+                logger.log(Level.FINEST, "Start Movements");
+
+                long now = System.nanoTime();
+                long updateLength = now - lastLoopTime;
+                lastLoopTime = now;
+                // double delta = updateLength / ((double) OPTIMAL_TIME);
+                // delta is the number of frames that has passed
+
+                lastFpsTime += updateLength;
+                if (lastFpsTime >= 1000000000) {
+                    lastFpsTime = 0;
+                }
+
+                robot.letsGo(updateLength);
+
+                robot.repaint();
+
+                try {
+                    Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 }
