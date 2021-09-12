@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.lang.reflect.Array;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.text.DecimalFormat;
@@ -271,28 +272,17 @@ public class HamiltonianPath extends JComponent {
 
     public void generatePlannedPath(Grid grid, Robot robot) {
         this.reset();
-
-        // this.shortestPath
-        // this.plannedPath
-        this.plannedPath.add(robot.getCurrentLocation());
-        this.plannedPPolygon.addPoint((int) robot.getCurrentLocation().getX(), (int) robot.getCurrentLocation().getY());
-
         ArrayList<MyPoint> workingPath = new ArrayList<MyPoint>(Arrays.asList(this.shortestPath));
 
-        // System.out.println("WORKING PATH");
-        // for (MyPoint ppp : workingPath) {
-        // System.out.println(ppp.x + " " + ppp.y + " " + ppp.getDirection());
-        // }
-        // System.out.println("----------------");
-        // Direction robotDirection = robot.getGeneralDirection();
+        this.plannedPath.add(robot.getCurrentLocation());
         MyPoint sp;
 
+        System.out.println("-----GENERATING PATH-----");
         int i = 1;
         while (i < workingPath.size()) {
             // sp = source point (absolute point)
             sp = this.plannedPath.get(this.plannedPath.size() - 1);
-            // if start, take first point of workingPath AKA robot starting point
-            // else, that the last planned step as source
+            
             MyPoint point = workingPath.get(i);
             // take the current working point as destination
 
@@ -337,6 +327,7 @@ public class HamiltonianPath extends JComponent {
                 logger.log(Level.SEVERE, "Cannot transform");
             }
 
+            System.out.println(rDirection + " " + rOrientation);
             switch (rDirection) {
                 // ignore collision detection for the rest for now
 
@@ -380,7 +371,6 @@ public class HamiltonianPath extends JComponent {
                                 i--; // minus so that it does not go to the next workingPath point
                             }
                             this.plannedPath.add(fp); // add point to planned path
-                            this.plannedPPolygon.addPoint((int) fp.getX(), (int) fp.getY());
                             break;
                         }
                         case SOUTH: { // DONE (no collision avoidance)
@@ -390,7 +380,6 @@ public class HamiltonianPath extends JComponent {
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
                                 af.transform(rp, rp);
                                 this.plannedPath.add(rp);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
@@ -399,7 +388,7 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, tp3, tp4, dp };
+                            MyPoint[] tpArray = { tp1, tp2, tp3, tp4, fp };
                             int x, y;
 
                             // try for first turn to be right turn
@@ -416,23 +405,18 @@ public class HamiltonianPath extends JComponent {
                             tp3.move(x, (int) dp.getY() - y);
                             tp4.move(0, (int) dp.getY() - y);
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(tp3, tp3);
-                                af.transform(tp4, tp4);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(tp3);
                                 this.plannedPath.add(tp4);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(tp3.x, tp3.y);
-                                this.plannedPPolygon.addPoint(tp4.x, tp4.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
 
@@ -449,23 +433,18 @@ public class HamiltonianPath extends JComponent {
                             tp3.move(-x, (int) dp.getY() - y);
                             tp4.move(0, (int) dp.getY() - y);
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(tp3, tp3);
-                                af.transform(tp4, tp4);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(tp3);
                                 this.plannedPath.add(tp4);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(tp3.x, tp3.y);
-                                this.plannedPPolygon.addPoint(tp4.x, tp4.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             ;
@@ -480,7 +459,6 @@ public class HamiltonianPath extends JComponent {
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
                                 af.transform(rp, rp);
                                 this.plannedPath.add(rp);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
@@ -488,7 +466,7 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, tp3, dp };
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
                             int x, y;
 
                             // first turn = left
@@ -501,20 +479,16 @@ public class HamiltonianPath extends JComponent {
                             tp2.move(-x, 0);
                             tp3.move(-x, (int) dp.getY());
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(tp3, tp3);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(tp3);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(tp3.x, tp3.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -528,7 +502,6 @@ public class HamiltonianPath extends JComponent {
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
                                 af.transform(rp, rp);
                                 this.plannedPath.add(rp);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
@@ -536,7 +509,7 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, tp3, dp };
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
                             int x, y;
 
                             // first turn = right
@@ -549,20 +522,16 @@ public class HamiltonianPath extends JComponent {
                             tp2.move(x, -y);
                             tp3.move(x, (int) dp.getY());
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(tp3, tp3);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(tp3);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(tp3.x, tp3.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -585,14 +554,13 @@ public class HamiltonianPath extends JComponent {
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
                                 af.transform(rp, rp);
                                 this.plannedPath.add(rp);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, dp };
+                            MyPoint[] tpArray = { tp1, tp2, fp };
                             int x, y;
 
                             // first turn = right
@@ -603,17 +571,14 @@ public class HamiltonianPath extends JComponent {
                             tp1.move(0, -y);
                             tp2.move(dp.x, -y);
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -626,25 +591,28 @@ public class HamiltonianPath extends JComponent {
                                 // reverse, then turn right, then will be handled by another case
                                 MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                                 tp1.rotateRight90();
+                                tp2.rotateRight90();
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                tp2.move((int) robot.getTwoTurnsDistance() / 2, 0);
                                 af.transform(rp, rp);
                                 af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
                                 this.plannedPath.add(rp);
                                 this.plannedPath.add(tp1);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
+                                this.plannedPath.add(tp2);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, dp };
+                            MyPoint[] tpArray = { tp1, tp2, fp };
                             int x, y;
 
-                            // first turn = left
-                            tp1.rotateLeft90();
+                            // first turn = right
+                            tp1.rotateRight90();
                             tp2.rotate180();
                             //
                             x = (int) robot.getTwoTurnsDistance();
@@ -652,17 +620,14 @@ public class HamiltonianPath extends JComponent {
                             tp1.move(0, dp.y - y);
                             tp2.move(dp.x, dp.y - y);
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -675,20 +640,23 @@ public class HamiltonianPath extends JComponent {
                                 // reverse, then turn left, then will be handled by another case
                                 MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                                 tp1.rotateLeft90();
+                                tp2.rotateLeft90();
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                tp2.move(-(int) robot.getTwoTurnsDistance() / 2, 0);
                                 af.transform(rp, rp);
                                 af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
                                 this.plannedPath.add(rp);
                                 this.plannedPath.add(tp1);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
+                                this.plannedPath.add(tp2);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, dp };
+                            MyPoint[] tpArray = { tp1, fp };
                             int x, y;
 
                             // first turn = right
@@ -698,14 +666,12 @@ public class HamiltonianPath extends JComponent {
                             y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, dp.y);
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -719,7 +685,6 @@ public class HamiltonianPath extends JComponent {
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
                                 af.transform(rp, rp);
                                 this.plannedPath.add(rp);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
@@ -727,7 +692,7 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, tp3, dp };
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
                             int x, y;
 
                             // first turn = right
@@ -737,23 +702,19 @@ public class HamiltonianPath extends JComponent {
                             x = (int) robot.getTwoTurnsDistance();
                             y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, -y);
-                            tp2.move(x, -y);
-                            tp3.move(x, (int) dp.getY());
+                            tp2.move(dp.x + y, -y);
+                            tp3.move(dp.x + y, (int) dp.getY());
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(tp3, tp3);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(tp3);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(tp3.x, tp3.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -775,14 +736,13 @@ public class HamiltonianPath extends JComponent {
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
                                 af.transform(rp, rp);
                                 this.plannedPath.add(rp);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, dp };
+                            MyPoint[] tpArray = { tp1, tp2, fp };
                             int x, y;
 
                             // first turn = left
@@ -793,17 +753,14 @@ public class HamiltonianPath extends JComponent {
                             tp1.move(0, -y);
                             tp2.move(dp.x, -y);
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -816,25 +773,28 @@ public class HamiltonianPath extends JComponent {
                                 // reverse, then turn left, then will be handled by another case
                                 MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                                 tp1.rotateLeft90();
+                                tp2.rotateLeft90();
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                tp2.move(-(int) robot.getTwoTurnsDistance() / 2, 0);
                                 af.transform(rp, rp);
                                 af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
                                 this.plannedPath.add(rp);
                                 this.plannedPath.add(tp1);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
+                                this.plannedPath.add(tp2);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, dp };
+                            MyPoint[] tpArray = { tp1, tp2, fp };
                             int x, y;
 
-                            // first turn = right
-                            tp1.rotateRight90();
+                            // first turn = left
+                            tp1.rotateLeft90();
                             tp2.rotate180();
                             //
                             x = (int) robot.getTwoTurnsDistance();
@@ -842,17 +802,14 @@ public class HamiltonianPath extends JComponent {
                             tp1.move(0, dp.y - y);
                             tp2.move(dp.x, dp.y - y);
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -866,7 +823,6 @@ public class HamiltonianPath extends JComponent {
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
                                 af.transform(rp, rp);
                                 this.plannedPath.add(rp);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
@@ -874,7 +830,7 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, tp2, tp3, dp };
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
                             int x, y;
 
                             // first turn = left
@@ -887,20 +843,16 @@ public class HamiltonianPath extends JComponent {
                             tp2.move(-x, 0);
                             tp3.move(-x, (int) dp.getY());
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(tp2, tp2);
-                                af.transform(tp3, tp3);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(tp3);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(tp2.x, tp2.y);
-                                this.plannedPPolygon.addPoint(tp3.x, tp3.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -913,20 +865,23 @@ public class HamiltonianPath extends JComponent {
                                 // reverse, then turn right, then will be handled by another case
                                 MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                                 tp1.rotateRight90();
+                                tp2.rotateRight90();
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                tp2.move(-(int) robot.getTwoTurnsDistance() / 2, 0);
                                 af.transform(rp, rp);
                                 af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
                                 this.plannedPath.add(rp);
                                 this.plannedPath.add(tp1);
-                                this.plannedPPolygon.addPoint(rp.x, rp.y);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
+                                this.plannedPath.add(tp2);
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { tp1, dp };
+                            MyPoint[] tpArray = { tp1, fp };
                             int x, y;
 
                             // first turn = left
@@ -936,14 +891,12 @@ public class HamiltonianPath extends JComponent {
                             y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, dp.y);
 
-                            if (grid.checkIfPathCollides(tpArray)) {
+                            af.transform(tp1, tp1);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
-                                af.transform(tp1, tp1);
-                                af.transform(dp, fp);
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(fp);
-                                this.plannedPPolygon.addPoint(tp1.x, tp1.y);
-                                this.plannedPPolygon.addPoint(fp.x, fp.y);
                                 break;
                             }
                             // do collision detection
@@ -954,24 +907,88 @@ public class HamiltonianPath extends JComponent {
                             break;
                         default:
                             break;
-
                     }
                     break;
 
-                case FRONT_SLIGHT_LEFT:
+                case FRONT_SLIGHT_LEFT: // DONE for now
                     switch (rOrientation) {
-                        case NORTH: {
+                        case WEST:
+                            if (dp.x <= (int) robot.getTwoTurnsDistance() / 2) {
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                                MyPoint[] tpArray = { tp1, fp };
+
+                                // first turn = left
+                                tp1.rotateLeft90();
+                                //
+                                tp1.move(0, dp.y);
+
+                                af.transform(tp1, tp1);
+                                af.transform(dp, fp);
+                                if (!grid.checkIfPathCollides(tpArray)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(fp);
+                                    break;
+                                }
+                            }
+                        case NORTH:
+                        case SOUTH:
+                        case EAST:
+                            // turn left to go to other cases
+                            // if not, turn right
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2 };
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotateLeft90();
+                            //
+                            int y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(-y, -y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                i--;
+                                break;
+                            }
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotateRight90();
+                            //
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(y, -y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                i--;
+                                break;
+                            }
+                            // do collision detection
+                            System.out.println("Collision detected at FRONT SLIGHT LEFT");
                             break;
-                        }
-                        case SOUTH: {
-                            break;
-                        }
-                        case EAST: {
-                            break;
-                        }
-                        case WEST: {
-                            break;
-                        }
                         case NONE:
                             break;
                         default:
@@ -979,20 +996,85 @@ public class HamiltonianPath extends JComponent {
 
                     }
                     break;
-                case FRONT_SLIGHT_RIGHT:
+                case FRONT_SLIGHT_RIGHT: // DONE for now
                     switch (rOrientation) {
-                        case NORTH: {
+                        case EAST:
+                            if (dp.x >= (int) robot.getTwoTurnsDistance() / 2) {
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                                MyPoint[] tpArray = { tp1, fp };
+
+                                // first turn = right
+                                tp1.rotateRight90();
+                                //
+                                tp1.move(0, dp.y);
+
+                                af.transform(tp1, tp1);
+                                af.transform(dp, fp);
+                                if (!grid.checkIfPathCollides(tpArray)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(fp);
+                                    break;
+                                }
+                            }
+                        case NORTH:
+                        case SOUTH:
+                        case WEST:
+                            // turn right to go other case
+                            // else turn left
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2 };
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotateRight90();
+                            //
+                            int y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(y, -y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                i--;
+                                break;
+                            }
+
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotateLeft90();
+                            //
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(-y, -y);
+
+                            af.transform(tp1, tp1);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                i--;
+                                break;
+                            }
+                            // do collision detection
+                            System.out.println("Collision detected at FRONT SLIGHT RIGHT");
                             break;
-                        }
-                        case SOUTH: {
-                            break;
-                        }
-                        case EAST: {
-                            break;
-                        }
-                        case WEST: {
-                            break;
-                        }
                         case NONE:
                             break;
                         default:
@@ -1002,37 +1084,361 @@ public class HamiltonianPath extends JComponent {
                     break;
                 case BACK:
                     switch (rOrientation) {
-                        case NORTH: {
-                            break;
-                        }
-                        case SOUTH: {
-                            break;
-                        }
-                        case EAST: {
-                            break;
-                        }
-                        case WEST: {
-                            break;
-                        }
-                        case NONE:
-                            break;
-                        default:
-                            break;
+                        case NORTH: { // DONE (no collision avoidance)
+                            // we try 3 ways to see if it works
+                            // 1. 4 turns, R R R R
+                            // 2. 4 turns, L L L L
+                            // 3. make 180 turn, then let other case handle
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
 
-                    }
-                    break;
-                case BACK_LEFT:
-                    switch (rOrientation) {
-                        case NORTH: {
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, tp4, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotate180();
+                            tp3.rotateLeft90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(x, -y);
+                            tp3.move(x, dp.y + y);
+                            tp4.move(0, dp.y + y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(tp4);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            tp4 = new MyPoint(0, 0, sp.getDirection());
+                            fp = new MyPoint(0, 0, dp.getDirection());
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotate180();
+                            tp3.rotateRight90();
+                            //
+                            tp1.move(0, -y);
+                            tp2.move(-x, -y);
+                            tp3.move(-x, dp.y + y);
+                            tp4.move(0, dp.y + y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(tp4);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            // make 180 turn (Reverse, Right, Reverse, Right)
+                            // Reverse already done above
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp1.rotateRight90();
+                            tp2.move(y, -y);
+                            tp2.rotateRight90();
+                            rp.move(-y, -y);
+                            rp.rotateRight90();
+                            tp3.move(0, -y);
+                            tp3.rotate180();
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(rp, rp);
+                            af.transform(tp3, tp3);
+                            this.plannedPath.add(tp1);
+                            this.plannedPath.add(tp2);
+                            this.plannedPath.add(rp);
+                            this.plannedPath.add(tp3);
+                            i--;
                             break;
                         }
-                        case SOUTH: {
+                        case SOUTH: { // DONE (no collision avoidance)
+                            // we try 3 ways to see if it works
+                            // 1. 4 turns, R R R L
+                            // 2. 4 turns, L L L R
+                            // 3. make 180 turn, then let other case handle
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, tp4, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotate180();
+                            tp3.rotateLeft90();
+                            tp4.rotate180();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(x, -y);
+                            tp3.move(x, dp.y - y);
+                            tp4.move(0, dp.y - y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(tp4);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            tp4 = new MyPoint(0, 0, sp.getDirection());
+                            fp = new MyPoint(0, 0, dp.getDirection());
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotate180();
+                            tp3.rotate180();
+                            //
+                            tp1.move(0, -y);
+                            tp2.move(-x, -y);
+                            tp3.move(-x, dp.y - y);
+                            tp4.move(0, dp.y - y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(tp4);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            // make 180 turn (Reverse, Right, Reverse, Right)
+                            // Reverse already done above
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp1.rotateRight90();
+                            tp2.move(y, -y);
+                            tp2.rotateRight90();
+                            rp.move(-y, -y);
+                            rp.rotateRight90();
+                            tp3.move(0, -y);
+                            tp3.rotate180();
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(rp, rp);
+                            af.transform(tp3, tp3);
+                            this.plannedPath.add(tp1);
+                            this.plannedPath.add(tp2);
+                            this.plannedPath.add(rp);
+                            this.plannedPath.add(tp3);
+                            i--;
                             break;
                         }
-                        case EAST: {
+                        case EAST: { // DONE (no collision avoidance)
+                            // we try 2 ways to see if it works
+                            // 1. 3 turns, L L L
+                            // 2. make 180 turn, then let other case handle
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateLeft90();
+                            tp2.rotate180();
+                            tp3.rotateRight90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(-x, -y);
+                            tp3.move(-x, dp.y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            // make 180 turn (Reverse, Right, Reverse, Right)
+                            // Reverse already done above
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp1.rotateRight90();
+                            tp2.move(y, -y);
+                            tp2.rotateRight90();
+                            rp.move(-y, -y);
+                            rp.rotateRight90();
+                            tp3.move(0, -y);
+                            tp3.rotate180();
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(rp, rp);
+                            af.transform(tp3, tp3);
+                            this.plannedPath.add(tp1);
+                            this.plannedPath.add(tp2);
+                            this.plannedPath.add(rp);
+                            this.plannedPath.add(tp3);
+                            i--;
                             break;
                         }
-                        case WEST: {
+                        case WEST: { // DONE (no collision avoidance)
+                            // we try 2 ways to see if it works
+                            // 1. 3 turns, R R R
+                            // 2. make 180 turn, then let other case handle
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotate180();
+                            tp3.rotateLeft90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(x, -y);
+                            tp3.move(x, dp.y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            // make 180 turn (Reverse, Right, Reverse, Right)
+                            // Reverse already done above
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp1.rotateRight90();
+                            tp2.move(y, -y);
+                            tp2.rotateRight90();
+                            rp.move(-y, -y);
+                            rp.rotateRight90();
+                            tp3.move(0, -y);
+                            tp3.rotate180();
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(rp, rp);
+                            af.transform(tp3, tp3);
+                            this.plannedPath.add(tp1);
+                            this.plannedPath.add(tp2);
+                            this.plannedPath.add(rp);
+                            this.plannedPath.add(tp3);
+                            i--;
                             break;
                         }
                         case NONE:
@@ -1044,16 +1450,267 @@ public class HamiltonianPath extends JComponent {
                     break;
                 case BACK_RIGHT:
                     switch (rOrientation) {
-                        case NORTH: {
+                        case NORTH: { // DONE (no c a)
+                            // we try 3 ways to see if it works (similar to BACK NORTH)
+                            // 1. 4 turns, R R R R
+                            // 2. 4 turns, L L L L
+                            // 3. make 180 turn, then let other case handle
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, tp4, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotate180();
+                            tp3.rotateLeft90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(dp.x + x, -y);
+                            tp3.move(dp.x + x, dp.y + y);
+                            tp4.move(dp.x, dp.y + y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(tp4);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            tp4 = new MyPoint(0, 0, sp.getDirection());
+                            fp = new MyPoint(0, 0, dp.getDirection());
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotate180();
+                            tp3.rotateRight90();
+                            //
+                            tp1.move(0, -y);
+                            tp2.move(-x, -y);
+                            tp3.move(-x, dp.y + y);
+                            tp4.move(dp.x, dp.y + y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(tp4);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            // make 180 turn (Reverse, Right, Reverse, Right)
+                            // Reverse already done above
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray2 = { tp1, tp2, rp, tp3 };
+
+                            tp1.move(0, -y);
+                            tp1.rotateRight90();
+                            tp2.move(y, -y);
+                            tp2.rotateRight90();
+                            rp.move(-y, -y);
+                            rp.rotateRight90();
+                            tp3.move(0, -y);
+                            tp3.rotate180();
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(rp, rp);
+                            af.transform(tp3, tp3);
+                            if (!grid.checkIfPathCollides(tpArray2)) {
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(rp);
+                                this.plannedPath.add(tp3);
+                                i--;
+                                break;
+                            }
                             break;
                         }
                         case SOUTH: {
+                            // idea: 2 turns R R
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotate180();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(dp.x, -y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            System.out.println("Collision detected at BACK RIGHT + SOUTH");
                             break;
                         }
                         case EAST: {
+                            // idea: 3 turns L L L
+                            // or R then pass
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
+                            int x, y;
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotate180();
+                            tp3.rotateRight90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(-x, -y);
+                            tp3.move(-x, dp.y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray2 = { tp1, tp2, tp3 };
+                            tp1.rotateRight90();
+                            tp2.rotateRight90();
+                            tp3.rotateRight90();
+                            tp1.move(0, -y);
+                            tp2.move(y, -y);
+                            tp3.move(0, -y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            if (!grid.checkIfPathCollides(tpArray2)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                i--;
+                                break;
+                            }
+                            System.out.println("Collision detected at BACK RIGHT + EAST");
                             break;
                         }
                         case WEST: {
+                            // idea: 3 turns R R R
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotate180();
+                            tp3.rotateLeft90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(dp.x + y, -y);
+                            tp3.move(dp.x + y, dp.y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            System.out.println("Collision detected at BACK RIGHT + WEST");
                             break;
                         }
                         case NONE:
@@ -1063,18 +1720,271 @@ public class HamiltonianPath extends JComponent {
 
                     }
                     break;
-                case BACK_SLIGHT_LEFT:
+                case BACK_LEFT:
                     switch (rOrientation) {
-                        case NORTH: {
+                        case NORTH: { // DONE (no c a)
+                            // we try 3 ways to see if it works (similar to BACK NORTH)
+                            // 1. 4 turns, R R R R
+                            // 2. 4 turns, L L L L
+                            // 3. make 180 turn, then let other case handle
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, tp4, fp };
+                            int x, y;
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotate180();
+                            tp3.rotateRight90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(dp.x - x, -y);
+                            tp3.move(dp.x - x, dp.y + y);
+                            tp4.move(dp.x, dp.y + y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(tp4);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            tp4 = new MyPoint(0, 0, sp.getDirection());
+                            fp = new MyPoint(0, 0, dp.getDirection());
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotate180();
+                            tp3.rotateLeft90();
+                            //
+                            tp1.move(0, -y);
+                            tp2.move(x, -y);
+                            tp3.move(x, dp.y + y);
+                            tp4.move(dp.x, dp.y + y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(tp4, tp4);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(tp4);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            // make 180 turn (Reverse, Right, Reverse, Right)
+                            // Reverse already done above
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray2 = { tp1, tp2, rp, tp3 };
+
+                            tp1.move(0, -y);
+                            tp1.rotateRight90();
+                            tp2.move(y, -y);
+                            tp2.rotateRight90();
+                            rp.move(-y, -y);
+                            rp.rotateRight90();
+                            tp3.move(0, -y);
+                            tp3.rotate180();
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(rp, rp);
+                            af.transform(tp3, tp3);
+
+                            if (!grid.checkIfPathCollides(tpArray2)) {
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(rp);
+                                this.plannedPath.add(tp3);
+                                i--;
+                                break;
+                            }
                             break;
                         }
                         case SOUTH: {
+                            // idea: 2 turns L L
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateLeft90();
+                            tp2.rotate180();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(dp.x, -y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            System.out.println("Collision detected at BACK LEFT + SOUTH");
                             break;
                         }
                         case EAST: {
+                            // idea: 3 turns L L L
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
+                            int x, y;
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotate180();
+                            tp3.rotateRight90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(dp.x - y, -y);
+                            tp3.move(dp.x - y, dp.y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            System.out.println("Collision detected at BACK LEFT + EAST");
                             break;
                         }
                         case WEST: {
+                            // idea: 3 turns R R R
+                            // or L then pass
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3, fp };
+                            int x, y;
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotate180();
+                            tp3.rotateLeft90();
+                            //
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(x, -y);
+                            tp3.move(x, dp.y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            af.transform(dp, fp);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                this.plannedPath.add(fp);
+                                break;
+                            }
+
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray2 = { tp1, tp2, tp3 };
+                            tp1.rotateLeft90();
+                            tp2.rotateLeft90();
+                            tp3.rotateLeft90();
+                            tp1.move(0, -y);
+                            tp2.move(-y, -y);
+                            tp3.move(0, -y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            if (!grid.checkIfPathCollides(tpArray2)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                i--;
+                                break;
+                            }
+
+                            System.out.println("Collision detected at BACK LEFT + WEST");
                             break;
                         }
                         case NONE:
@@ -1084,18 +1994,376 @@ public class HamiltonianPath extends JComponent {
 
                     }
                     break;
-                case BACK_SLIGHT_RIGHT:
+                case BACK_SLIGHT_LEFT: // DONE for now
+                    switch (rOrientation) {
+                        // turn right to go to other cases
+                        case NORTH:
+                        case SOUTH:
+                        case EAST:
+                        case WEST:
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2 };
+
+                            // first turn = left
+                            tp1.rotateLeft90();
+                            tp2.rotateLeft90();
+                            //
+                            int y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(-y, -y);
+
+                            af.transform(tp1, tp1);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                i--;
+                                break;
+                            }
+                            // do collision detection
+                            System.out.println("Collision detected at FRONT SLIGHT LEFT");
+                            break;
+                        case NONE:
+                            break;
+                        default:
+                            break;
+
+                    }
+                    break;
+                case BACK_SLIGHT_RIGHT: // DONE for now
+                    switch (rOrientation) {
+                        case NORTH:
+                        case SOUTH:
+                        case EAST:
+                        case WEST:
+                            if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                af.transform(rp, rp);
+                                this.plannedPath.add(rp);
+                                i--; // minus so that it does not go to the next workingPath point
+                                break;
+                            }
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2 };
+
+                            // first turn = right
+                            tp1.rotateRight90();
+                            tp2.rotateRight90();
+                            //
+                            int y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, -y);
+                            tp2.move(y, -y);
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                i--;
+                                break;
+                            }
+                            // do collision detection
+                            System.out.println("Collision detected at BACK SLIGHT RIGHT");
+                            break;
+                        case NONE:
+                            break;
+                        default:
+                            break;
+
+                    }
+                    break;
+                case CENTER_RIGHT:
                     switch (rOrientation) {
                         case NORTH: {
+                            // try to reverse till it is in top left
+                            int x;
+                            MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+
+                            x = (int) robot.getTwoTurnsDistance();
+                            rp.move(0, x - dp.y);
+
+                            af.transform(rp, rp);
+                            if (!grid.checkIfPointCollides(rp)) {
+                                // this path works, go next
+                                this.plannedPath.add(rp);
+                                i--;
+                                break;
+                            }
+                            // if cannot, move forward till in bottom left
+                            MyPoint tp = new MyPoint(0, 0, sp.getDirection());
+
+                            x = (int) robot.getTwoTurnsDistance();
+                            tp.move(0, -(x - dp.y));
+
+                            af.transform(tp, tp);
+                            if (!grid.checkIfPointCollides(tp)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp);
+                                i--;
+                                break;
+                            }
+                            System.out.println("Collision detected at CENTER RIGHT + NORTH");
                             break;
                         }
                         case SOUTH: {
+                            int x, y;
+                            // move forward and turn right till in top right
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3 };
+
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, dp.y);
+                            tp2.move(0, dp.y - y);
+                            tp3.move(y, dp.y - y);
+                            tp2.rotateRight90();
+                            tp3.rotateRight90();
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                i--;
+                                break;
+                            }
+                            System.out.println("Collision detected at CENTER RIGHT + SOUTH");
                             break;
                         }
                         case EAST: {
+                            // idea: if far enough right, turn right
+                            // else if not that far, reverse and turn right
+                            // or do 180 turn (try right)
+                            // or do 3 R 1 L???
+                            // else if too close, turn left
+                            // else, reverse and pass to front slight right
+                            int x, y;
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            if (dp.x >= x) {
+                                if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                    MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                    rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                    af.transform(rp, rp);
+                                    this.plannedPath.add(rp);
+                                    i--; // minus so that it does not go to the next workingPath point
+                                    break;
+                                }
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray = { tp1, tp2 };
+
+                                // first turn = right
+                                tp1.rotateRight90();
+                                tp2.rotateRight90();
+                                //
+
+                                tp1.move(0, -y);
+                                tp2.move(y, -y);
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
+                                if (!grid.checkIfPathCollides(tpArray)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp2);
+                                    i--;
+                                    break;
+                                }
+                            } else if (dp.x >= y) {
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray = { tp1, tp2 };
+
+                                tp1.move(0, (dp.y + y));
+                                tp2.move(0, (dp.y));
+                                tp2.rotateRight90();
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
+                                if (!grid.checkIfPathCollides(tpArray)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp2);
+                                    i--;
+                                    break;
+                                }
+
+                                // 180 turn R
+                                tp1 = new MyPoint(0, 0, sp.getDirection());
+                                tp2 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray2 = { tp1, tp2, tp3, tp4 };
+
+                                tp1.move(0, dp.y - x);
+                                tp1.rotateRight90();
+                                tp2.move(y, dp.y - x);
+                                tp2.rotateRight90();
+                                tp3.move(-y, dp.y - x);
+                                tp3.rotateRight90();
+                                tp4.move(0, dp.y - x);
+                                tp4.rotate180();
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
+                                af.transform(tp3, tp3);
+                                af.transform(tp4, tp4);
+                                if (!grid.checkIfPathCollides(tpArray2)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp2);
+                                    this.plannedPath.add(tp3);
+                                    this.plannedPath.add(tp4);
+                                    i--;
+                                    break;
+                                }
+
+                                // this is the RRRL 180 turn move X_X
+                                tp1 = new MyPoint(0, 0, sp.getDirection());
+                                tp2 = new MyPoint(0, 0, sp.getDirection());
+                                tp3 = new MyPoint(0, 0, sp.getDirection());
+                                tp4 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp1f = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2f = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp3f = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp4f = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp1r = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2r = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp3r = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray3 = { tp1, tp1f, tp1r, tp2, tp2f, tp2r, tp3, tp3f, tp3r, tp4, tp4f };
+
+                                tp1.move(0, dp.y - x);
+                                tp1.rotateRight90();
+                                tp1f.move(y, dp.y - x);
+                                tp1f.rotateRight90();
+                                tp1r.move(0, dp.y - x);
+                                tp1r.rotateRight90();
+                                tp2.move(y, dp.y - x);
+                                tp2.rotate180();
+                                tp2f.move(y, dp.y - x + y);
+                                tp2f.rotate180();
+                                tp2r.move(y, dp.y - x);
+                                tp2r.rotate180();
+                                tp3.move(y, dp.y - x + y);
+                                tp3.rotateLeft90();
+                                tp3f.move(0, dp.y - x + y);
+                                tp3f.rotateLeft90();
+                                tp3r.move(y, dp.y - x + y);
+                                tp3r.rotateLeft90();
+                                tp4.move(0, dp.y - x + y);
+                                tp4.rotate180();
+                                tp4f.move(0, dp.y);
+                                tp4f.rotate180();
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp1f, tp1f);
+                                af.transform(tp1r, tp1r);
+                                af.transform(tp2, tp2);
+                                af.transform(tp2f, tp2f);
+                                af.transform(tp2r, tp2r);
+                                af.transform(tp3, tp3);
+                                af.transform(tp3f, tp3f);
+                                af.transform(tp3r, tp3r);
+                                af.transform(tp4, tp4);
+                                af.transform(tp4f, tp4f);
+                                if (!grid.checkIfPathCollides(tpArray3)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp1f);
+                                    this.plannedPath.add(tp1r);
+                                    this.plannedPath.add(tp2);
+                                    this.plannedPath.add(tp2f);
+                                    this.plannedPath.add(tp2r);
+                                    this.plannedPath.add(tp3);
+                                    this.plannedPath.add(tp3f);
+                                    this.plannedPath.add(tp3r);
+                                    this.plannedPath.add(tp4);
+                                    this.plannedPath.add(tp4f);
+                                    i--;
+                                    break;
+                                }
+
+                                System.out.println("Collision detected at CENTER RIGHT + EAST 1");
+                            } else if (dp.x < y) {
+                                // turn left (reverse if need)
+                                if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                    MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                    rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                    af.transform(rp, rp);
+                                    this.plannedPath.add(rp);
+                                    i--; // minus so that it does not go to the next workingPath point
+                                    break;
+                                }
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray = { tp1, tp2 };
+
+                                tp1.move(0, -y);
+                                tp2.move(-y, -y);
+                                tp1.rotateLeft90();
+                                tp2.rotateLeft90();
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
+                                if (!grid.checkIfPathCollides(tpArray)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp2);
+                                    i--;
+                                    break;
+                                }
+                                System.out.println("Collision detected at CENTER RIGHT + EAST 2");
+                            } else {
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+
+                                tp1.move(0, (dp.y + x));
+
+                                af.transform(tp1, tp1);
+                                if (!grid.checkIfPointCollides(tp1)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    i--;
+                                    break;
+                                }
+                                System.out.println("Collision detected at CENTER RIGHT + EAST 3");
+                            }
                             break;
                         }
                         case WEST: {
+                            // idea: reverse untill other case
+                            int x, y;
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+
+                            tp1.move(0, (dp.y + x));
+
+                            af.transform(tp1, tp1);
+                            if (!grid.checkIfPointCollides(tp1)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                i--;
+                                break;
+                            }
+                            System.out.println("Collision detected at CENTER RIGHT + WEST");
                             break;
                         }
                         case NONE:
@@ -1108,36 +2376,280 @@ public class HamiltonianPath extends JComponent {
                 case CENTER_LEFT:
                     switch (rOrientation) {
                         case NORTH: {
-                            break;
-                        }
-                        case SOUTH: {
-                            break;
-                        }
-                        case EAST: {
-                            break;
-                        }
-                        case WEST: {
-                            break;
-                        }
-                        case NONE:
-                            break;
-                        default:
-                            break;
+                            // try to reverse till it is in top left
+                            int x;
+                            MyPoint tp = new MyPoint(0, 0, sp.getDirection());
 
-                    }
-                    break;
-                case CENTER_RIGHT:
-                    switch (rOrientation) {
-                        case NORTH: {
+                            x = (int) robot.getTwoTurnsDistance();
+                            tp.move(0, x - dp.y + 5);
+
+                            af.transform(tp, tp);
+                            if (!grid.checkIfPointCollides(tp)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp);
+                                i--;
+                                break;
+                            }
+                            // if cannot, move forward till in bottom left
+                            tp = new MyPoint(0, 0, sp.getDirection());
+
+                            x = (int) robot.getTwoTurnsDistance();
+                            tp.move(0, -(x - dp.y));
+
+                            af.transform(tp, tp);
+                            if (!grid.checkIfPointCollides(tp)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp);
+                                i--;
+                                break;
+                            }
+                            System.out.println("Collision detected at CENTER LEFT + NORTH");
                             break;
                         }
                         case SOUTH: {
+                            int x, y;
+                            // move forward and turn left till in top left
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray = { tp1, tp2, tp3 };
+
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            tp1.move(0, dp.y - y);
+                            tp2.move(0, dp.y - x);
+                            tp3.move(-y, dp.y - x);
+                            tp2.rotateLeft90();
+                            tp3.rotateLeft90();
+
+                            af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
+                            af.transform(tp3, tp3);
+                            if (!grid.checkIfPathCollides(tpArray)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp3);
+                                i--;
+                                break;
+                            }
+                            System.out.println("Collision detected at CENTER LEFT + SOUTH");
                             break;
                         }
                         case EAST: {
+                            // idea: reverse untill other case
+                            int x, y;
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+
+                            tp1.move(0, (dp.y + x));
+
+                            af.transform(tp1, tp1);
+                            if (!grid.checkIfPointCollides(tp1)) {
+                                // this path works, go next
+                                this.plannedPath.add(tp1);
+                                i--;
+                                break;
+                            }
+                            System.out.println("Collision detected at CENTER LEFT + EAST");
                             break;
                         }
                         case WEST: {
+                            // idea: if far enough left, turn left
+                            // else if not that far, reverse and turn left
+                            // or do 180 turn (try left)
+                            // or do 3 L 1 R???
+                            // if too close, turn right
+                            // else, reverse and pass to front slight left
+                            int x, y;
+                            x = (int) robot.getTwoTurnsDistance();
+                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            if (dp.x <= -x) {
+                                if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                    MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                    rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                    af.transform(rp, rp);
+                                    this.plannedPath.add(rp);
+                                    i--; // minus so that it does not go to the next workingPath point
+                                    break;
+                                }
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray = { tp1, tp2 };
+
+                                // first turn = left
+                                tp1.rotateLeft90();
+                                tp2.rotateLeft90();
+                                //
+
+                                tp1.move(0, -y);
+                                tp2.move(-y, -y);
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
+                                if (!grid.checkIfPathCollides(tpArray)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp2);
+                                    i--;
+                                    break;
+                                }
+                            } else if (dp.x <= -y) {
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray = { tp1, tp2 };
+
+                                tp1.move(0, (dp.y + y));
+                                tp2.move(0, (dp.y));
+                                tp2.rotateLeft90();
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
+                                if (!grid.checkIfPathCollides(tpArray)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp2);
+                                    i--;
+                                    break;
+                                }
+                                // 180 turn L
+                                tp1 = new MyPoint(0, 0, sp.getDirection());
+                                tp2 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray2 = { tp1, tp2, tp3, tp4 };
+
+                                tp1.move(0, dp.y - x);
+                                tp1.rotateLeft90();
+                                tp2.move(-y, dp.y - x);
+                                tp2.rotateLeft90();
+                                tp3.move(y, dp.y - x);
+                                tp3.rotateLeft90();
+                                tp4.move(0, dp.y - x);
+                                tp4.rotate180();
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
+                                af.transform(tp3, tp3);
+                                af.transform(tp4, tp4);
+                                if (!grid.checkIfPathCollides(tpArray2)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp2);
+                                    this.plannedPath.add(tp3);
+                                    this.plannedPath.add(tp4);
+                                    i--;
+                                    break;
+                                }
+
+                                // this is the LLLR 180 turn move X_X
+                                tp1 = new MyPoint(0, 0, sp.getDirection());
+                                tp2 = new MyPoint(0, 0, sp.getDirection());
+                                tp3 = new MyPoint(0, 0, sp.getDirection());
+                                tp4 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp1f = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2f = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp3f = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp4f = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp1r = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2r = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp3r = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray3 = { tp1, tp1f, tp1r, tp2, tp2f, tp2r, tp3, tp3f, tp3r, tp4, tp4f };
+
+                                tp1.move(0, dp.y - x);
+                                tp1.rotateLeft90();
+                                tp1f.move(-y, dp.y - x);
+                                tp1f.rotateLeft90();
+                                tp1r.move(0, dp.y - x);
+                                tp1r.rotateLeft90();
+                                tp2.move(-y, dp.y - x);
+                                tp2.rotate180();
+                                tp2f.move(-y, dp.y - x + y);
+                                tp2f.rotate180();
+                                tp2r.move(-y, dp.y - x);
+                                tp2r.rotate180();
+                                tp3.move(-y, dp.y - x + y);
+                                tp3.rotateRight90();
+                                tp3f.move(0, dp.y - x + y);
+                                tp3f.rotateRight90();
+                                tp3r.move(-y, dp.y - x + y);
+                                tp3r.rotateRight90();
+                                tp4.move(0, dp.y - x + y);
+                                tp4.rotate180();
+                                tp4f.move(0, dp.y);
+                                tp4f.rotate180();
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp1f, tp1f);
+                                af.transform(tp1r, tp1r);
+                                af.transform(tp2, tp2);
+                                af.transform(tp2f, tp2f);
+                                af.transform(tp2r, tp2r);
+                                af.transform(tp3, tp3);
+                                af.transform(tp3f, tp3f);
+                                af.transform(tp3r, tp3r);
+                                af.transform(tp4, tp4);
+                                af.transform(tp4f, tp4f);
+                                if (!grid.checkIfPathCollides(tpArray3)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp1f);
+                                    this.plannedPath.add(tp1r);
+                                    this.plannedPath.add(tp2);
+                                    this.plannedPath.add(tp2f);
+                                    this.plannedPath.add(tp2r);
+                                    this.plannedPath.add(tp3);
+                                    this.plannedPath.add(tp3f);
+                                    this.plannedPath.add(tp3r);
+                                    this.plannedPath.add(tp4);
+                                    this.plannedPath.add(tp4f);
+                                    i--;
+                                    break;
+                                }
+                                System.out.println("Collision detected at CENTER LEFT + WEST 1");
+                            } else if (dp.x > -y) {
+                                if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
+                                    MyPoint rp = new MyPoint(0, 0, sp.getDirection());
+                                    rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
+                                    af.transform(rp, rp);
+                                    this.plannedPath.add(rp);
+                                    i--; // minus so that it does not go to the next workingPath point
+                                    break;
+                                }
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
+                                MyPoint[] tpArray = { tp1, tp2 };
+
+                                tp1.move(0, -y);
+                                tp2.move(y, -y);
+                                tp1.rotateRight90();
+                                tp2.rotateRight90();
+
+                                af.transform(tp1, tp1);
+                                af.transform(tp2, tp2);
+                                if (!grid.checkIfPathCollides(tpArray)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    this.plannedPath.add(tp2);
+                                    i--;
+                                    break;
+                                }
+                                System.out.println("Collision detected at CENTER LEFT + WEST 2");
+                            } else {
+                                MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
+
+                                tp1.move(0, (dp.y + x));
+
+                                af.transform(tp1, tp1);
+                                if (!grid.checkIfPointCollides(tp1)) {
+                                    // this path works, go next
+                                    this.plannedPath.add(tp1);
+                                    i--;
+                                    break;
+                                }
+                                System.out.println("Collision detected at CENTER LEFT + WEST 3");
+                            }
                             break;
                         }
                         case NONE:
@@ -1156,6 +2668,8 @@ public class HamiltonianPath extends JComponent {
 
             i++;
         }
+        System.out.println("-----GENERATED PATH-----");
+        this.determinePolygonPath();
     }
 
     public void addToPlannedPath(MyPoint p) {
@@ -1174,7 +2688,14 @@ public class HamiltonianPath extends JComponent {
     public ArrayList<MyPoint> getPlannedPath() {
         return this.plannedPath;
     }
-    
+
+    private void determinePolygonPath() {
+        this.plannedPPolygon.reset();
+        for (MyPoint p : this.plannedPath) {
+            this.plannedPPolygon.addPoint(p.x, p.y);
+        }
+    }
+
     public void reset() {
         this.plannedPath.clear();
         this.plannedPPolygon.reset();

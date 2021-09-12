@@ -149,6 +149,7 @@ class Simulator {
             hPath.generatePlannedPath(grid, robot);
             hPath.printPlannedPath();
             robot.generateMovements(hPath.getPlannedPath());
+        //     robot.printGeneratedMovements();
             grid.repaint();
         });
         
@@ -1056,7 +1057,7 @@ class Simulator {
             logger.log(Level.FINEST, "Thread");
 
             long lastLoopTime = System.nanoTime();
-            final int TARGET_FPS = 30;
+            final int TARGET_FPS = 120;
             final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
             long lastFpsTime = 0;
 
@@ -1073,7 +1074,7 @@ class Simulator {
                 long now = System.nanoTime();
                 long updateLength = now - lastLoopTime;
                 lastLoopTime = now;
-                // double delta = updateLength / ((double) OPTIMAL_TIME);
+                double delta = updateLength / ((double) OPTIMAL_TIME);
                 // delta is the number of frames that has passed
 
                 lastFpsTime += updateLength;
@@ -1081,7 +1082,7 @@ class Simulator {
                     lastFpsTime = 0;
                 }
 
-                robot.letsGo(updateLength);
+                robot.letsGo(delta);
 
                 robot.repaint();
 

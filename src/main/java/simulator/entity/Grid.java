@@ -111,6 +111,9 @@ public class Grid extends JPanel {
 
         for (Rectangle2D o : obs) {
             if (o.intersectsLine(line)) {
+                // System.out.println("Line collide:");
+                // System.out.println("p1" + p1.x + " " + p1.y);
+                // System.out.println("p2" + p2.x + " " + p2.y);
                 return true;
             }
         }
@@ -131,6 +134,7 @@ public class Grid extends JPanel {
         if (p.getX() < 0 + this.boundaryLength || p.getY() < 0 + this.boundaryLength
                 || p.getX() > this.envModelSize.getWidth() - this.boundaryLength
                 || p.getY() > this.envModelSize.getHeight() - this.boundaryLength) {
+            System.out.println("Out of bounds detected");
             return true;
         } else {
             return false;

@@ -39,9 +39,10 @@ public class Robot extends JComponent {
     // since the coordinate system is positive x is right, positive y is down,
     // angles work by starting from positive x and going clockwise
 
-    private static final double DIRECTION_MARGIN_OF_ERROR = 1.2;
+    private static final double DIRECTION_MARGIN_OF_ERROR = 1;
     private final double MAX_TURNING_ANGLE = 45;
     public final double MAX_TURNING_RADIUS;
+    public final int TARGET_FPS = 120;
 
     private int avoidingPhase = 0;
     private Direction directionToTurnFrom = Direction.NONE;
@@ -69,11 +70,11 @@ public class Robot extends JComponent {
         rightWheel = new Rectangle2D.Double(0, 0, size.getWidth() / 5, size.getHeight() / 3);
 
         this.distanceBetweenFrontBackWheels = distanceBetweenFrontBackWheels;
-        distancePerTick = this.speed / 30;
+        distancePerTick = this.speed / this.TARGET_FPS;
         angleChangePerClick = 5;
 
-        this.MAX_TURNING_RADIUS = Math.abs(
-                this.distanceBetweenFrontBackWheels * Math.tan(Math.PI / 2 - Math.toRadians(this.MAX_TURNING_ANGLE)));
+        this.MAX_TURNING_RADIUS = Math
+                .abs(this.distanceBetweenFrontBackWheels * Math.tan(Math.toRadians(this.MAX_TURNING_ANGLE)));
 
         setOpaque(false);
     }
@@ -97,7 +98,7 @@ public class Robot extends JComponent {
     }
 
     public double getTwoTurnsDistance() {
-        return MAX_TURNING_RADIUS * 2.5;
+        return MAX_TURNING_RADIUS * 2.4;
     }
 
     // can combine with turnRight and accept one parameter for the angle to turn
@@ -297,14 +298,15 @@ public class Robot extends JComponent {
         return false;
     }
 
-    public void letsGo(long timeDelta) {
+    public void letsGo(double frames) {
         if (!this.durationQueue.isEmpty()) {
-            long durationLeft = this.durationQueue.get(0) - timeDelta;
+            long timeDelta = (long) (1000000000 * frames / TARGET_FPS);
+            long durationLeft = this.durationQueue.get(0);
 
             if (durationLeft > 0) {
-                this.durationQueue.set(0, durationLeft);
+                this.durationQueue.set(0, durationLeft - timeDelta);
                 // System.out.println(this.movementQueue.get(0) + ": " +
-                // this.durationQueue.get(0));
+                // this.durationQueue.get(0) + " " + this.directionQueue.get(0));
                 switch (this.movementQueue.get(0)) {
                     default:
                         break;
@@ -340,7 +342,6 @@ public class Robot extends JComponent {
                 this.directionQueue.remove(0);
             }
         }
-
     }
 
     public void addToQueue(String command, double durationInSecs, Direction d) {
@@ -460,8 +461,7 @@ public class Robot extends JComponent {
     // based on distance between front and back wheel axis
     private void doWheelsTurned() {
         this.turningRadius = this.thetaWheelsDegree == 0 ? 0
-                : Math.abs(this.distanceBetweenFrontBackWheels
-                        * Math.tan(Math.PI / 2 - Math.toRadians(this.thetaWheelsDegree)));
+                : Math.abs(this.distanceBetweenFrontBackWheels * Math.tan(Math.toRadians(this.thetaWheelsDegree)));
 
         this.turningAngleDegrees = this.turningRadius == 0 ? 0
                 : Math.toDegrees(this.distancePerTick / this.turningRadius);
@@ -628,22 +628,25 @@ public class Robot extends JComponent {
         // find p2's relative direction from p1
         // meaning, from p1's POV, where is p2?
         MyPoint pp = (MyPoint) p2.clone();
-        pp.translate((int) -p1.getX(), (int) -p1.getY());
 
         AffineTransform af = new AffineTransform();
         af.setToIdentity();
+        af.translate((int) p1.getX(), (int) p1.getY());
         switch (p1.getDirection()) {
             case NORTH:
                 af.rotate(Math.toRadians(0));
                 break;
             case SOUTH:
                 af.rotate(Math.toRadians(180));
+                pp.rotate180();
                 break;
             case EAST:
-                af.rotate(Math.toRadians(-90));
+                af.rotate(Math.toRadians(90));
+                pp.rotateLeft90();
                 break;
             case WEST:
-                af.rotate(Math.toRadians(90));
+                af.rotate(Math.toRadians(-90));
+                pp.rotateRight90();
                 break;
             case NONE:
                 break;
@@ -652,39 +655,23 @@ public class Robot extends JComponent {
 
         }
 
-        af.transform(pp, pp);
+        try {
+            af.inverseTransform(pp, pp);
+        } catch (NoninvertibleTransformException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // System.out.println("pp: " + pp.x + " " + pp.y + " " + pp.getDirection());
+        // System.out.println("pp: " + pp.getY() + " " + pp.y + " " + this.getTwoTurnsDistance());
 
+        int twoTurnDistance = (int) this.getTwoTurnsDistance();
         if (-this.size.width / 2 <= pp.getX() && this.size.width / 2 >= pp.getX()) {
             if (pp.getY() <= 0) {
                 return RelativeDirection.FRONT;
             } else if (pp.getY() >= 0) {
                 return RelativeDirection.BACK;
             }
-        } else if (-this.getTwoTurnsDistance() >= pp.getY()) {
-            // point in front within two turn margin
-            if (pp.getX() <= this.getTwoTurnsDistance() && pp.getX() >= 0) {
-                // difference between x less than two turn
-                return RelativeDirection.FRONT_SLIGHT_RIGHT;
-            } else if (pp.getX() >= -this.getTwoTurnsDistance() && pp.getX() <= 0) {
-                return RelativeDirection.FRONT_SLIGHT_LEFT;
-            } else if (pp.getX() >= 0) {
-                return RelativeDirection.FRONT_RIGHT;
-            } else if (pp.getX() <= 0) {
-                return RelativeDirection.FRONT_LEFT;
-            }
-        } else if (this.getTwoTurnsDistance() <= pp.getY()) {
-            // point is behind
-            if (pp.getX() <= this.getTwoTurnsDistance() && pp.getX() >= 0) {
-                // difference between x less than two turn
-                return RelativeDirection.BACK_SLIGHT_RIGHT;
-            } else if (pp.getX() >= -this.getTwoTurnsDistance() && pp.getX() <= 0) {
-                return RelativeDirection.BACK_SLIGHT_LEFT;
-            } else if (pp.getX() >= 0) {
-                return RelativeDirection.BACK_RIGHT;
-            } else if (pp.getX() <= 0) {
-                return RelativeDirection.BACK_LEFT;
-            }
-        } else if (0 <= pp.getY() + this.getTwoTurnsDistance()) {
+        } else if (Math.abs(pp.getY()) < twoTurnDistance) {
             // within the 2 turn margin of front and back
             if (0 <= pp.getX()) {
                 return RelativeDirection.CENTER_RIGHT;
@@ -692,6 +679,30 @@ public class Robot extends JComponent {
                 return RelativeDirection.CENTER_LEFT;
             }
 
+        } else if (-twoTurnDistance >= pp.getY()) {
+            // point in front within two turn margin
+            if (pp.getX() <= twoTurnDistance && pp.getX() >= 0) {
+                // difference between x less than two turn
+                return RelativeDirection.FRONT_SLIGHT_RIGHT;
+            } else if (pp.getX() >= -twoTurnDistance && pp.getX() <= 0) {
+                return RelativeDirection.FRONT_SLIGHT_LEFT;
+            } else if (pp.getX() >= 0) {
+                return RelativeDirection.FRONT_RIGHT;
+            } else if (pp.getX() <= 0) {
+                return RelativeDirection.FRONT_LEFT;
+            }
+        } else if (twoTurnDistance <= pp.getY()) {
+            // point is behind
+            if (pp.getX() <= twoTurnDistance && pp.getX() >= 0) {
+                // difference between x less than two turn
+                return RelativeDirection.BACK_SLIGHT_RIGHT;
+            } else if (pp.getX() >= -twoTurnDistance && pp.getX() <= 0) {
+                return RelativeDirection.BACK_SLIGHT_LEFT;
+            } else if (pp.getX() >= 0) {
+                return RelativeDirection.BACK_RIGHT;
+            } else if (pp.getX() <= 0) {
+                return RelativeDirection.BACK_LEFT;
+            }
         }
 
         return null;
@@ -723,11 +734,11 @@ public class Robot extends JComponent {
 
     public double getTimeFor90DegTurn() {
         // not really working properly
-        return 0.9075 * 0.25 * 2 * Math.PI * (this.getTwoTurnsDistance() / 2) / this.speed;
+        return 2.26875 * 0.25 * 2 * Math.PI * this.MAX_TURNING_RADIUS / this.speed;
     }
 
-    public long getDurationForManeuver(double dist) {
-        return (long) (dist / this.getSpeed());
+    public double getDurationForManeuver(double dist) {
+        return (dist / this.getSpeed());
     }
 
     double getEuclideanDistance(Point a, Point b) {
@@ -737,6 +748,7 @@ public class Robot extends JComponent {
     public void generateMovements(ArrayList<MyPoint> plannedPath) {
         this.movementQueue.clear();
         this.durationQueue.clear();
+        this.directionQueue.clear();
         boolean justTurned = false;
         double dist;
         for (int i = 1; i < plannedPath.size(); i++) {
@@ -744,19 +756,22 @@ public class Robot extends JComponent {
             MyPoint dest = plannedPath.get(i);
             // System.out.println("src: " + src.x + " " + src.y);
             // System.out.println("dest: " + dest.x + " " + dest.y);
+            // System.out.println(this.getRelativeDirection(src, dest));
             switch (this.getRelativeOrientation(src, dest)) {
                 case NORTH:
                     dist = this.getEuclideanDistance(src, dest);
                     if (justTurned) {
-                        dist -= this.MAX_TURNING_RADIUS;
+                        dist -= this.getTwoTurnsDistance() / 2;
                         justTurned = false;
                     }
                     switch (this.getRelativeDirection(src, dest)) {
                         case BACK:
                             this.addToQueue("Reverse", this.getDurationForManeuver(dist), Direction.NONE);
+                            justTurned = false;
                             break;
                         case FRONT:
                             this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE);
+                            justTurned = false;
                             break;
                         case NONE:
                             break;
@@ -770,9 +785,9 @@ public class Robot extends JComponent {
                     break;
                 case EAST:
                     dist = this.getEuclideanDistance(src, dest);
-                    dist -= this.MAX_TURNING_RADIUS;
+                    dist -= this.getTwoTurnsDistance() / 2;
                     if (justTurned) {
-                        dist -= this.MAX_TURNING_RADIUS;
+                        dist -= this.getTwoTurnsDistance() / 2;
                         justTurned = false;
                     }
                     this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE);
@@ -783,9 +798,9 @@ public class Robot extends JComponent {
                     break;
                 case WEST:
                     dist = this.getEuclideanDistance(src, dest);
-                    dist -= this.MAX_TURNING_RADIUS;
+                    dist -= this.getTwoTurnsDistance() / 2;
                     if (justTurned) {
-                        dist -= this.MAX_TURNING_RADIUS;
+                        dist -= this.getTwoTurnsDistance() / 2;
                         justTurned = false;
                     }
                     this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE);
@@ -801,6 +816,13 @@ public class Robot extends JComponent {
 
             }
 
+        }
+    }
+
+    public void printGeneratedMovements() {
+        for (int i = 0; i < this.movementQueue.size(); i++) {
+            System.out.println(
+                    this.movementQueue.get(i) + " " + this.durationQueue.get(i) + " " + this.directionQueue.get(i));
         }
     }
 }
