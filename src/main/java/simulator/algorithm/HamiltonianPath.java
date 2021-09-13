@@ -105,12 +105,14 @@ public class HamiltonianPath extends JComponent {
             shortestPath[i] = pointsArray[shortestPathPointIndex[i]];
         }
 
+        /*
         for (Point p : shortestPath) {
             this.polygon.addPoint((int) p.getX(), (int) p.getY());
         }
 
-        // Not necessary
-        // this.polygon.addPoint((int) src.getX(), (int) src.getY());
+        Not necessary
+        this.polygon.addPoint((int) src.getX(), (int) src.getY());
+        */
 
         this.repaint();
 
@@ -263,8 +265,11 @@ public class HamiltonianPath extends JComponent {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
+
+        /*
         g2.setColor(Color.green);
         g2.drawPolygon(this.polygon);
+         */
 
         g2.setColor(Color.blue);
         g2.drawPolygon(this.plannedPPolygon);
