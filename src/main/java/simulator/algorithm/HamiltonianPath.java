@@ -282,7 +282,7 @@ public class HamiltonianPath extends JComponent {
         while (i < workingPath.size()) {
             // sp = source point (absolute point)
             sp = this.plannedPath.get(this.plannedPath.size() - 1);
-            
+
             MyPoint point = workingPath.get(i);
             // take the current working point as destination
 
@@ -839,9 +839,9 @@ public class HamiltonianPath extends JComponent {
                             //
                             x = (int) robot.getTwoTurnsDistance();
                             y = (int) robot.getTwoTurnsDistance() / 2;
-                            tp1.move(0, 0);
-                            tp2.move(-x, 0);
-                            tp3.move(-x, (int) dp.getY());
+                            tp1.move(0, -y);
+                            tp2.move((int) dp.getX() - y, -y);
+                            tp3.move((int) dp.getX() - y, (int) dp.getY());
 
                             af.transform(tp1, tp1);
                             af.transform(tp2, tp2);
@@ -862,12 +862,12 @@ public class HamiltonianPath extends JComponent {
                         case WEST: { // DONE (no c a)
                             // idea: 1 turn
                             if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
-                                // reverse, then turn right, then will be handled by another case
+                                // reverse, then turn left, then will be handled by another case
                                 MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
-                                tp1.rotateRight90();
-                                tp2.rotateRight90();
+                                tp1.rotateLeft90();
+                                tp2.rotateLeft90();
                                 rp.move(0, (int) robot.getTwoTurnsDistance() / 2);
                                 tp2.move(-(int) robot.getTwoTurnsDistance() / 2, 0);
                                 af.transform(rp, rp);
