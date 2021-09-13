@@ -1065,6 +1065,7 @@ public class HamiltonianPath extends JComponent {
                             tp2.move(-y, -y);
 
                             af.transform(tp1, tp1);
+                            af.transform(tp2, tp2);
                             if (!grid.checkIfPathCollides(tpArray)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
