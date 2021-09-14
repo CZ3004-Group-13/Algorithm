@@ -64,7 +64,7 @@ class Simulator {
                 * ENVIRONMENT_SCALING_FACTOR;
 
         JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(800, 800)); // hardcoded for now
+        layeredPane.setPreferredSize(new Dimension(600, 600)); // hardcoded for now
         // use layered pane
         // grid in one layer
         // robot as one layer
@@ -87,10 +87,10 @@ class Simulator {
         layeredPane.add(hPath, 2, 0);
 
         // add surrounding boxes as margins
-        jFrame.add(Box.createRigidArea(new Dimension(50, 50)), BorderLayout.PAGE_START);
-        jFrame.add(Box.createRigidArea(new Dimension(50, 50)), BorderLayout.LINE_START);
-        jFrame.add(Box.createRigidArea(new Dimension(50, 50)), BorderLayout.LINE_END);
-        jFrame.add(Box.createRigidArea(new Dimension(50, 50)), BorderLayout.PAGE_END);
+        jFrame.add(Box.createRigidArea(new Dimension(20, 20)), BorderLayout.PAGE_START);
+        jFrame.add(Box.createRigidArea(new Dimension(20, 20)), BorderLayout.LINE_START);
+        jFrame.add(Box.createRigidArea(new Dimension(20, 20)), BorderLayout.LINE_END);
+        jFrame.add(Box.createRigidArea(new Dimension(20, 20)), BorderLayout.PAGE_END);
 
         // add the center layered pane to the window
         jFrame.add(layeredPane, BorderLayout.CENTER);
