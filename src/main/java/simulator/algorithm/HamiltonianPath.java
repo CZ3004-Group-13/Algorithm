@@ -2213,7 +2213,7 @@ public class HamiltonianPath extends JComponent {
                                 // 180 turn R
                                 tp1 = new MyPoint(0, 0, sp.getDirection());
                                 tp2 = new MyPoint(0, 0, sp.getDirection());
-                                MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
+                                tp3 = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint[] tpArray2 = { tp1, tp2, tp3, tp4 };
 
