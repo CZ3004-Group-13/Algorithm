@@ -279,6 +279,9 @@ public class HamiltonianPath extends JComponent {
         this.plannedPath.add(robot.getCurrentLocation());
         MyPoint sp;
         int caStep = 5;
+        int x, y;
+        x = (int) robot.getTwoTurnsDistance();
+        y = (int) robot.getTwoTurnsDistance() / 2;
 
         System.out.println("-----GENERATING PATH-----");
         int i = 1;
@@ -341,9 +344,6 @@ public class HamiltonianPath extends JComponent {
                             // idea: move forward only
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, fp };
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
 
                             dp.move(0, (int) dp.getY());
                             af.transform(dp, fp);
@@ -416,16 +416,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, tp4, fp };
-                            int x, y;
 
                             // try for first turn to be right turn
                             tp1.rotateRight90(); // face right
                             // tp2 already facing straight
                             tp3.rotateLeft90(); // face left
                             tp4.rotate180(); // face backwards
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
 
                             tp1.move(0, -y);
                             tp2.move(x, -y);
@@ -446,15 +442,18 @@ public class HamiltonianPath extends JComponent {
                                 this.plannedPath.add(fp);
                                 break;
                             }
-
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            tp3 = new MyPoint(0, 0, sp.getDirection());
+                            tp4 = new MyPoint(0, 0, sp.getDirection());
+                            fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray2 = { sp, tp1, tp2, tp3, tp4, fp };
                             // try turn left first instead
                             tp1.rotateLeft90(); // face right
                             // tp2 already facing straight
                             tp3.rotateRight90(); // face left
                             tp4.rotate180(); // face backwards
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(-x, -y);
                             tp3.move(-x, (int) dp.getY() - y);
@@ -465,7 +464,7 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp3, tp3);
                             af.transform(tp4, tp4);
                             af.transform(dp, fp);
-                            if (!grid.checkIfPathCollides(tpArray)) {
+                            if (!grid.checkIfPathCollides(tpArray2)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -495,14 +494,11 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, fp };
-                            int x, y;
 
                             // first turn = left
                             tp1.rotateLeft90();
                             tp3.rotateRight90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, 0);
                             tp2.move(-x, 0);
                             tp3.move(-x, (int) dp.getY());
@@ -538,14 +534,11 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp3.rotateLeft90();
                             //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, -y);
                             tp2.move(x, -y);
                             tp3.move(x, (int) dp.getY());
@@ -585,9 +578,6 @@ public class HamiltonianPath extends JComponent {
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
 
                             // first turn = right
                             boolean breakFlag = false;
@@ -635,14 +625,11 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotate180();
                             //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, dp.y - y);
                             tp2.move(dp.x, dp.y - y);
 
@@ -675,6 +662,9 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
+                            tp1 = new MyPoint(0, 0, sp.getDirection());
+                            tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray3 = { sp, tp1, tp2 };
                             // right turn
                             tp1 = new MyPoint(0, 0, sp.getDirection());
                             tp2 = new MyPoint(0, 0, sp.getDirection());
@@ -684,7 +674,7 @@ public class HamiltonianPath extends JComponent {
                             tp2.move(y, -y);
                             af.transform(tp1, tp1);
                             af.transform(tp2, tp2);
-                            if (!grid.checkIfPathCollides(tpArray2)) {
+                            if (!grid.checkIfPathCollides(tpArray3)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -711,13 +701,9 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, dp.y);
 
                             af.transform(tp1, tp1);
@@ -770,13 +756,14 @@ public class HamiltonianPath extends JComponent {
                             // right turn
                             tp1 = new MyPoint(0, 0, sp.getDirection());
                             tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray3 = { sp, tp1, tp2 };
                             tp1.rotateRight90();
                             tp2.rotateRight90();
                             tp1.move(0, -y);
                             tp2.move(y, -y);
                             af.transform(tp1, tp1);
                             af.transform(tp2, tp2);
-                            if (!grid.checkIfPathCollides(tpArray2)) {
+                            if (!grid.checkIfPathCollides(tpArray3)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -798,9 +785,6 @@ public class HamiltonianPath extends JComponent {
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
 
                             if (dp.y <= -x - y) {
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
@@ -881,10 +865,6 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
-
                             // first turn = left
                             boolean breakFlag = false;
                             for (int yyy = y; yyy <= Math.abs(dp.y) - y; yyy += caStep) {
@@ -931,14 +911,11 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, fp };
-                            int x, y;
 
                             // first turn = left
                             tp1.rotateLeft90();
                             tp2.rotate180();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, dp.y - y);
                             tp2.move(dp.x, dp.y - y);
 
@@ -974,13 +951,14 @@ public class HamiltonianPath extends JComponent {
                             // left turn
                             tp1 = new MyPoint(0, 0, sp.getDirection());
                             tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray3 = { sp, tp1, tp2 };
                             tp1.rotateLeft90();
                             tp2.rotateLeft90();
                             tp1.move(0, -y);
                             tp2.move(-y, -y);
                             af.transform(tp1, tp1);
                             af.transform(tp2, tp2);
-                            if (!grid.checkIfPathCollides(tpArray2)) {
+                            if (!grid.checkIfPathCollides(tpArray3)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -1001,9 +979,7 @@ public class HamiltonianPath extends JComponent {
                                 i--; // minus so that it does not go to the next workingPath point
                                 break;
                             }
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             if (dp.y <= -x - y) {
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
@@ -1078,13 +1054,9 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, fp };
-                            int x, y;
 
                             // first turn = left
                             tp1.rotateLeft90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, dp.y);
 
                             af.transform(tp1, tp1);
@@ -1096,7 +1068,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
-                            // left turn
+                            // left turn 
                             if (dp.x <= -x) {
                                 tp1 = new MyPoint(0, 0, sp.getDirection());
                                 MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
@@ -1137,13 +1109,14 @@ public class HamiltonianPath extends JComponent {
                             // left turn
                             tp1 = new MyPoint(0, 0, sp.getDirection());
                             tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray3 = { sp, tp1, tp2 };
                             tp1.rotateLeft90();
                             tp2.rotateLeft90();
                             tp1.move(0, -y);
                             tp2.move(-y, -y);
                             af.transform(tp1, tp1);
                             af.transform(tp2, tp2);
-                            if (!grid.checkIfPathCollides(tpArray2)) {
+                            if (!grid.checkIfPathCollides(tpArray3)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -1171,7 +1144,6 @@ public class HamiltonianPath extends JComponent {
 
                                 // first turn = left
                                 tp1.rotateLeft90();
-                                //
                                 tp1.move(0, dp.y);
 
                                 af.transform(tp1, tp1);
@@ -1203,8 +1175,7 @@ public class HamiltonianPath extends JComponent {
                             // first turn = left
                             tp1.rotateLeft90();
                             tp2.rotateLeft90();
-                            //
-                            int y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(-y, -y);
 
@@ -1217,20 +1188,20 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
+
                             tp1 = new MyPoint(0, 0, sp.getDirection());
                             tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray2 = { sp, tp1, tp2 };
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotateRight90();
-                            //
-                            y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, -y);
                             tp2.move(y, -y);
 
                             af.transform(tp1, tp1);
                             af.transform(tp2, tp2);
-                            if (!grid.checkIfPathCollides(tpArray)) {
+                            if (!grid.checkIfPathCollides(tpArray2)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -1257,7 +1228,6 @@ public class HamiltonianPath extends JComponent {
 
                                 // first turn = right
                                 tp1.rotateRight90();
-                                //
                                 tp1.move(0, dp.y);
 
                                 af.transform(tp1, tp1);
@@ -1289,8 +1259,6 @@ public class HamiltonianPath extends JComponent {
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotateRight90();
-                            //
-                            int y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, -y);
                             tp2.move(y, -y);
 
@@ -1306,18 +1274,19 @@ public class HamiltonianPath extends JComponent {
 
                             tp1 = new MyPoint(0, 0, sp.getDirection());
                             tp2 = new MyPoint(0, 0, sp.getDirection());
+                            MyPoint[] tpArray2 = { sp, tp1, tp2 };
 
                             // first turn = left
                             tp1.rotateLeft90();
                             tp2.rotateLeft90();
                             //
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            
                             tp1.move(0, -y);
                             tp2.move(-y, -y);
 
                             af.transform(tp1, tp1);
                             af.transform(tp2, tp2);
-                            if (!grid.checkIfPathCollides(tpArray)) {
+                            if (!grid.checkIfPathCollides(tpArray2)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -1356,15 +1325,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, tp4, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotate180();
                             tp3.rotateLeft90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(x, -y);
                             tp3.move(x, dp.y + y);
@@ -1390,6 +1356,7 @@ public class HamiltonianPath extends JComponent {
                             tp3 = new MyPoint(0, 0, sp.getDirection());
                             tp4 = new MyPoint(0, 0, sp.getDirection());
                             fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray2 = { sp, tp1, tp2, tp3, tp4, fp };
 
                             // first turn = left
                             tp1.rotateLeft90();
@@ -1406,7 +1373,7 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp3, tp3);
                             af.transform(tp4, tp4);
                             af.transform(dp, fp);
-                            if (!grid.checkIfPathCollides(tpArray)) {
+                            if (!grid.checkIfPathCollides(tpArray2)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -1422,8 +1389,8 @@ public class HamiltonianPath extends JComponent {
                             tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                             tp3 = new MyPoint(0, 0, sp.getDirection());
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            MyPoint[] tpArray3 = { sp, tp1, tp2, rp, tp3 };
+
                             tp1.move(0, -y);
                             tp1.rotateRight90();
                             tp2.move(y, -y);
@@ -1436,12 +1403,15 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp2, tp2);
                             af.transform(rp, rp);
                             af.transform(tp3, tp3);
+                            if (!grid.checkIfPathCollides(tpArray3)) {
                             this.plannedPath.add(tp1);
                             this.plannedPath.add(tp2);
                             this.plannedPath.add(rp);
                             this.plannedPath.add(tp3);
                             i--;
                             break;
+                        }
+                        break;
                         }
                         case SOUTH: { // DONE (no collision avoidance)
                             // we try 3 ways to see if it works
@@ -1463,16 +1433,13 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, tp4, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotate180();
                             tp3.rotateLeft90();
                             tp4.rotate180();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(x, -y);
                             tp3.move(x, dp.y - y);
@@ -1498,6 +1465,7 @@ public class HamiltonianPath extends JComponent {
                             tp3 = new MyPoint(0, 0, sp.getDirection());
                             tp4 = new MyPoint(0, 0, sp.getDirection());
                             fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray2 = { sp, tp1, tp2, tp3, tp4, fp };
 
                             // first turn = left
                             tp1.rotateLeft90();
@@ -1514,7 +1482,7 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp3, tp3);
                             af.transform(tp4, tp4);
                             af.transform(dp, fp);
-                            if (!grid.checkIfPathCollides(tpArray)) {
+                            if (!grid.checkIfPathCollides(tpArray2)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -1530,8 +1498,8 @@ public class HamiltonianPath extends JComponent {
                             tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                             tp3 = new MyPoint(0, 0, sp.getDirection());
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            MyPoint[] tpArray3 = { sp, tp1, tp2, rp, tp3 };
+
                             tp1.move(0, -y);
                             tp1.rotateRight90();
                             tp2.move(y, -y);
@@ -1544,12 +1512,15 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp2, tp2);
                             af.transform(rp, rp);
                             af.transform(tp3, tp3);
-                            this.plannedPath.add(tp1);
+                            if (!grid.checkIfPathCollides(tpArray3)) {
+                                this.plannedPath.add(tp1);
                             this.plannedPath.add(tp2);
                             this.plannedPath.add(rp);
                             this.plannedPath.add(tp3);
                             i--;
                             break;
+                        }
+                        break;
                         }
                         case EAST: { // DONE (no collision avoidance)
                             // we try 2 ways to see if it works
@@ -1569,15 +1540,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateLeft90();
                             tp2.rotate180();
                             tp3.rotateRight90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(-x, -y);
                             tp3.move(-x, dp.y);
@@ -1601,8 +1569,8 @@ public class HamiltonianPath extends JComponent {
                             tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                             tp3 = new MyPoint(0, 0, sp.getDirection());
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            MyPoint[] tpArray2 = { sp, tp1, tp2, rp, tp3 };
+                            
                             tp1.move(0, -y);
                             tp1.rotateRight90();
                             tp2.move(y, -y);
@@ -1615,12 +1583,15 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp2, tp2);
                             af.transform(rp, rp);
                             af.transform(tp3, tp3);
-                            this.plannedPath.add(tp1);
+                            if (!grid.checkIfPathCollides(tpArray2)) {
+                                this.plannedPath.add(tp1);
                             this.plannedPath.add(tp2);
                             this.plannedPath.add(rp);
                             this.plannedPath.add(tp3);
                             i--;
                             break;
+                        }
+                        break;
                         }
                         case WEST: { // DONE (no collision avoidance)
                             // we try 2 ways to see if it works
@@ -1640,15 +1611,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotate180();
                             tp3.rotateLeft90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(x, -y);
                             tp3.move(x, dp.y);
@@ -1672,8 +1640,8 @@ public class HamiltonianPath extends JComponent {
                             tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                             tp3 = new MyPoint(0, 0, sp.getDirection());
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            MyPoint[] tpArray2 = { sp, tp1, tp2, rp, tp3 };
+                            
                             tp1.move(0, -y);
                             tp1.rotateRight90();
                             tp2.move(y, -y);
@@ -1686,11 +1654,13 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp2, tp2);
                             af.transform(rp, rp);
                             af.transform(tp3, tp3);
-                            this.plannedPath.add(tp1);
+                            if (!grid.checkIfPathCollides(tpArray2)) {
+                                this.plannedPath.add(tp1);
                             this.plannedPath.add(tp2);
                             this.plannedPath.add(rp);
                             this.plannedPath.add(tp3);
                             i--;
+                            break;}
                             break;
                         }
                         case NONE:
@@ -1722,15 +1692,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, tp4, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotate180();
                             tp3.rotateLeft90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            
                             tp1.move(0, -y);
                             tp2.move(dp.x + x, -y);
                             tp3.move(dp.x + x, dp.y + y);
@@ -1756,6 +1723,7 @@ public class HamiltonianPath extends JComponent {
                             tp3 = new MyPoint(0, 0, sp.getDirection());
                             tp4 = new MyPoint(0, 0, sp.getDirection());
                             fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray2 = { sp, tp1, tp2, tp3, tp4, fp };
 
                             // first turn = left
                             tp1.rotateLeft90();
@@ -1772,7 +1740,7 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp3, tp3);
                             af.transform(tp4, tp4);
                             af.transform(dp, fp);
-                            if (!grid.checkIfPathCollides(tpArray)) {
+                            if (!grid.checkIfPathCollides(tpArray2)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -1788,7 +1756,7 @@ public class HamiltonianPath extends JComponent {
                             tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                             tp3 = new MyPoint(0, 0, sp.getDirection());
-                            MyPoint[] tpArray2 = { sp, tp1, tp2, rp, tp3 };
+                            MyPoint[] tpArray3 = { sp, tp1, tp2, rp, tp3 };
 
                             tp1.move(0, -y);
                             tp1.rotateRight90();
@@ -1802,7 +1770,7 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp2, tp2);
                             af.transform(rp, rp);
                             af.transform(tp3, tp3);
-                            if (!grid.checkIfPathCollides(tpArray2)) {
+                            if (!grid.checkIfPathCollides(tpArray3)) {
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(rp);
@@ -1827,14 +1795,11 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotate180();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(dp.x, -y);
 
@@ -1869,15 +1834,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, fp };
-                            int x, y;
 
                             // first turn = left
                             tp1.rotateLeft90();
                             tp2.rotate180();
                             tp3.rotateRight90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(-x, -y);
                             tp3.move(-x, dp.y);
@@ -1936,15 +1898,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotate180();
                             tp3.rotateLeft90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(dp.x + y, -y);
                             tp3.move(dp.x + y, dp.y);
@@ -1994,15 +1953,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, tp4, fp };
-                            int x, y;
 
                             // first turn = left
                             tp1.rotateLeft90();
                             tp2.rotate180();
                             tp3.rotateRight90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(dp.x - x, -y);
                             tp3.move(dp.x - x, dp.y + y);
@@ -2028,6 +1984,7 @@ public class HamiltonianPath extends JComponent {
                             tp3 = new MyPoint(0, 0, sp.getDirection());
                             tp4 = new MyPoint(0, 0, sp.getDirection());
                             fp = new MyPoint(0, 0, dp.getDirection());
+                            MyPoint[] tpArray2 = { sp, tp1, tp2, tp3, tp4, fp };
 
                             // first turn = right
                             tp1.rotateRight90();
@@ -2044,7 +2001,7 @@ public class HamiltonianPath extends JComponent {
                             af.transform(tp3, tp3);
                             af.transform(tp4, tp4);
                             af.transform(dp, fp);
-                            if (!grid.checkIfPathCollides(tpArray)) {
+                            if (!grid.checkIfPathCollides(tpArray2)) {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
@@ -2060,7 +2017,7 @@ public class HamiltonianPath extends JComponent {
                             tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint rp = new MyPoint(0, 0, sp.getDirection());
                             tp3 = new MyPoint(0, 0, sp.getDirection());
-                            MyPoint[] tpArray2 = { sp, tp1, tp2, rp, tp3 };
+                            MyPoint[] tpArray3 = { sp, tp1, tp2, rp, tp3 };
 
                             tp1.move(0, -y);
                             tp1.rotateRight90();
@@ -2075,7 +2032,7 @@ public class HamiltonianPath extends JComponent {
                             af.transform(rp, rp);
                             af.transform(tp3, tp3);
 
-                            if (!grid.checkIfPathCollides(tpArray2)) {
+                            if (!grid.checkIfPathCollides(tpArray3)) {
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
                                 this.plannedPath.add(rp);
@@ -2100,14 +2057,11 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateLeft90();
                             tp2.rotate180();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(dp.x, -y);
 
@@ -2141,15 +2095,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, fp };
-                            int x, y;
 
                             // first turn = left
                             tp1.rotateLeft90();
                             tp2.rotate180();
                             tp3.rotateRight90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(dp.x - y, -y);
                             tp3.move(dp.x - y, dp.y);
@@ -2187,15 +2138,12 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3, fp };
-                            int x, y;
 
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotate180();
                             tp3.rotateLeft90();
-                            //
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(x, -y);
                             tp3.move(x, dp.y);
@@ -2268,8 +2216,7 @@ public class HamiltonianPath extends JComponent {
                             // first turn = left
                             tp1.rotateLeft90();
                             tp2.rotateLeft90();
-                            //
-                            int y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(-y, -y);
 
@@ -2312,8 +2259,7 @@ public class HamiltonianPath extends JComponent {
                             // first turn = right
                             tp1.rotateRight90();
                             tp2.rotateRight90();
-                            //
-                            int y = (int) robot.getTwoTurnsDistance() / 2;
+
                             tp1.move(0, -y);
                             tp2.move(y, -y);
 
@@ -2340,10 +2286,8 @@ public class HamiltonianPath extends JComponent {
                     switch (rOrientation) {
                         case NORTH: {
                             // try to reverse till it is in top left
-                            int x;
                             MyPoint rp = new MyPoint(0, 0, sp.getDirection());
 
-                            x = (int) robot.getTwoTurnsDistance();
                             rp.move(0, x - dp.y);
 
                             af.transform(rp, rp);
@@ -2356,7 +2300,6 @@ public class HamiltonianPath extends JComponent {
                             // if cannot, move forward till in bottom left
                             MyPoint tp = new MyPoint(0, 0, sp.getDirection());
 
-                            x = (int) robot.getTwoTurnsDistance();
                             tp.move(0, -(x - dp.y));
 
                             af.transform(tp, tp);
@@ -2370,15 +2313,13 @@ public class HamiltonianPath extends JComponent {
                             break;
                         }
                         case SOUTH: {
-                            int x, y;
+
                             // move forward and turn right till in top right
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3 };
 
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, dp.y);
                             tp2.move(0, dp.y - y);
                             tp3.move(y, dp.y - y);
@@ -2406,9 +2347,6 @@ public class HamiltonianPath extends JComponent {
                             // or do 3 R 1 L???
                             // else if too close, turn left
                             // else, reverse and pass to front slight right
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
                             if (dp.x >= y) {
                                 if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
                                     MyPoint rp = new MyPoint(0, 0, sp.getDirection());
@@ -2604,10 +2542,6 @@ public class HamiltonianPath extends JComponent {
                         case WEST: {
                             // idea: 3 turns to reach dest
                             // else reverse until other case
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
-
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
@@ -2661,10 +2595,8 @@ public class HamiltonianPath extends JComponent {
                     switch (rOrientation) {
                         case NORTH: {
                             // try to reverse till it is in top left
-                            int x;
                             MyPoint tp = new MyPoint(0, 0, sp.getDirection());
-
-                            x = (int) robot.getTwoTurnsDistance();
+                            
                             tp.move(0, x - dp.y);
 
                             af.transform(tp, tp);
@@ -2677,7 +2609,6 @@ public class HamiltonianPath extends JComponent {
                             // if cannot, move forward till in bottom left
                             tp = new MyPoint(0, 0, sp.getDirection());
 
-                            x = (int) robot.getTwoTurnsDistance();
                             tp.move(0, -(x - dp.y));
 
                             af.transform(tp, tp);
@@ -2691,15 +2622,13 @@ public class HamiltonianPath extends JComponent {
                             break;
                         }
                         case SOUTH: {
-                            int x, y;
+
                             // move forward and turn left till in top left
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint[] tpArray = { sp, tp1, tp2, tp3 };
 
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
                             tp1.move(0, dp.y - y);
                             tp2.move(0, dp.y - x);
                             tp3.move(-y, dp.y - x);
@@ -2723,9 +2652,6 @@ public class HamiltonianPath extends JComponent {
                         case EAST: {
                             // idea: 3 turns to reach dest
                             // else, reverse until other case
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
 
                             MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
@@ -2775,9 +2701,7 @@ public class HamiltonianPath extends JComponent {
                             // or do 3 L 1 R???
                             // if too close, turn right
                             // else, reverse and pass to front slight left
-                            int x, y;
-                            x = (int) robot.getTwoTurnsDistance();
-                            y = (int) robot.getTwoTurnsDistance() / 2;
+                            
                             if (dp.x <= -y) {
                                 if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
                                     MyPoint rp = new MyPoint(0, 0, sp.getDirection());
