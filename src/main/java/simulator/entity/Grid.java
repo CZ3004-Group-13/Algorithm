@@ -112,8 +112,8 @@ public class Grid extends JPanel {
         for (Rectangle2D o : obs) {
             if (o.intersectsLine(line)) {
                 // System.out.println("Line collide:");
-                // System.out.println("p1" + p1.x + " " + p1.y);
-                // System.out.println("p2" + p2.x + " " + p2.y);
+                // System.out.println("p1 " + p1.x + " " + p1.y);
+                // System.out.println("p2 " + p2.x + " " + p2.y);
                 return true;
             }
         }
