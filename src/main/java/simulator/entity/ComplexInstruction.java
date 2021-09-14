@@ -7,6 +7,18 @@ public class ComplexInstruction {
     private final Instruction instruction;
     private double distance;
 
+    public ComplexInstruction(Instruction instruction, Direction finalDirection) {
+        this.instruction = instruction;
+        this.finalDirection = finalDirection;
+        this.distance = Double.MIN_VALUE;
+    }
+
+    public ComplexInstruction(Instruction instruction, Direction finalDirection, double distance) {
+        this.instruction = instruction;
+        this.finalDirection = finalDirection;
+        this.distance = distance;
+    }
+
     public Instruction getInstruction() {
         return instruction;
     }
@@ -28,18 +40,6 @@ public class ComplexInstruction {
         REVERSE,
         FORWARD_LEFT,
         FORWARD_RIGHT,
-    }
-
-    public ComplexInstruction(Instruction instruction, Direction finalDirection) {
-        this.instruction = instruction;
-        this.finalDirection = finalDirection;
-        this.distance = Double.MIN_VALUE;
-    }
-
-    public ComplexInstruction(Instruction instruction, Direction finalDirection, double distance) {
-        this.instruction = instruction;
-        this.finalDirection = finalDirection;
-        this.distance = distance;
     }
 
 }
