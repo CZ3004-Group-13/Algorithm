@@ -21,8 +21,9 @@ public class Reader {
                 if (strCurrentLine.startsWith("Objects")) {
                     bufferTime = new StringBuilder();
                 } else {
-                    if (!strCurrentLine.equals("\n")) {
-                        bufferTime.append(strCurrentLine + System.lineSeparator());
+                    if (!strCurrentLine.equals("")) {
+                        // This line contains information.
+                        bufferTime.append(strCurrentLine).append(System.lineSeparator());
                     }
                 }
             }
