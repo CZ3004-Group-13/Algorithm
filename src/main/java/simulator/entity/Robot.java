@@ -289,7 +289,7 @@ public class Robot extends JComponent {
         return false;
     }
 
-    public void letsGo(double frames) {
+    public boolean letsGo(double frames) {
         if (!this.durationQueue.isEmpty()) {
             long timeDelta = (long) (1000000000 * frames / TARGET_FPS);
             long durationLeft = this.durationQueue.get(0);
@@ -332,7 +332,11 @@ public class Robot extends JComponent {
                 this.movementQueue.remove(0);
                 this.directionQueue.remove(0);
             }
+
+            return false;
         }
+
+        return true;
     }
 
     public void addToQueue(String command, double durationInSecs, Direction d) {

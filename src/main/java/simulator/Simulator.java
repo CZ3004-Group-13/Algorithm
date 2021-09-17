@@ -11,6 +11,7 @@ import simulator.entity.Robot;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
@@ -39,6 +40,8 @@ class Simulator {
     private Queue<ComplexInstruction> instructions = new LinkedList<>();
     private Thread movementsLoop;
     private boolean isRunning2 = false;
+    private long startTime;
+    private JLabel timerLabel = new JLabel();
 
     public static void main(String[] args) {
 
@@ -161,6 +164,7 @@ class Simulator {
 
         JButton startMovementsButton = new JButton("Start Movements");
         startMovementsButton.addActionListener(e -> {
+            startTime = System.nanoTime();
             startMovements();
             isRunning2 = true;
             movementsLoop.start();
@@ -177,6 +181,7 @@ class Simulator {
         rightPanel.add(resetButton);
         rightPanel.add(drawButton2);
         rightPanel.add(startMovementsButton);
+        rightPanel.add(timerLabel);
 
         jFrame.pack();
         jFrame.setLocationRelativeTo(null);
@@ -1076,9 +1081,14 @@ class Simulator {
                     lastFpsTime = 0;
                 }
 
-                robot.letsGo(delta);
+                if (robot.letsGo(delta)) {
+                    break;
+                }
 
                 robot.repaint();
+                timerLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+                DecimalFormat df = new DecimalFormat("#.##");
+                timerLabel.setText("Time:" + df.format((double) (System.nanoTime() - startTime) / 1000000000) + "s");
 
                 try {
                     Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
