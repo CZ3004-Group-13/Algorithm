@@ -73,25 +73,24 @@ public class ImageDetectionProcessor {
             System.out.println("Image on the right!");
         }
 
-        int area = width * height;
-
-        if (area > 100000) {
+        if (height > 450) {
             System.out.println("Image is about less than 15 cm away!");
-        } else if (area > 70000) {
+        } else if (height > 340) {
             System.out.println("Image is about 20 cm away!");
-        } else if (area > 45000) {
+        } else if (height > 260) {
             System.out.println("Image is about 25 cm away!");
-        } else if (area > 35000) {
+        } else if (height > 210) {
             System.out.println("Image is about 30 cm away!");
-        } else if (area > 28000) {
+        } else if (height > 190) {
             System.out.println("Image is about 35 cm away!");
-        } else if (area > 21000) {
+        } else if (height > 160) {
             System.out.println("Image is about 40 cm away!");
-        } else if (area > 17000) {
+        } else if (height > 140) {
             System.out.println("Image is about 45 cm away!");
         } else {
             System.out.println("Image is more than 50 cm away!");
         }
+        System.out.println(height);
 
         double slantness = (double) height / width;
 
