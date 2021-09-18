@@ -95,8 +95,6 @@ public class ImageDetectionProcessor {
 
         double slantness = (double) height / width;
 
-        // System.out.println(slantness);
-
         if (slantness < 1.25) {
             System.out.println("Not slanted");
         } else {
