@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Reader {
+public class ImageDetectionProcessor {
     private static final String COMMAND = "C:\\darknet\\darknet-master\\build\\darknet\\x64\\darknet.exe detector demo data/yolov4.data cfg/yolov4_custom_test.cfg backup/yolov4_custom_train_final.weights -c 1 -thresh 0.9 -ext_output";
     private static final String DIRECTORY = "C:\\darknet\\darknet-master\\build\\darknet\\x64";
     private static final String OBJECTS = "Objects";
@@ -12,7 +12,7 @@ public class Reader {
     private static final String EMPTY_STRING = "";
 
     public static void main(String[] args) {
-        new Reader().processOutputDirectly();
+        new ImageDetectionProcessor().processOutputDirectly();
     }
 
     /**
