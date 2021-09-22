@@ -44,12 +44,19 @@ public class ImageDetectionProcessor {
                     if (isNextLines && !line.equals(EMPTY_STRING)) {
                         isThereItems = true;
                         String[] items = line.split("[:)]");
+                        String item = items[0];
                         int left = Integer.parseInt(items[2].trim().split(SPACE, 2)[0]);
                         int top = Integer.parseInt(items[3].trim().split(SPACE, 2)[0]);
                         int width = Integer.parseInt(items[4].trim().split(SPACE, 2)[0]);
                         int height = Integer.parseInt(items[5].trim().split("\\)", 2)[0]);
-                        processInput(left, width, height);
-                        System.out.println(items[0] + " Left: " + left + " Top: " + top + " Width: " + width + " Height: " + height);
+
+                        // This is the command that is output
+                        String command = processInput(item, left, width, height);
+                        if (command.equals("s")) {
+                            return;
+                        }
+
+                        System.out.println(item + " Left: " + left + " Top: " + top + " Width: " + width + " Height: " + height);
                     }
 
                     // Only print detections if it is past 1 second since previous print
@@ -64,7 +71,7 @@ public class ImageDetectionProcessor {
         }).start();
     }
 
-    private void processInput(int left, int width, int height) {
+    private String processInput(String item, int left, int width, int height) {
         if (left < 170) {
             System.out.println("Image on the left!");
         } else if (left < 346) {
@@ -99,5 +106,8 @@ public class ImageDetectionProcessor {
         } else {
             System.out.println("Very slanted");
         }
+
+        return item.equals("circle") ? "s" : "g";
+        //return item.equals("bullseye") ? "g" : "s";
     }
 }
