@@ -65,22 +65,16 @@ public class ImageDetectionProcessor {
                         // This is the command that is output
                         String command = processInput(item, left, width, height);
 
-                        conn.sendMsg(command, "type");
                         // send command to rpi
-                        String reply = conn.recvMsg();
+                        conn.sendMsg(command, "type");
 
-                        /*if (reply.equals("s")) {
-                            conn.closeConnection();
-                            return;
-                        }*/
-
-                        if (command.equals("s")) {
-                            System.out.print("error?");
-                            conn.closeConnection();
-                            return;
-                        }
 
                         System.out.println(item + " Left: " + left + " Top: " + top + " Width: " + width + " Height: " + height);
+
+                        if (command.equals("s")) {
+                            //conn.closeConnection();
+                            return;
+                        }
                     }
 
                     // Only print detections if it is past 1 second since previous print
@@ -131,7 +125,7 @@ public class ImageDetectionProcessor {
             System.out.println("Very slanted");
         }
 
-        return item.equals("circle") ? "s" : "g";
+        return item.equals("stop") ? "s" : "g";
         //return item.equals("bullseye") ? "g" : "s";
     }
 }
