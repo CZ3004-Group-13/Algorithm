@@ -81,11 +81,10 @@ public class Connection {
         // logger.log(Level.FINE, "Sending a message...");
 
         try {
-            String outputMsg = "";
             // TODO: Define string tokens for sending messages
 
             // logger.log(Level.FINE, "Sending out message: " + outputMsg);
-            writer.write(outputMsg);
+            writer.write(msg);
             writer.flush();
         } catch (IOException e) {
             logger.log(Level.FINE, "sendMsg() --> IOException");

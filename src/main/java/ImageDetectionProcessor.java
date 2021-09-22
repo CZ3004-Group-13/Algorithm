@@ -1,3 +1,5 @@
+import simulator.connection.Connection;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +12,7 @@ public class ImageDetectionProcessor {
     private static final String FPS = "FPS";
     private static final String SPACE = " ";
     private static final String EMPTY_STRING = "";
+    private static final Connection conn = Connection.getConnection();
 
     public static void main(String[] args) {
         new ImageDetectionProcessor().RunImageRecognition();
@@ -29,6 +32,11 @@ public class ImageDetectionProcessor {
                 String line;
                 boolean isNextLines = false;
                 boolean isThereItems = false;
+
+                if (!conn.isConnected()) {
+                    conn.openConnection("192.168.13.13", 3053);
+                }
+
                 while ((line = in.readLine()) != null) {
                     if (line.startsWith(FPS)) {
 
@@ -52,7 +60,19 @@ public class ImageDetectionProcessor {
 
                         // This is the command that is output
                         String command = processInput(item, left, width, height);
+
+                        conn.sendMsg(command, "type");
+                        // send command to rpi
+                        String reply = conn.recvMsg();
+
+                        if (reply.equals("s")) {
+                            conn.closeConnection();
+                            return;
+                        }
+
                         if (command.equals("s")) {
+                            System.out.print("error?");
+                            conn.closeConnection();
                             return;
                         }
 
