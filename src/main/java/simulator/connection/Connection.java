@@ -114,6 +114,6 @@ public class Connection {
     }
 
     public boolean isConnected() {
-        return socket.isConnected();
+        return socket != null && socket.isConnected();
     }
 }

@@ -34,7 +34,11 @@ public class ImageDetectionProcessor {
                 boolean isThereItems = false;
 
                 if (!conn.isConnected()) {
+                    System.out.println("opening connection");
                     conn.openConnection("192.168.13.13", 3053);
+                    if (conn.isConnected()) {
+                        System.out.println("connection opened");
+                    }
                 }
 
                 while ((line = in.readLine()) != null) {
@@ -65,10 +69,10 @@ public class ImageDetectionProcessor {
                         // send command to rpi
                         String reply = conn.recvMsg();
 
-                        if (reply.equals("s")) {
+                        /*if (reply.equals("s")) {
                             conn.closeConnection();
                             return;
-                        }
+                        }*/
 
                         if (command.equals("s")) {
                             System.out.print("error?");
