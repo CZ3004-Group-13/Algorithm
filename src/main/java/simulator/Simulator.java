@@ -45,11 +45,12 @@ class Simulator {
 
     public static void main(String[] args) {
 
-        boolean rpiConnect = false;
+        boolean rpiConnect = true; //set to true to test connection
 
         if (rpiConnect) {
             Connection connection = Connection.getConnection();
             connection.openConnection(host, port);
+            connection.sendMsg("C", "type"); //C take pic
         }
 
         // need to use this utility to call the initial method that draws GUI
