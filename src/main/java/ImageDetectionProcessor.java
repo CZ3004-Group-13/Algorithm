@@ -22,7 +22,7 @@ public class ImageDetectionProcessor {
      * Runs image recognition and directly processes input from command line.
      */
     private void RunImageRecognition() {
-         new Thread(() -> {
+        new Thread(() -> {
             try {
                 long timeNow = System.currentTimeMillis();
                 ProcessBuilder builder = new ProcessBuilder(COMMAND.split(SPACE));
@@ -66,13 +66,14 @@ public class ImageDetectionProcessor {
                         String command = processInput(item, left, width, height);
 
                         // send command to rpi
-                        conn.sendMsg(command, "type");
-
-
-                        System.out.println(item + " Left: " + left + " Top: " + top + " Width: " + width + " Height: " + height);
+                        if (command != null) {
+                            conn.sendMsg(command, "type");
+                        }
+                        System.out.println(
+                                item + " Left: " + left + " Top: " + top + " Width: " + width + " Height: " + height);
 
                         if (command.equals("s")) {
-                            //conn.closeConnection();
+                            // conn.closeConnection();
                             return;
                         }
                     }
@@ -125,7 +126,15 @@ public class ImageDetectionProcessor {
             System.out.println("Very slanted");
         }
 
-        return item.equals("stop") ? "s" : "g";
-        //return item.equals("bullseye") ? "g" : "s";
+        // return item.equals("stop") ? "s" : "g";
+        switch (item) {
+            case "stop":
+                return "s";
+            case "bullseye":
+                return "g";
+            default:
+                return "?";
+        }
+        // return item.equals("bullseye") ? "g" : "s";
     }
 }
