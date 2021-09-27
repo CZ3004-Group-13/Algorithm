@@ -1,12 +1,14 @@
 import simulator.connection.Connection;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 public class ImageDetectionProcessor {
-    private static final String COMMAND = "C:\\darknet\\darknet-master\\build\\darknet\\x64\\darknet.exe detector demo data/yolov4.data cfg/yolov4_custom_test.cfg backup/yolov4_custom_train_final.weights -c 1 -thresh 0.9 -ext_output";
+    private static final String COMMAND = "C:\\darknet\\darknet-master\\build\\darknet\\x64\\darknet.exe detector test data/yolov4.data cfg/yolov4_custom_test.cfg backup/yolov4_custom_train_final.weights";
     private static final String DIRECTORY = "C:\\darknet\\darknet-master\\build\\darknet\\x64";
     private static final String OBJECTS = "Objects";
     private static final String FPS = "FPS";
@@ -28,20 +30,25 @@ public class ImageDetectionProcessor {
                 ProcessBuilder builder = new ProcessBuilder(COMMAND.split(SPACE));
                 builder.directory(new File(DIRECTORY));
                 builder.redirectErrorStream(true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(builder.start().getInputStream()));
+                Process process = builder.start();
+                BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line;
                 boolean isNextLines = false;
                 boolean isThereItems = false;
 
-                if (!conn.isConnected()) {
+                /*if (!conn.isConnected()) {
                     System.out.println("opening connection");
                     conn.openConnection("192.168.13.13", 3053);
                     if (conn.isConnected()) {
                         System.out.println("connection opened");
                     }
-                }
+                }*/
 
                 while ((line = in.readLine()) != null) {
+                    System.out.println(line);
+                    if (line.startsWith(" seen")) {
+                        break;
+                    }
                     if (line.startsWith(FPS)) {
 
                         // Print new line to separate between detections
@@ -83,6 +90,15 @@ public class ImageDetectionProcessor {
                         isNextLines = true;
                     }
                 }
+
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+                out.write("examples\\test_image_1.jpg\n");
+                out.flush();
+                while ((line = in.readLine()) != null) {
+                    System.out.println(line);
+                    char[] arr = line.toCharArray();
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
