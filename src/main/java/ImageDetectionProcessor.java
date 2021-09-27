@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 public class ImageDetectionProcessor {
-    private static final String COMMAND = "C:\\darknet\\darknet-master\\build\\darknet\\x64\\darknet.exe detector test data/yolov4.data cfg/yolov4_custom_test.cfg backup/yolov4_custom_train_final.weights";
+    private static final String COMMAND = "C:\\darknet\\darknet-master\\build\\darknet\\x64\\darknet.exe detector test data/yolov4.data cfg/yolov4_custom_test.cfg backup/yolov4_custom_train_final.weights http://192.168.13.13/html/cam_pic.php";
     private static final String DIRECTORY = "C:\\darknet\\darknet-master\\build\\darknet\\x64";
     private static final String OBJECTS = "Objects";
     private static final String FPS = "FPS";
@@ -91,13 +91,13 @@ public class ImageDetectionProcessor {
                     }
                 }
 
-                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+                /*BufferedWriter out = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
                 out.write("examples\\test_image_1.jpg\n");
                 out.flush();
                 while ((line = in.readLine()) != null) {
                     System.out.println(line);
                     char[] arr = line.toCharArray();
-                }
+                }*/
 
             } catch (IOException e) {
                 e.printStackTrace();
