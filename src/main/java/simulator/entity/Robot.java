@@ -49,8 +49,11 @@ public class Robot extends JComponent {
     private ArrayList<String> movementQueue = new ArrayList<>();
     private ArrayList<Long> durationQueue = new ArrayList<>(); // in seconds?
     private ArrayList<Direction> directionQueue = new ArrayList<>(); // in seconds?
+    private ArrayList<Double> distanceQueue = new ArrayList<>();
 
-    public Robot(Dimension size, Point startingPoint, double distanceBetweenFrontBackWheels) {
+    private int ENVIRONMENT_SCALING_FACTOR;
+
+    public Robot(Dimension size, Point startingPoint, double distanceBetweenFrontBackWheels, int ENVIRONMENT_SCALING_FACTOR) {
         logger = Logger.getLogger(Robot.class.getName());
 
         this.size = size;
@@ -67,6 +70,7 @@ public class Robot extends JComponent {
         this.MAX_TURNING_RADIUS = Math
                 .abs(this.distanceBetweenFrontBackWheels * Math.tan(Math.toRadians(this.MAX_TURNING_ANGLE)));
 
+        this.ENVIRONMENT_SCALING_FACTOR = ENVIRONMENT_SCALING_FACTOR;
         setOpaque(false);
     }
 
@@ -339,10 +343,11 @@ public class Robot extends JComponent {
         return true;
     }
 
-    public void addToQueue(String command, double durationInSecs, Direction d) {
+    public void addToQueue(String command, double durationInSecs, Direction d, double distance) {
         movementQueue.add(command);
         durationQueue.add((long) (durationInSecs * 1000000000));
         directionQueue.add(d);
+        distanceQueue.add(distance/this.ENVIRONMENT_SCALING_FACTOR);
     }
 
     public void moveForwardTime(long timeDelta) {
@@ -761,11 +766,11 @@ public class Robot extends JComponent {
                 }
                 switch (this.getRelativeDirection(src, dest)) {
                 case BACK:
-                    this.addToQueue("Reverse", this.getDurationForManeuver(dist), Direction.NONE);
+                    this.addToQueue("Reverse", this.getDurationForManeuver(dist), Direction.NONE, dist);
                     justTurned = false;
                     break;
                 case FRONT:
-                    this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE);
+                    this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
                     justTurned = false;
                     break;
                 case NONE:
@@ -785,10 +790,10 @@ public class Robot extends JComponent {
                     dist -= this.getTwoTurnsDistance() / 2;
                     justTurned = false;
                 }
-                this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE);
-                this.addToQueue("Right", 1, Direction.NONE);
-                this.addToQueue("RF", 1000, dest.getDirection());
-                this.addToQueue("Center", 1, Direction.NONE);
+                this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                this.addToQueue("Right", 1, Direction.NONE, -1);
+                this.addToQueue("RF", 1000, dest.getDirection(), -1);
+                this.addToQueue("Center", 1, Direction.NONE, -1);
                 justTurned = true;
                 break;
             case WEST:
@@ -798,10 +803,10 @@ public class Robot extends JComponent {
                     dist -= this.getTwoTurnsDistance() / 2;
                     justTurned = false;
                 }
-                this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE);
-                this.addToQueue("Left", 1, Direction.NONE);
-                this.addToQueue("LF", 1000, dest.getDirection());
-                this.addToQueue("Center", 1, Direction.NONE);
+                this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                this.addToQueue("Left", 1, Direction.NONE, -1);
+                this.addToQueue("LF", 1000, dest.getDirection(), -1);
+                this.addToQueue("Center", 1, Direction.NONE, -1);
                 justTurned = true;
                 break;
             case NONE:
@@ -815,9 +820,12 @@ public class Robot extends JComponent {
     }
 
     public void printGeneratedMovements() {
+        System.out.println("Command \tDuration(s) \tDirection \tDistance(cm)");
         for (int i = 0; i < this.movementQueue.size(); i++) {
-            System.out.println(
-                    this.movementQueue.get(i) + " " + this.durationQueue.get(i) + " " + this.directionQueue.get(i));
+            System.out.println(this.movementQueue.get(i) + "\t\t"
+                    + String.format("%.2f", ((double) this.durationQueue.get(i) / 1000000) / 1000) + "\t\t"
+                    + this.directionQueue.get(i) + "\t\t"
+                    + (this.distanceQueue.get(i) >= 0 ? String.format("%.2f", this.distanceQueue.get(i)) : "-"));
         }
     }
 }

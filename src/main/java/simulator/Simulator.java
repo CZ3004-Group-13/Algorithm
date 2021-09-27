@@ -45,7 +45,7 @@ class Simulator {
 
     public static void main(String[] args) {
 
-        boolean rpiConnect = true; //set to true to test connection
+        boolean rpiConnect = false; //set to true to test connection
 
         if (rpiConnect) {
             Connection connection = Connection.getConnection();
@@ -88,7 +88,7 @@ class Simulator {
         // bigger y is higher up
         // smaller z is higher up
 
-        robot = new Robot(robotModelSize, robotModelStartingPoint, robotModelDistanceBetweenFrontBackWheels);
+        robot = new Robot(robotModelSize, robotModelStartingPoint, robotModelDistanceBetweenFrontBackWheels, ENVIRONMENT_SCALING_FACTOR);
         robot.setSize(environmentModelSize);
         layeredPane.add(robot, 1, 0);
 
@@ -159,7 +159,7 @@ class Simulator {
             hPath.generatePlannedPath(grid, robot);
             hPath.printPlannedPath();
             robot.generateMovements(hPath.getPlannedPath());
-            //     robot.printGeneratedMovements();
+            robot.printGeneratedMovements();
             grid.repaint();
         });
 
