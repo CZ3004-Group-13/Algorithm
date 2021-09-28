@@ -330,6 +330,8 @@ public class Robot extends JComponent {
                 case "Reverse":
                     this.moveBackwardTime(timeDelta);
                     break;
+                case "Reached Obstacle":
+                    break;
                 }
             } else {
                 this.durationQueue.remove(0);
@@ -754,9 +756,14 @@ public class Robot extends JComponent {
         for (int i = 1; i < plannedPath.size(); i++) {
             MyPoint src = plannedPath.get(i - 1);
             MyPoint dest = plannedPath.get(i);
-            // System.out.println("src: " + src.x + " " + src.y);
-            // System.out.println("dest: " + dest.x + " " + dest.y);
-            // System.out.println(this.getRelativeDirection(src, dest));
+            if (dest.getDirection() == Direction.NONE) {
+                this.addToQueue("Reached", 1, Direction.NONE, -1);
+                continue;
+            }
+            if (src.getDirection() == Direction.NONE) {
+                src = plannedPath.get(i-2);
+            }
+
             switch (this.getRelativeOrientation(src, dest)) {
             case NORTH:
                 dist = this.getEuclideanDistance(src, dest);

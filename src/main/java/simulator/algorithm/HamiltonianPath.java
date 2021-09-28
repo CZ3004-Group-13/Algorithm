@@ -285,9 +285,13 @@ public class HamiltonianPath extends JComponent {
         while (i < workingPath.size()) {
             // sp = source point (absolute point)
             sp = (MyPoint) this.plannedPath.get(this.plannedPath.size() - 1).clone();
+            if (sp.getDirection() == Direction.NONE) {
+                sp = (MyPoint) this.plannedPath.get(this.plannedPath.size() - 2).clone();
+            }
 
-            MyPoint point = workingPath.get(i);
-            // take the current working point as destination
+            MyPoint point = null;
+            point = workingPath.get(i);
+            // take the current working point as destination)
 
             RelativeDirection rDirection = robot.getRelativeDirection(sp, point);
             // get destination point's relative direction from source point
@@ -3039,6 +3043,9 @@ public class HamiltonianPath extends JComponent {
             }
 
             i++;
+            if (i == workingPath.size() || point == workingPath.get(i)){
+                this.plannedPath.add(new MyPoint(-999,-999, Direction.NONE));
+            }
         }
         System.out.println("-----GENERATED PATH-----");
         this.determinePolygonPath();
@@ -3064,6 +3071,9 @@ public class HamiltonianPath extends JComponent {
     private void determinePolygonPath() {
         this.plannedPPolygon.reset();
         for (MyPoint p : this.plannedPath) {
+            if (p.x == -999 || p.y == -999){
+                continue;
+            }
             this.plannedPPolygon.addPoint(p.x, p.y);
         }
     }
