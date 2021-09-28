@@ -3084,8 +3084,3 @@ public class HamiltonianPath extends JComponent {
     }
 
 }
-
-// input of Points
-// need to generate the shortest path based on Points
-// need to generated weighted graph
-//

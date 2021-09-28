@@ -113,12 +113,6 @@ class Simulator {
         jFrame.add(rightPanel, BorderLayout.LINE_END);
 
         // add buttons
-        /*JButton drawButton = new JButton("Draw");
-        drawButton.addActionListener(e -> {
-            logger.log(Level.FINE, "Start Button Clicked");
-
-            shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
-        });*/
 
         JButton forwardButton = new JButton("Forward");
         forwardButton.addActionListener(e -> robot.moveForward());
@@ -131,17 +125,6 @@ class Simulator {
 
         JButton rightButton = new JButton("Turn right");
         rightButton.addActionListener(e -> robot.turnRight());
-
-        /*JButton startButton = new JButton("Start");
-        startButton.addActionListener(e -> {
-            setupGameLoop();
-            isRunning = true;
-            gameLoop.start();
-            logger.log(Level.FINE, "Start");
-        });*/
-
-        /*JButton stopButton = new JButton("Stop");
-        stopButton.addActionListener(e -> isRunning = false);*/
 
         JButton resetButton = new JButton("Reset");
         resetButton.addActionListener(e -> {
@@ -156,7 +139,6 @@ class Simulator {
         drawButton2.addActionListener(e -> {
             logger.log(Level.FINE, "Start Button Clicked");
 
-            //     shortestPath = hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts());
             hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts(), true);
             hPath.generatePlannedPath(grid, robot);
             hPath.printPlannedPath();
@@ -207,13 +189,11 @@ class Simulator {
             }
         });
 
-        //rightPanel.add(drawButton);
         rightPanel.add(forwardButton);
         rightPanel.add(backwardButton);
         rightPanel.add(leftButton);
         rightPanel.add(rightButton);
-        /*rightPanel.add(startButton);
-        rightPanel.add(stopButton);*/
+
         rightPanel.add(resetButton);
         rightPanel.add(drawButton2);
         rightPanel.add(startMovementsButton);

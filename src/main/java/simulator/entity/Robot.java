@@ -38,14 +38,8 @@ public class Robot extends JComponent {
     private double turningRadius = 0;
     private double turningAngleDegrees = 0;
     private double thetaWheelsDegree = 0; // with reference to the front of car
-    private int avoidingPhase = 0;
-    private Direction directionToTurnFrom = Direction.NONE;
-    private Direction directionToTurn = Direction.NONE;
-    private Rectangle2D avoidingObstacle;
     private boolean firstTime = true;
 
-    private long startTime;
-    private boolean started = false;
     private ArrayList<String> movementQueue = new ArrayList<>();
     private ArrayList<Long> durationQueue = new ArrayList<>(); // in seconds?
     private ArrayList<Direction> directionQueue = new ArrayList<>(); // in seconds?
