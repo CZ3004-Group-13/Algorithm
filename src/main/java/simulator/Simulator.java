@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
@@ -22,6 +23,7 @@ class Simulator {
     private static final int ENVIRONMENT_SCALING_FACTOR = 3;
     private static final double ROBOT_SIZE = 60;
     private static final int DISTANCE_MARGIN_OF_ERROR = 40;
+    private static Connection connection;
     public static String host = "192.168.13.13";
     public static int port = 3053;
     private final Logger logger = Logger.getLogger(Simulator.class.getName());
@@ -48,7 +50,7 @@ class Simulator {
         boolean rpiConnect = false; //set to true to test connection
 
         if (rpiConnect) {
-            Connection connection = Connection.getConnection();
+            connection = Connection.getConnection();
             connection.openConnection(host, port);
             connection.sendMsg("C", "type"); //C take pic
         }
@@ -172,6 +174,39 @@ class Simulator {
             logger.log(Level.FINE, "Start");
         });
 
+        JButton connectButton = new JButton("Connect to RPI");
+        connectButton.addActionListener(e -> {
+            System.out.println("Connecting");
+            connection = Connection.getConnection();
+            connection.openConnection(host, port);
+            if (connection.isConnected()) {
+                System.out.println("Connection opened");
+                connection.sendMsg("R", "type");
+            }
+        });
+
+        JButton disconnectButton = new JButton("Disconnect from RPI");
+        connectButton.addActionListener(e -> {
+            System.out.println("Disconnecting");
+            connection.closeConnection();
+        });
+
+        JButton sendMovements = new JButton("Send movements");
+        sendMovements.addActionListener(e -> {
+            ArrayList<String> commands = robot.getCommandsToSend();
+            System.out.println("----------Sending movements...");
+            for (String s : commands) {
+                if (s.compareTo("Reached") == 0 ) {
+                    // stop sending commannds for subsequent obstacle
+                    break;
+                }
+                System.out.println(s);
+                if (connection!=null && connection.isConnected()) {
+                    connection.sendMsg(s, "command");
+                }
+            }
+        });
+
         //rightPanel.add(drawButton);
         rightPanel.add(forwardButton);
         rightPanel.add(backwardButton);
@@ -182,6 +217,9 @@ class Simulator {
         rightPanel.add(resetButton);
         rightPanel.add(drawButton2);
         rightPanel.add(startMovementsButton);
+        rightPanel.add(connectButton);
+        rightPanel.add(disconnectButton);
+        rightPanel.add(sendMovements);
         rightPanel.add(timerLabel);
 
         jFrame.pack();

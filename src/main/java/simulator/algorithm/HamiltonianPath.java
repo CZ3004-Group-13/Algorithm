@@ -3043,7 +3043,7 @@ public class HamiltonianPath extends JComponent {
             }
 
             i++;
-            if (i == workingPath.size() || point == workingPath.get(i)){
+            if (i == workingPath.size() || point != workingPath.get(i)){
                 this.plannedPath.add(new MyPoint(-999,-999, Direction.NONE));
             }
         }
