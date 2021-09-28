@@ -22,7 +22,7 @@ public class Robot extends JComponent {
     private final double distanceBetweenFrontBackWheels;
     private final double distancePerTick; // the distance the robot moves per tick
     private final double angleChangePerClick;
-    private final double MAX_TURNING_ANGLE = 45;
+    private final double MAX_TURNING_ANGLE = 25;
     private final Logger logger;
     private Point startingPoint;
     private Point currentLocation;
@@ -63,9 +63,10 @@ public class Robot extends JComponent {
         angleChangePerClick = 5;
 
         this.MAX_TURNING_RADIUS = Math
-                .abs(this.distanceBetweenFrontBackWheels * Math.tan(Math.toRadians(this.MAX_TURNING_ANGLE)));
+                .abs(this.distanceBetweenFrontBackWheels / Math.tan(Math.toRadians(this.MAX_TURNING_ANGLE)));
 
         this.ENVIRONMENT_SCALING_FACTOR = ENVIRONMENT_SCALING_FACTOR;
+        System.out.println(this.MAX_TURNING_RADIUS);
         setOpaque(false);
     }
 
@@ -79,10 +80,6 @@ public class Robot extends JComponent {
         turningRadius = 0;
         turningAngleDegrees = 0;
         thetaWheelsDegree = 0;
-        avoidingPhase = 0;
-        directionToTurnFrom = Direction.NONE;
-        directionToTurn = Direction.NONE;
-        avoidingObstacle = null;
 
         this.repaint();
     }
@@ -459,7 +456,7 @@ public class Robot extends JComponent {
     // based on distance between front and back wheel axis
     private void doWheelsTurned() {
         this.turningRadius = this.thetaWheelsDegree == 0 ? 0
-                : Math.abs(this.distanceBetweenFrontBackWheels * Math.tan(Math.toRadians(this.thetaWheelsDegree)));
+                : Math.abs(this.distanceBetweenFrontBackWheels / Math.tan(Math.toRadians(this.thetaWheelsDegree)));
 
         this.turningAngleDegrees = this.turningRadius == 0 ? 0
                 : Math.toDegrees(this.distancePerTick / this.turningRadius);
