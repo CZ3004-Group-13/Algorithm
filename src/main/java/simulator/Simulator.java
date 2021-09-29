@@ -139,11 +139,11 @@ class Simulator {
         drawButton2.addActionListener(e -> {
             logger.log(Level.FINE, "Start Button Clicked");
 
-            hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts(), true);
+            hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts(), true, grid, robot);
             hPath.generatePlannedPath(grid, robot);
             hPath.printPlannedPath();
             robot.generateMovements(hPath.getPlannedPath());
-        //     robot.printGeneratedMovements();
+            robot.printGeneratedMovements();
             grid.repaint();
         });
 
@@ -1112,7 +1112,7 @@ class Simulator {
                 try {
                     Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                //     e.printStackTrace();
                 }
 
             }

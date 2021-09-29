@@ -103,7 +103,9 @@ public class Grid extends JPanel {
                 return true;
             }
         }
-        return checkIfExceedsBorders(p);
+        // return checkIfExceedsBorders(p);
+        // remove cause allowed to go out of bounds
+        return false;
     }
 
     public boolean checkIfLineCollides(Point p1, Point p2) {
@@ -118,7 +120,9 @@ public class Grid extends JPanel {
                 return true;
             }
         }
-        return checkIfExceedsBorders(p1) || checkIfExceedsBorders(p2);
+        // return checkIfExceedsBorders(p1) || checkIfExceedsBorders(p2);
+        // remove cause it is allowed to leave borders
+        return false;
     }
 
     public boolean checkIfPathCollides(Point[] pArray) {

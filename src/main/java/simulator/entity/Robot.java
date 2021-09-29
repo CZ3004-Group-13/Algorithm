@@ -663,9 +663,9 @@ public class Robot extends JComponent {
 
         int twoTurnDistance = (int) this.MAX_TURNING_RADIUS * 2;
         if (-this.size.width / 2 <= pp.getX() && this.size.width / 2 >= pp.getX()) {
-            if (pp.getY() <= -30) {
+            if (pp.getY() <= 0) {
                 return RelativeDirection.FRONT;
-            } else if (pp.getY() >= -30) {
+            } else if (pp.getY() >= 0) {
                 return RelativeDirection.BACK;
             }
         } else if (Math.abs(pp.getY()) < twoTurnDistance) {
@@ -768,11 +768,19 @@ public class Robot extends JComponent {
                     }
                     switch (this.getRelativeDirection(src, dest)) {
                         case BACK:
-                            this.addToQueue("Reverse", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                            if (dist > 0) {
+                                this.addToQueue("Reverse", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                            } else {
+                                this.addToQueue("Forward", this.getDurationForManeuver(-dist), Direction.NONE, dist);
+                            }
                             justTurned = false;
                             break;
                         case FRONT:
+                        if (dist > 0) {
                             this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                        } else {
+                            this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, dist);
+                        }
                             justTurned = false;
                             break;
                         case NONE:
@@ -792,7 +800,11 @@ public class Robot extends JComponent {
                         dist -= this.MAX_TURNING_RADIUS;
                         justTurned = false;
                     }
-                    this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                    if (dist > 0) {
+                        this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                    } else {
+                        this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, dist);
+                    }
                     this.addToQueue("Right", 1, Direction.NONE, -1);
                     this.addToQueue("RF", 1000, dest.getDirection(), -1);
                     this.addToQueue("Center", 1, Direction.NONE, -1);
@@ -805,7 +817,11 @@ public class Robot extends JComponent {
                         dist -= this.MAX_TURNING_RADIUS;
                         justTurned = false;
                     }
-                    this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                    if (dist > 0) {
+                        this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                    } else {
+                        this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, dist);
+                    }
                     this.addToQueue("Left", 1, Direction.NONE, -1);
                     this.addToQueue("LF", 1000, dest.getDirection(), -1);
                     this.addToQueue("Center", 1, Direction.NONE, -1);
