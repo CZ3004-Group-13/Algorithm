@@ -143,7 +143,7 @@ class Simulator {
             hPath.generatePlannedPath(grid, robot);
             hPath.printPlannedPath();
             robot.generateMovements(hPath.getPlannedPath());
-            robot.printGeneratedMovements();
+        //     robot.printGeneratedMovements();
             grid.repaint();
         });
 
@@ -189,10 +189,10 @@ class Simulator {
             }
         });
 
-        rightPanel.add(forwardButton);
-        rightPanel.add(backwardButton);
-        rightPanel.add(leftButton);
-        rightPanel.add(rightButton);
+        // rightPanel.add(forwardButton);
+        // rightPanel.add(backwardButton);
+        // rightPanel.add(leftButton);
+        // rightPanel.add(rightButton);
 
         rightPanel.add(resetButton);
         rightPanel.add(drawButton2);

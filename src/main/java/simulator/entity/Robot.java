@@ -22,7 +22,8 @@ public class Robot extends JComponent {
     private final double distanceBetweenFrontBackWheels;
     private final double distancePerTick; // the distance the robot moves per tick
     private final double angleChangePerClick;
-    private final double MAX_TURNING_ANGLE = 25;
+    private final double MAX_TURNING_ANGLE = 23.10;
+    // private final double MAX_TURNING_ANGLE = 45;
     private final Logger logger;
     private Point startingPoint;
     private Point currentLocation;
@@ -85,7 +86,7 @@ public class Robot extends JComponent {
     }
 
     public double getTwoTurnsDistance() {
-        return MAX_TURNING_RADIUS * 2.4;
+        return MAX_TURNING_RADIUS * 2;
     }
 
     // can combine with turnRight and accept one parameter for the angle to turn
@@ -342,7 +343,7 @@ public class Robot extends JComponent {
         durationQueue.add((long) (durationInSecs * 1000000000));
         directionQueue.add(direction);
         distanceQueue
-                .add(distance / this.ENVIRONMENT_SCALING_FACTOR > 0 ? distance / this.ENVIRONMENT_SCALING_FACTOR : 0);
+                .add((distance / this.ENVIRONMENT_SCALING_FACTOR) > 0 ? distance / this.ENVIRONMENT_SCALING_FACTOR : 0);
     }
 
     public void moveForwardTime(long timeDelta) {
@@ -459,7 +460,7 @@ public class Robot extends JComponent {
                 : Math.abs(this.distanceBetweenFrontBackWheels / Math.tan(Math.toRadians(this.thetaWheelsDegree)));
 
         this.turningAngleDegrees = this.turningRadius == 0 ? 0
-                : Math.toDegrees(this.distancePerTick / this.turningRadius);
+                : Math.toDegrees(this.distancePerTick / this.turningRadius) * 1.2;
         this.turningAngleDegrees = this.thetaWheelsDegree > 0 ? turningAngleDegrees : -turningAngleDegrees;
     }
 
@@ -660,11 +661,11 @@ public class Robot extends JComponent {
         // System.out.println("pp: " + pp.getY() + " " + pp.y + " " +
         // this.getTwoTurnsDistance());
 
-        int twoTurnDistance = (int) this.getTwoTurnsDistance();
+        int twoTurnDistance = (int) this.MAX_TURNING_RADIUS * 2;
         if (-this.size.width / 2 <= pp.getX() && this.size.width / 2 >= pp.getX()) {
-            if (pp.getY() <= 0) {
+            if (pp.getY() <= -30) {
                 return RelativeDirection.FRONT;
-            } else if (pp.getY() >= 0) {
+            } else if (pp.getY() >= -30) {
                 return RelativeDirection.BACK;
             }
         } else if (Math.abs(pp.getY()) < twoTurnDistance) {
@@ -741,6 +742,23 @@ public class Robot extends JComponent {
         return Math.sqrt(Math.pow(Math.abs(a.getX() - b.getX()), 2) + Math.pow(Math.abs(a.getY() - b.getY()), 2));
     }
 
+    double getForwardDistance(MyPoint a, MyPoint b) {
+        switch (a.getDirection()) {
+            case NORTH:
+            case SOUTH:
+                return Math.abs(a.getY() - b.getY());
+            case WEST:
+            case EAST:
+                return Math.abs(a.getX() - b.getX());
+            case NONE:
+                break;
+            default:
+                break;
+        }
+
+        return 0;
+    }
+
     public void generateMovements(ArrayList<MyPoint> plannedPath) {
         this.movementQueue.clear();
         this.durationQueue.clear();
@@ -761,10 +779,10 @@ public class Robot extends JComponent {
             switch (this.getRelativeOrientation(src, dest)) {
                 case NORTH:
                     dist = this.getEuclideanDistance(src, dest);
-                    if (justTurned) {
-                        dist -= this.getTwoTurnsDistance() / 2;
-                        justTurned = false;
-                    }
+                    // if (justTurned) {
+                    //     dist -= this.MAX_TURNING_RADIUS;
+                    //     justTurned = false;
+                    // }
                     switch (this.getRelativeDirection(src, dest)) {
                         case BACK:
                             this.addToQueue("Reverse", this.getDurationForManeuver(dist), Direction.NONE, dist);
@@ -785,12 +803,12 @@ public class Robot extends JComponent {
                     // this.addToQueue("Reverse", this.getDurationForManeuver(dist));
                     break;
                 case EAST:
-                    dist = this.getEuclideanDistance(src, dest);
-                    dist -= this.getTwoTurnsDistance() / 2;
-                    if (justTurned) {
-                        dist -= this.getTwoTurnsDistance() / 2;
-                        justTurned = false;
-                    }
+                    dist = this.getForwardDistance(src, dest);
+                    // dist -= this.MAX_TURNING_RADIUS;
+                    // if (justTurned) {
+                    //     dist -= this.MAX_TURNING_RADIUS;
+                    //     justTurned = false;
+                    // }
                     this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
                     this.addToQueue("Right", 1, Direction.NONE, -1);
                     this.addToQueue("RF", 1000, dest.getDirection(), -1);
@@ -798,12 +816,12 @@ public class Robot extends JComponent {
                     justTurned = true;
                     break;
                 case WEST:
-                    dist = this.getEuclideanDistance(src, dest);
-                    dist -= this.getTwoTurnsDistance() / 2;
-                    if (justTurned) {
-                        dist -= this.getTwoTurnsDistance() / 2;
-                        justTurned = false;
-                    }
+                    dist = this.getForwardDistance(src, dest);
+                    // dist -= this.MAX_TURNING_RADIUS;
+                    // if (justTurned) {
+                    //     dist -= this.MAX_TURNING_RADIUS;
+                    //     justTurned = false;
+                    // }
                     this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
                     this.addToQueue("Left", 1, Direction.NONE, -1);
                     this.addToQueue("LF", 1000, dest.getDirection(), -1);
