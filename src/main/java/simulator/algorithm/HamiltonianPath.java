@@ -386,7 +386,7 @@ public class HamiltonianPath extends JComponent {
                     MyPoint tp2 = new MyPoint(0, 0, sp.getDirection());
                     MyPoint[] tpArray2 = {sp, tp1, tp2};
 
-                    tp1.move(turnRadius1, -turnRadius1);
+                    tp1.move(0, -turnRadius1);
                     tp2.move(turnRadius1, -turnRadius1);
                     tp1.rotateRight90();
                     tp2.rotateRight90();
