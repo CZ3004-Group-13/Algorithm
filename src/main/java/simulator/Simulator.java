@@ -48,11 +48,11 @@ class Simulator {
     public static void main(String[] args) {
 
         boolean rpiConnect = false; //set to true to test connection
+        connection = Connection.getConnection();
 
         if (rpiConnect) {
-            connection = Connection.getConnection();
             connection.openConnection(host, port);
-            connection.sendMsg("C", "type"); //C take pic
+        //     connection.sendMsg("C", "type"); //C take pic
         }
 
         // need to use this utility to call the initial method that draws GUI
@@ -158,17 +158,19 @@ class Simulator {
 
         JButton connectButton = new JButton("Connect to RPI");
         connectButton.addActionListener(e -> {
-            System.out.println("Connecting");
-            connection = Connection.getConnection();
-            connection.openConnection(host, port);
-            if (connection.isConnected()) {
-                System.out.println("Connection opened");
-                connection.sendMsg("R", "type");
-            }
+                System.out.println("Connecting");
+                if (!connection.isConnected()) {
+                        connection = Connection.getConnection();
+                        connection.openConnection(host, port);
+                }
+                if (connection.isConnected()) {
+                        System.out.println("Connection opened");
+                        // connection.sendMsg("R", "type");
+                }
         });
 
         JButton disconnectButton = new JButton("Disconnect from RPI");
-        connectButton.addActionListener(e -> {
+        disconnectButton.addActionListener(e -> {
             System.out.println("Disconnecting");
             connection.closeConnection();
         });
@@ -177,16 +179,18 @@ class Simulator {
         sendMovements.addActionListener(e -> {
             ArrayList<String> commands = robot.getCommandsToSend();
             System.out.println("----------Sending movements...");
+            String concatCommand = "";
             for (String s : commands) {
                 if (s.compareTo("Reached") == 0 ) {
                     // stop sending commannds for subsequent obstacle
                     break;
                 }
-                System.out.println(s);
-                if (connection!=null && connection.isConnected()) {
-                    connection.sendMsg(s, "command");
-                }
+                concatCommand += s + '|';
             }
+                System.out.println(concatCommand);
+                if (connection != null && connection.isConnected()) {
+                        connection.sendMsg(concatCommand, "command");
+                }
         });
 
         // rightPanel.add(forwardButton);

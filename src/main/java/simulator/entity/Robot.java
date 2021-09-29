@@ -758,7 +758,6 @@ public class Robot extends JComponent {
             if (src.getDirection() == Direction.NONE) {
                 src = plannedPath.get(i - 2);
             }
-
             switch (this.getRelativeOrientation(src, dest)) {
                 case NORTH:
                     dist = this.getEuclideanDistance(src, dest);
@@ -771,16 +770,16 @@ public class Robot extends JComponent {
                             if (dist > 0) {
                                 this.addToQueue("Reverse", this.getDurationForManeuver(dist), Direction.NONE, dist);
                             } else {
-                                this.addToQueue("Forward", this.getDurationForManeuver(-dist), Direction.NONE, dist);
+                                this.addToQueue("Forward", this.getDurationForManeuver(-dist), Direction.NONE, -dist);
                             }
                             justTurned = false;
                             break;
                         case FRONT:
-                        if (dist > 0) {
-                            this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
-                        } else {
-                            this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, dist);
-                        }
+                            if (dist > 0) {
+                                this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                            } else {
+                                this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, -dist);
+                            }
                             justTurned = false;
                             break;
                         case NONE:
@@ -803,7 +802,7 @@ public class Robot extends JComponent {
                     if (dist > 0) {
                         this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
                     } else {
-                        this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, dist);
+                        this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, -dist);
                     }
                     this.addToQueue("Right", 1, Direction.NONE, -1);
                     this.addToQueue("RF", 1000, dest.getDirection(), -1);
@@ -820,7 +819,7 @@ public class Robot extends JComponent {
                     if (dist > 0) {
                         this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
                     } else {
-                        this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, dist);
+                        this.addToQueue("Reverse", this.getDurationForManeuver(-dist), Direction.NONE, -dist);
                     }
                     this.addToQueue("Left", 1, Direction.NONE, -1);
                     this.addToQueue("LF", 1000, dest.getDirection(), -1);
@@ -849,40 +848,120 @@ public class Robot extends JComponent {
 
     public ArrayList<String> getCommandsToSend() {
         ArrayList<String> commandList = new ArrayList<String>();
-        String dist = "0";
+        ArrayList<Double> distanceList = new ArrayList<Double>();
+        double dist = 0;
         String command = null;
         for (int i = 0; i < this.movementQueue.size(); i++) {
-            dist = String.format("%.2f", this.distanceQueue.get(i));
+            dist = this.distanceQueue.get(i) / this.ENVIRONMENT_SCALING_FACTOR;
             command = null;
 
             switch (this.movementQueue.get(i)) {
                 case "Forward":
-                    if (this.distanceQueue.get(i) > 0) {
+                    if (this.distanceQueue.get(i) / this.ENVIRONMENT_SCALING_FACTOR > 0) {
                         command = "w";
                     }
                     break;
                 case "Reverse":
-                    if (this.distanceQueue.get(i) > 0) {
+                    if (this.distanceQueue.get(i) / this.ENVIRONMENT_SCALING_FACTOR > 0) {
                         command = "s";
                     }
                     break;
                 case "LF":
+                    // 34 - 21 = 13
+                    commandList.add("w");
+                    distanceList.add(13.0);
                     command = "a";
                     break;
                 case "RF":
+                    // 34 - 21 = 13
+                    commandList.add("w");
+                    distanceList.add(13.0);
                     command = "d";
                     break;
                 case "Reached":
-                    command = "Reached";
-                    dist = "";
+                    command = "R";
+                    dist = 0;
                     break;
                 default:
                     break;
             }
 
             if (command != null) {
-                commandList.add(command + dist);
+                commandList.add(command);
+                distanceList.add(dist);
             }
+        }
+
+        int i = 1;
+        while (i < commandList.size()) {
+            String commandOne = commandList.get(i - 1);
+            String commandTwo = commandList.get(i);
+            if (commandTwo.compareTo("w") == 0) {
+                if (commandOne.compareTo("w") == 0) {
+                    commandList.remove(i);
+                    commandList.remove(i - 1);
+                    double newDist = distanceList.get(i) + distanceList.get(i - 1);
+                    distanceList.remove(i);
+                    distanceList.remove(i - 1);
+                    if (newDist > 0) {
+                        commandList.add(i - 1, "w");
+                        distanceList.add(i - 1, newDist);
+                    } else {
+                        commandList.add(i - 1, "s");
+                        distanceList.add(i - 1, -newDist);
+                    }
+                    i--;
+                } else if (commandOne.compareTo("s") == 0) {
+                    commandList.remove(i);
+                    commandList.remove(i - 1);
+                    double newDist = distanceList.get(i) - distanceList.get(i - 1);
+                    distanceList.remove(i);
+                    distanceList.remove(i - 1);
+                    if (newDist > 0) {
+                        commandList.add(i - 1, "w");
+                        distanceList.add(i - 1, newDist);
+                    } else {
+                        commandList.add(i - 1, "s");
+                        distanceList.add(i - 1, -newDist);
+                    }
+                    i--;
+                }
+            } else if (commandTwo.compareTo("s") == 0) {
+                if (commandOne.compareTo("w") == 0) {
+                    commandList.remove(i);
+                    commandList.remove(i - 1);
+                    double newDist = distanceList.get(i - 1) - distanceList.get(i);
+                    distanceList.remove(i);
+                    distanceList.remove(i - 1);
+                    if (newDist > 0) {
+                        commandList.add(i - 1, "w");
+                        distanceList.add(i - 1, newDist);
+                    } else {
+                        commandList.add(i - 1, "s");
+                        distanceList.add(i - 1, -newDist);
+                    }
+                    i--;
+                } else if (commandOne.compareTo("s") == 0) {
+                    commandList.remove(i);
+                    commandList.remove(i - 1);
+                    double newDist = distanceList.get(i) + distanceList.get(i - 1);
+                    distanceList.remove(i);
+                    distanceList.remove(i - 1);
+                    if (newDist > 0) {
+                        commandList.add(i - 1, "s");
+                        distanceList.add(i - 1, newDist);
+                    } else {
+                        commandList.add(i - 1, "w");
+                        distanceList.add(i - 1, -newDist);
+                    }
+                    i--;
+                }
+            }
+            i++;
+        }
+
+        for (int ii = 0; ii < commandList.size(); ii++) {
+            commandList.set(ii, commandList.get(ii) + String.format("%.2f", distanceList.get(ii)));
         }
         return commandList;
     }

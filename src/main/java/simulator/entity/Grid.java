@@ -30,7 +30,7 @@ public class Grid extends JPanel {
         }
         this.envModelSize = envModelSize;
         this.cellModelSize = new Dimension((int) envModelSize.getWidth() / 20, (int) envModelSize.getHeight() / 20);
-        this.boundaryLength = cellModelSize.getWidth() * 1.2;
+        this.boundaryLength = cellModelSize.getWidth() * 1.5;
     }
 
     public MyPoint[] getObstacleFronts() {
