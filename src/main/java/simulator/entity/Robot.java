@@ -668,14 +668,6 @@ public class Robot extends JComponent {
             } else if (pp.getY() >= 0) {
                 return RelativeDirection.BACK;
             }
-        } else if (Math.abs(pp.getY()) < twoTurnDistance) {
-            // within the 2 turn margin of front and back
-            if (0 <= pp.getX()) {
-                return RelativeDirection.CENTER_RIGHT;
-            } else if (0 >= pp.getX()) {
-                return RelativeDirection.CENTER_LEFT;
-            }
-
         } else if (-twoTurnDistance >= pp.getY()) {
             // point in front within two turn margin
             if (pp.getX() <= twoTurnDistance && pp.getX() >= 0) {
@@ -700,6 +692,14 @@ public class Robot extends JComponent {
             } else if (pp.getX() <= 0) {
                 return RelativeDirection.BACK_LEFT;
             }
+        } else if (Math.abs(pp.getY()) < twoTurnDistance) {
+            // within the 2 turn margin of front and back
+            if (0 <= pp.getX()) {
+                return RelativeDirection.CENTER_RIGHT;
+            } else if (0 >= pp.getX()) {
+                return RelativeDirection.CENTER_LEFT;
+            }
+
         }
 
         return null;

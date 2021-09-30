@@ -12,6 +12,7 @@ public class Grid extends JPanel {
     private Dimension envModelSize;
     private Dimension cellModelSize;
     private double boundaryLength;
+    private boolean allowOutOfBounds = true;
 
     public Grid(Dimension envModelSize) {
         // setBorder(BorderFactory.createLineBorder(Color.black));
@@ -30,7 +31,8 @@ public class Grid extends JPanel {
         }
         this.envModelSize = envModelSize;
         this.cellModelSize = new Dimension((int) envModelSize.getWidth() / 20, (int) envModelSize.getHeight() / 20);
-        this.boundaryLength = cellModelSize.getWidth() * 1.5;
+        // this.boundaryLength = cellModelSize.getWidth() * 1.5;
+        this.boundaryLength = 30+5;
     }
 
     public MyPoint[] getObstacleFronts() {
@@ -38,32 +40,32 @@ public class Grid extends JPanel {
 
         Dimension size = cells[0][0].getSize();
 
-        int offset = (int) this.boundaryLength + 5 + size.width / 2;
+        int offset = (int) this.boundaryLength + size.width / 2 + 20;
 
         for (Cell[] row : cells) {
             for (Cell cell : row) {
                 if (cell.isObstaclePresent()) {
                     switch (cell.getImageDirection()) {
-                    case NONE:
-                        break;
-                    case NORTH:
-                        obstacleFront.add(new MyPoint(cell.getX() + size.width / 2,
-                                cell.getY() + size.height / 2 - offset, cell.getImageDirection()));
-                        break;
-                    case SOUTH:
-                        obstacleFront.add(new MyPoint(cell.getX() + size.width / 2,
-                                cell.getY() + size.height / 2 + offset, cell.getImageDirection()));
-                        break;
-                    case EAST:
-                        obstacleFront.add(new MyPoint(cell.getX() + size.width / 2 + offset,
-                                cell.getY() + size.height / 2, cell.getImageDirection()));
-                        break;
-                    case WEST:
-                        obstacleFront.add(new MyPoint(cell.getX() + size.width / 2 - offset,
-                                cell.getY() + size.height / 2, cell.getImageDirection()));
-                        break;
-                    default:
-                        break;
+                        case NONE:
+                            break;
+                        case NORTH:
+                            obstacleFront.add(new MyPoint(cell.getX() + size.width / 2,
+                                    cell.getY() + size.height / 2 - offset, cell.getImageDirection()));
+                            break;
+                        case SOUTH:
+                            obstacleFront.add(new MyPoint(cell.getX() + size.width / 2,
+                                    cell.getY() + size.height / 2 + offset, cell.getImageDirection()));
+                            break;
+                        case EAST:
+                            obstacleFront.add(new MyPoint(cell.getX() + size.width / 2 + offset,
+                                    cell.getY() + size.height / 2, cell.getImageDirection()));
+                            break;
+                        case WEST:
+                            obstacleFront.add(new MyPoint(cell.getX() + size.width / 2 - offset,
+                                    cell.getY() + size.height / 2, cell.getImageDirection()));
+                            break;
+                        default:
+                            break;
 
                     }
 
@@ -103,9 +105,11 @@ public class Grid extends JPanel {
                 return true;
             }
         }
-        // return checkIfExceedsBorders(p);
-        // remove cause allowed to go out of bounds
-        return false;
+        if (allowOutOfBounds) {
+            return false;
+        } else {
+            return checkIfExceedsBorders(p);
+        }
     }
 
     public boolean checkIfLineCollides(Point p1, Point p2) {
@@ -120,9 +124,11 @@ public class Grid extends JPanel {
                 return true;
             }
         }
-        // return checkIfExceedsBorders(p1) || checkIfExceedsBorders(p2);
-        // remove cause it is allowed to leave borders
-        return false;
+        if (allowOutOfBounds) {
+            return false;
+        } else {
+            return checkIfExceedsBorders(p1) || checkIfExceedsBorders(p2);
+        }
     }
 
     public boolean checkIfPathCollides(Point[] pArray) {
@@ -149,22 +155,22 @@ public class Grid extends JPanel {
     public boolean checkIfNeedReverse(MyPoint p, int turningRadius) {
         p = (MyPoint) p.clone();
         switch (p.getDirection()) {
-        case NONE:
-            break;
-        case NORTH:
-            p.translate(0, -turningRadius);
-            return this.checkIfPointCollides(p);
-        case SOUTH:
-            p.translate(0, turningRadius);
-            return this.checkIfPointCollides(p);
-        case EAST:
-            p.translate(turningRadius, 0);
-            return this.checkIfPointCollides(p);
-        case WEST:
-            p.translate(-turningRadius, 0);
-            return this.checkIfPointCollides(p);
-        default:
-            break;
+            case NONE:
+                break;
+            case NORTH:
+                p.translate(0, -turningRadius);
+                return this.checkIfPointCollides(p);
+            case SOUTH:
+                p.translate(0, turningRadius);
+                return this.checkIfPointCollides(p);
+            case EAST:
+                p.translate(turningRadius, 0);
+                return this.checkIfPointCollides(p);
+            case WEST:
+                p.translate(-turningRadius, 0);
+                return this.checkIfPointCollides(p);
+            default:
+                break;
 
         }
 
