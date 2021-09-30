@@ -135,8 +135,8 @@ class Simulator {
             hPath.reset();
         });
 
-        JButton drawButton2 = new JButton("Draw Path");
-        drawButton2.addActionListener(e -> {
+        JButton drawButton = new JButton("Draw Path");
+        drawButton.addActionListener(e -> {
             logger.log(Level.FINE, "Start Button Clicked");
 
             hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts(), true, grid, robot);
@@ -154,6 +154,15 @@ class Simulator {
             isRunning2 = true;
             movementsLoop.start();
             logger.log(Level.FINE, "Start");
+        });
+
+        JButton pauseButton = new JButton("Pause");
+        pauseButton.addActionListener(e ->{
+                isRunning2 = false;
+        });
+        JButton continueButton = new JButton("Continue");
+        continueButton.addActionListener(e ->{
+                isRunning2 = true;
         });
 
         JButton connectButton = new JButton("Connect to RPI");
@@ -175,7 +184,7 @@ class Simulator {
             connection.closeConnection();
         });
 
-        JButton sendMovements = new JButton("Send movements");
+        JButton sendMovements = new JButton("Send Movements");
         sendMovements.addActionListener(e -> {
             ArrayList<String> commands = robot.getCommandsToSend();
             System.out.println("----------Sending movements...");
@@ -198,13 +207,15 @@ class Simulator {
         // rightPanel.add(leftButton);
         // rightPanel.add(rightButton);
 
-        rightPanel.add(resetButton);
-        rightPanel.add(drawButton2);
-        rightPanel.add(startMovementsButton);
+        rightPanel.add(timerLabel);
         rightPanel.add(connectButton);
         rightPanel.add(disconnectButton);
+        rightPanel.add(resetButton);
+        rightPanel.add(drawButton);
+        rightPanel.add(startMovementsButton);
+        rightPanel.add(pauseButton);
+        rightPanel.add(continueButton);
         rightPanel.add(sendMovements);
-        rightPanel.add(timerLabel);
 
         jFrame.pack();
         jFrame.setLocationRelativeTo(null);

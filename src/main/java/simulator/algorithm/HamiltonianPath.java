@@ -228,6 +228,9 @@ public class HamiltonianPath extends JComponent {
         return path.stream().mapToInt(i -> i).toArray();
     }
 
+    // get shortest path based on the path finding algorithm below
+    // checks every permutation of node travel
+    // returns the permutation that results in the shortest valid path
     public int[] getShortestPathWithChecking(double[][] adjacencyMatrix, MyPoint[] pointsArray, Grid grid, Robot robot) {
         ArrayList<Integer> pathIndex = new ArrayList<Integer>(adjacencyMatrix.length);
 
