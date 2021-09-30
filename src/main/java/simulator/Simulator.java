@@ -8,6 +8,7 @@ import simulator.entity.Robot;
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +29,8 @@ class Simulator {
     private Robot robot;
     private HamiltonianPath hPath;
     private Thread movementsLoop;
-    private boolean isRunning2 = false;
+    private boolean isRunning = false;
+    private boolean isPaused = false;
     private long startTime;
     private JLabel timerLabel = new JLabel();
 
@@ -136,7 +138,8 @@ class Simulator {
         JButton resetButton = new JButton("Reset");
         resetButton.addActionListener(e -> {
             robot.reset();
-            isRunning2 = false;
+            isRunning = false;
+            isPaused = false;
             hPath.reset();
         });
 
@@ -156,18 +159,18 @@ class Simulator {
         startMovementsButton.addActionListener(e -> {
             startTime = System.nanoTime();
             startMovements();
-            isRunning2 = true;
+            isRunning = true;
             movementsLoop.start();
             logger.log(Level.FINE, "Start");
         });
 
         JButton pauseButton = new JButton("Pause");
         pauseButton.addActionListener(e -> {
-            isRunning2 = false;
+            isPaused = true;
         });
         JButton continueButton = new JButton("Continue");
         continueButton.addActionListener(e -> {
-            isRunning2 = true;
+            isPaused = false;
         });
 
         JButton sendMovements = new JButton("Send Movements");
@@ -217,12 +220,20 @@ class Simulator {
             final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
             long lastFpsTime = 0;
 
-            while (isRunning2) {
+            long duration = 0;
+            timerLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+
+            while (isRunning) {
                 logger.log(Level.FINEST, "Start Movements");
 
+                if (isPaused) {
+                    lastLoopTime = System.nanoTime();
+                    continue;
+                }
                 long now = System.nanoTime();
                 long updateLength = now - lastLoopTime;
                 lastLoopTime = now;
+                duration += updateLength;
                 double delta = updateLength / ((double) OPTIMAL_TIME);
                 // delta is the number of frames that has passed
 
@@ -236,9 +247,8 @@ class Simulator {
                 }
 
                 robot.repaint();
-                timerLabel.setFont(new Font("Serif", Font.PLAIN, 20));
                 DecimalFormat df = new DecimalFormat("#.##");
-                timerLabel.setText("Time:" + df.format((double) (System.nanoTime() - startTime) / 1000000000) + "s");
+                timerLabel.setText("Time:" + df.format((double) (duration) / 1000000000) + "s");
 
                 try {
                     Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
