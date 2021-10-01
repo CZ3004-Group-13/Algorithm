@@ -71,6 +71,11 @@ public class Robot extends JComponent {
         setOpaque(false);
     }
 
+    public void moveTo(double x, double y) {
+        this.bodyAffineTransform.setToTranslation(x, y);
+        this.repaint();
+    }
+
     public void reset() {
         this.setCurrentLocationCenter(this.startingPoint);
         firstTime = true;
@@ -286,6 +291,13 @@ public class Robot extends JComponent {
         return false;
     }
 
+    public boolean finishedMovements() {
+        if (this.movementQueue.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean letsGo(double frames) {
         if (!this.durationQueue.isEmpty()) {
             long timeDelta = (long) (1000000000 * frames / TARGET_FPS);
@@ -324,7 +336,7 @@ public class Robot extends JComponent {
                         this.moveBackwardTime(timeDelta);
                         break;
                     case "Reached Obstacle":
-                        break;
+                        return true;
                 }
             } else {
                 this.durationQueue.remove(0);
@@ -336,6 +348,77 @@ public class Robot extends JComponent {
         }
 
         return true;
+    }
+
+    public void addCommand(String command) {
+        char c = command.charAt(0);
+        char[] other;
+        double dist;
+        Direction currDirection = this.getCurrentDirection();
+        Direction dir = Direction.NONE;
+
+        switch (c) {
+            case 'w':
+                other = new char[10];
+                command.getChars(1, command.length(), other, 0);
+                dist = Double.parseDouble(new String(other)) * this.ENVIRONMENT_SCALING_FACTOR;
+                this.addToQueue("Forward", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                break;
+            case 's':
+                other = new char[10];
+                command.getChars(1, command.length(), other, 0);
+                dist = Double.parseDouble(new String(other)) * this.ENVIRONMENT_SCALING_FACTOR;
+                this.addToQueue("Reverse", this.getDurationForManeuver(dist), Direction.NONE, dist);
+                break;
+            case 'a':
+                switch (currDirection) {
+                    case NORTH:
+                        dir = Direction.WEST;
+                        break;
+                    case SOUTH:
+                        dir = Direction.EAST;
+                        break;
+                    case WEST:
+                        dir = Direction.SOUTH;
+                        break;
+                    case EAST:
+                        dir = Direction.NORTH;
+                        break;
+                    case NONE:
+                        break;
+                    default:
+                        break;
+                }
+                this.addToQueue("Left", 1, Direction.NONE, -1);
+                this.addToQueue("LF", 1000, dir, -1);
+                this.addToQueue("Center", 1, Direction.NONE, -1);
+                break;
+            case 'd':
+                switch (currDirection) {
+                    case NORTH:
+                        dir = Direction.EAST;
+                        break;
+                    case SOUTH:
+                        dir = Direction.WEST;
+                        break;
+                    case WEST:
+                        dir = Direction.NORTH;
+                        break;
+                    case EAST:
+                        dir = Direction.SOUTH;
+                        break;
+                    case NONE:
+                        break;
+                    default:
+                        break;
+                }
+                this.addToQueue("Right", 1, Direction.NONE, -1);
+                this.addToQueue("RF", 1000, dir, -1);
+                this.addToQueue("Center", 1, Direction.NONE, -1);
+                break;
+            default:
+                break;
+        }
     }
 
     public void addToQueue(String command, double durationInSecs, Direction direction, double distance) {
@@ -554,6 +637,7 @@ public class Robot extends JComponent {
     public void setCurrentLocationCenter(Point loc) {
         this.currentLocationCenter = loc;
         this.currentLocation = this.calculateTopLeftPoint();
+        this.repaint();
     }
 
     public AffineTransform getBodyAffineTransform() {
@@ -964,5 +1048,19 @@ public class Robot extends JComponent {
             commandList.set(ii, commandList.get(ii) + String.format("%.2f", distanceList.get(ii)));
         }
         return commandList;
+    }
+
+    public Direction getCurrentDirection() {
+        if (Math.abs(directionInDegrees - (-90)) <= DIRECTION_MARGIN_OF_ERROR) {
+            return Direction.NORTH;
+        } else if (Math.abs(directionInDegrees - (90)) <= DIRECTION_MARGIN_OF_ERROR) {
+            return Direction.SOUTH;
+        } else if (Math.abs(directionInDegrees) <= DIRECTION_MARGIN_OF_ERROR) {
+            return Direction.EAST;
+        } else if (Math.abs(directionInDegrees - 180) <= DIRECTION_MARGIN_OF_ERROR
+                || Math.abs(directionInDegrees - (-180)) <= DIRECTION_MARGIN_OF_ERROR) {
+            return Direction.WEST;
+        }
+        return null;
     }
 }

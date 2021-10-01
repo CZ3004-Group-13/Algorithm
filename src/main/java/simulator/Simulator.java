@@ -31,8 +31,12 @@ class Simulator {
     private Thread movementsLoop;
     private boolean isRunning = false;
     private boolean isPaused = false;
-    private long startTime;
+    private boolean waitingImageRec = false;
     private JLabel timerLabel = new JLabel();
+
+    private JTextField robotX;
+    private JTextField robotY;
+    private JTextField commandTextField;
 
     public static void main(String[] args) {
 
@@ -102,8 +106,18 @@ class Simulator {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
         jFrame.add(rightPanel, BorderLayout.LINE_END);
 
-        // add buttons
+        // textfields
 
+        robotX = new JTextField();
+        robotX.setMaximumSize(new Dimension(100, robotX.getPreferredSize().height));
+
+        robotY = new JTextField();
+        robotY.setMaximumSize(new Dimension(100, robotY.getPreferredSize().height));
+
+        commandTextField = new JTextField();
+        commandTextField.setMaximumSize(new Dimension(100, commandTextField.getPreferredSize().height));
+
+        // add buttons
         JButton connectButton = new JButton("Connect to RPI");
         connectButton.addActionListener(e -> {
             System.out.println("Connecting");
@@ -140,7 +154,19 @@ class Simulator {
             robot.reset();
             isRunning = false;
             isPaused = false;
+            waitingImageRec = false;
             hPath.reset();
+            timerLabel.setText("Time: 0.00s");
+            // this is so that robot gets painted first (so that the affine transform gets
+            // processed first)
+            new java.util.Timer().schedule(new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    // TODO Auto-generated method stub
+                    updateRobotCoordinates();
+                }
+
+            }, 100);
         });
 
         JButton drawButton = new JButton("Draw Path");
@@ -157,7 +183,6 @@ class Simulator {
 
         JButton startMovementsButton = new JButton("Start Movements");
         startMovementsButton.addActionListener(e -> {
-            startTime = System.nanoTime();
             startMovements();
             isRunning = true;
             movementsLoop.start();
@@ -191,27 +216,93 @@ class Simulator {
             }
         });
 
+        JButton setRobotLocButton = new JButton("Set Robot Location");
+        setRobotLocButton.addActionListener(e -> {
+            moveRobotTo(Double.parseDouble(robotX.getText()), Double.parseDouble(robotY.getText()));
+        });
+
+        JButton task1Button = new JButton("Task 1 BEGIN");
+        task1Button.addActionListener(e -> {
+            startMovements(true);
+            isRunning = true;
+            movementsLoop.start();
+        });
+
+        JButton imageRecButton = new JButton("*image rec done*");
+        imageRecButton.addActionListener(e -> {
+            waitingImageRec = false;
+        });
+        JButton sendOneCommand = new JButton("Send one command");
+        sendOneCommand.addActionListener(e -> {
+            sendOne();
+        });
+
         // rightPanel.add(forwardButton);
         // rightPanel.add(backwardButton);
         // rightPanel.add(leftButton);
         // rightPanel.add(rightButton);
+        robotX.setAlignmentX(Component.CENTER_ALIGNMENT);
+        robotY.setAlignmentX(Component.CENTER_ALIGNMENT);
+        setRobotLocButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        disconnectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        drawButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        startMovementsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pauseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        sendMovements.setAlignmentX(Component.CENTER_ALIGNMENT);
+        commandTextField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        sendOneCommand.setAlignmentX(Component.CENTER_ALIGNMENT);
+        timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        task1Button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageRecButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        rightPanel.add(timerLabel);
+        rightPanel.add(robotX);
+        rightPanel.add(robotY);
+        rightPanel.add(setRobotLocButton);
+        rightPanel.add(Box.createRigidArea(new Dimension(10, 20)));
         rightPanel.add(connectButton);
         rightPanel.add(disconnectButton);
-        rightPanel.add(resetButton);
+        rightPanel.add(Box.createRigidArea(new Dimension(10, 20)));
         rightPanel.add(drawButton);
+        rightPanel.add(resetButton);
+        rightPanel.add(Box.createRigidArea(new Dimension(10, 20)));
         rightPanel.add(startMovementsButton);
         rightPanel.add(pauseButton);
         rightPanel.add(continueButton);
         rightPanel.add(sendMovements);
+        rightPanel.add(commandTextField);
+        rightPanel.add(sendOneCommand);
+
+        rightPanel.add(timerLabel);
+        rightPanel.add(Box.createRigidArea(new Dimension(10, 20)));
+        rightPanel.add(task1Button);
+        rightPanel.add(imageRecButton);
+
+        timerLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+        timerLabel.setText("Time: 0.00s");
 
         jFrame.pack();
         jFrame.setLocationRelativeTo(null);
         jFrame.setVisible(true); // now frame will be visible, by default not visible
+
+        // this is so that robot gets painted first (so that the affine transform gets
+        // processed first)
+        new java.util.Timer().schedule(new java.util.TimerTask() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                updateRobotCoordinates();
+            }
+        }, 100);
     }
 
     public void startMovements() {
+        startMovements(false);
+    }
+
+    public void startMovements(boolean pauseUponObstacle) {
         movementsLoop = new Thread(() -> {
             logger.log(Level.FINEST, "Thread");
 
@@ -221,12 +312,11 @@ class Simulator {
             long lastFpsTime = 0;
 
             long duration = 0;
-            timerLabel.setFont(new Font("Serif", Font.PLAIN, 20));
 
             while (isRunning) {
                 logger.log(Level.FINEST, "Start Movements");
 
-                if (isPaused) {
+                if (isPaused || waitingImageRec) {
                     lastLoopTime = System.nanoTime();
                     continue;
                 }
@@ -243,12 +333,18 @@ class Simulator {
                 }
 
                 if (robot.letsGo(delta)) {
+                    if (pauseUponObstacle) {
+                        waitingImageRec = true;
+                    }
+                }
+                if (robot.finishedMovements()) {
                     break;
                 }
+                updateRobotCoordinates();
 
                 robot.repaint();
                 DecimalFormat df = new DecimalFormat("#.##");
-                timerLabel.setText("Time:" + df.format((double) (duration) / 1000000000) + "s");
+                timerLabel.setText("Time: " + df.format((double) (duration) / 1000000000) + "s");
 
                 try {
                     Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
@@ -258,5 +354,29 @@ class Simulator {
 
             }
         });
+    }
+
+    public void updateRobotCoordinates() {
+        double x = robot.getCurrentLocation().getX();
+        double y = robot.getCurrentLocation().getY();
+        x = x / ENVIRONMENT_SCALING_FACTOR;
+        y = y / ENVIRONMENT_SCALING_FACTOR;
+        y = -y + 200;
+        robotX.setText(String.format("%.2f", x));
+        robotY.setText(String.format("%.2f", y));
+    }
+
+    public void moveRobotTo(double x, double y) {
+        x = x * ENVIRONMENT_SCALING_FACTOR;
+        y = -y + 200;
+        y = y * ENVIRONMENT_SCALING_FACTOR;
+        robot.moveTo(x, y);
+    }
+
+    public void sendOne() {
+        String cmd = commandTextField.getText();
+
+        connection.sendMsg(cmd + '|', "command");
+        robot.addCommand(cmd);
     }
 }
