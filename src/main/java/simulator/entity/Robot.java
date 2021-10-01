@@ -342,6 +342,7 @@ public class Robot extends JComponent {
                 this.durationQueue.remove(0);
                 this.movementQueue.remove(0);
                 this.directionQueue.remove(0);
+                this.distanceQueue.remove(0);
             }
 
             return false;
@@ -830,6 +831,7 @@ public class Robot extends JComponent {
         this.movementQueue.clear();
         this.durationQueue.clear();
         this.directionQueue.clear();
+        this.distanceQueue.clear();
         boolean justTurned = false;
         double dist;
         for (int i = 1; i < plannedPath.size(); i++) {
@@ -936,17 +938,17 @@ public class Robot extends JComponent {
         double dist = 0;
         String command = null;
         for (int i = 0; i < this.movementQueue.size(); i++) {
-            dist = this.distanceQueue.get(i) / this.ENVIRONMENT_SCALING_FACTOR;
+            dist = this.distanceQueue.get(i);
             command = null;
 
             switch (this.movementQueue.get(i)) {
                 case "Forward":
-                    if (this.distanceQueue.get(i) / this.ENVIRONMENT_SCALING_FACTOR > 0) {
+                    if (this.distanceQueue.get(i) > 0) {
                         command = "w";
                     }
                     break;
                 case "Reverse":
-                    if (this.distanceQueue.get(i) / this.ENVIRONMENT_SCALING_FACTOR > 0) {
+                    if (this.distanceQueue.get(i) > 0) {
                         command = "s";
                     }
                     break;

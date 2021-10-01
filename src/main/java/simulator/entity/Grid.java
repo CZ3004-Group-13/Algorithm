@@ -32,7 +32,7 @@ public class Grid extends JPanel {
         this.envModelSize = envModelSize;
         this.cellModelSize = new Dimension((int) envModelSize.getWidth() / 20, (int) envModelSize.getHeight() / 20);
         // this.boundaryLength = cellModelSize.getWidth() * 1.5;
-        this.boundaryLength = 30+5;
+        this.boundaryLength = 30 + 15;
     }
 
     public MyPoint[] getObstacleFronts() {
@@ -40,7 +40,7 @@ public class Grid extends JPanel {
 
         Dimension size = cells[0][0].getSize();
 
-        int offset = (int) this.boundaryLength + size.width / 2 + 20;
+        int offset = (int) this.boundaryLength + size.width / 2 + 25;
 
         for (Cell[] row : cells) {
             for (Cell cell : row) {
@@ -175,6 +175,68 @@ public class Grid extends JPanel {
         }
 
         return false;
+    }
+
+    public double getAmountToReverse(MyPoint p, int turningRadius) {
+        Rectangle2D[] obs = this.getObstacleBoundaries();
+
+        Line2D line = null;
+        MyPoint p2 = (MyPoint) p.clone();
+
+        switch (p.getDirection()) {
+            case NONE:
+                break;
+            case NORTH:
+                p2.translate(0, -turningRadius);
+                line = new Line2D.Double(p, p2);
+                for (Rectangle2D o : obs) {
+                    if (o.intersectsLine(line)) {
+
+                        double centerToBoundary = this.cellModelSize.getHeight() / 2 + this.boundaryLength;
+                        double diff = Math.abs(p.getY() - o.getCenterY());
+                        double amt = turningRadius - (diff - centerToBoundary);
+                        return amt;
+                    }
+                }
+            case SOUTH:
+                p2.translate(0, turningRadius);
+                line = new Line2D.Double(p, p2);
+                for (Rectangle2D o : obs) {
+                    if (o.intersectsLine(line)) {
+
+                        double centerToBoundary = this.cellModelSize.getHeight() / 2 + this.boundaryLength;
+                        double diff = Math.abs(p.getY() - o.getCenterY());
+                        double amt = turningRadius - (diff - centerToBoundary);
+                        return amt;
+                    }
+                }
+            case EAST:
+                p2.translate(-turningRadius, 0);
+                line = new Line2D.Double(p, p2);
+                for (Rectangle2D o : obs) {
+                    if (o.intersectsLine(line)) {
+                        double centerToBoundary = this.cellModelSize.getHeight() / 2 + this.boundaryLength;
+                        double diff = Math.abs(p.getX() - o.getCenterX());
+                        double amt = turningRadius - (diff - centerToBoundary);
+                        return amt;
+                    }
+                }
+            case WEST:
+                p2.translate(turningRadius, 0);
+                line = new Line2D.Double(p, p2);
+                for (Rectangle2D o : obs) {
+                    if (o.intersectsLine(line)) {
+                        double centerToBoundary = this.cellModelSize.getHeight() / 2 + this.boundaryLength;
+                        double diff = Math.abs(p.getX() - o.getCenterX());
+                        double amt = turningRadius - (diff - centerToBoundary);
+                        return amt;
+                    }
+                }
+            default:
+                break;
+
+        }
+        return 0.0;
     }
 
     public void paintComponent(Graphics g) {

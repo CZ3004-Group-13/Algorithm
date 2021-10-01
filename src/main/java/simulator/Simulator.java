@@ -2,13 +2,13 @@ package simulator;
 
 import simulator.algorithm.HamiltonianPath;
 import simulator.connection.Connection;
+import simulator.connection.Messages;
 import simulator.entity.Grid;
 import simulator.entity.Robot;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
-import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +17,7 @@ class Simulator {
 
     private static final int ENVIRONMENT_SCALING_FACTOR = 3;
     private static Connection connection;
+    private Messages messages;
     public static String host = "192.168.13.13";
     public static int port = 3053;
     private final Logger logger = Logger.getLogger(Simulator.class.getName());
@@ -232,6 +233,12 @@ class Simulator {
         imageRecButton.addActionListener(e -> {
             waitingImageRec = false;
         });
+
+        JButton receiveButton = new JButton("Receive message");
+        receiveButton.addActionListener(e -> {
+            this.messages.getObstacles();
+        });
+
         JButton sendOneCommand = new JButton("Send one command");
         sendOneCommand.addActionListener(e -> {
             sendOne();
@@ -246,6 +253,7 @@ class Simulator {
         setRobotLocButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         disconnectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        receiveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         drawButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startMovementsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -264,6 +272,7 @@ class Simulator {
         rightPanel.add(Box.createRigidArea(new Dimension(10, 20)));
         rightPanel.add(connectButton);
         rightPanel.add(disconnectButton);
+        rightPanel.add(receiveButton);
         rightPanel.add(Box.createRigidArea(new Dimension(10, 20)));
         rightPanel.add(drawButton);
         rightPanel.add(resetButton);
