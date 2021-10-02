@@ -35,6 +35,29 @@ public class Grid extends JPanel {
         this.boundaryLength = 30 + 15;
     }
 
+    public void addObstacle(int x, int y, int z) {
+        Direction d = Direction.NONE;
+        switch (z) {
+            case 0:
+                d = Direction.NORTH;
+                break;
+            case 1:
+                d = Direction.EAST;
+                break;
+            case 2:
+                d = Direction.SOUTH;
+                break;
+            case 3:
+                d = Direction.WEST;
+                break;
+            default:
+                break;
+        }
+        cells[x][y].setObstaclePresent(true);
+        cells[x][y].setImageDirection(d);
+        this.repaint();
+    }
+
     public MyPoint[] getObstacleFronts() {
         ArrayList<MyPoint> obstacleFront = new ArrayList<>();
 

@@ -6,7 +6,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,21 +32,22 @@ public class Connection {
         return connection;
     }
 
-    public void openConnection(String host, int port) {
+    public boolean openConnection(String host, int port) {
         logger.log(Level.FINE, "Opening connection...");
 
         try {
             // String HOST = "192.168.13.13";
             // int PORT = 3053;
-            socket = new Socket(host, port);
+            socket = new Socket();
+            SocketAddress socketAddress = new InetSocketAddress(host, port);
+            socket.connect(socketAddress, 2000); // 10s connection timeout
 
             writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(socket.getOutputStream())));
             InputStreamReader instream = new InputStreamReader(socket.getInputStream());
             reader = new BufferedReader(instream);
 
             logger.log(Level.FINE, "openConnection() --> " + "Connection established successfully!");
-
-            return;
+            return true;
         } catch (UnknownHostException e) {
             logger.log(Level.FINE, "openConnection() --> UnknownHostException");
         } catch (IOException e) {
@@ -55,6 +58,7 @@ public class Connection {
         }
 
         logger.log(Level.FINE, "Failed to establish connection!");
+        return false;
     }
 
     public void closeConnection() {

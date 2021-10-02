@@ -124,10 +124,10 @@ class Simulator {
             System.out.println("Connecting");
             if (!connection.isConnected()) {
                 connection = Connection.getConnection();
-                connection.openConnection(host, port);
             }
             if (connection.isConnected()) {
                 System.out.println("Connection opened");
+                this.messages = new Messages(connection, this.grid, this.robot, this.hPath);
                 // connection.sendMsg("R", "type");
             }
         });
@@ -236,7 +236,6 @@ class Simulator {
 
         JButton receiveButton = new JButton("Receive message");
         receiveButton.addActionListener(e -> {
-            this.messages.getObstacles();
         });
 
         JButton sendOneCommand = new JButton("Send one command");
