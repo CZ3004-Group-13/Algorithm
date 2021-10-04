@@ -1779,7 +1779,7 @@ public class HamiltonianPath extends JComponent {
                             MyPoint tp3 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint tp4 = new MyPoint(0, 0, sp.getDirection());
                             MyPoint fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray = { sp, tp1, tp2, tp2_3, tp3, tp4, fp };
+                            MyPoint[] tpArray = { sp, tp1, tp2, tp2_3, tp2__3, tp3, tp4, fp };
 
                             // first turn = right
                             tp1.rotateRight90();
@@ -1790,10 +1790,10 @@ public class HamiltonianPath extends JComponent {
                             tp4.rotate180();
 
                             tp1.move(0, -turnRadius1);
-                            tp2.move(dp.x + turnRadius2, -turnRadius1);
-                            tp2_3.move(dp.x + turnRadius2, 0);
-                            tp2__3.move(dp.x + turnRadius2, dp.y - turnRadius2);
-                            tp3.move(dp.x + turnRadius2, dp.y - turnRadius1);
+                            tp2.move(dp.x + turnRadius1, -turnRadius1);
+                            tp2_3.move(dp.x + turnRadius1, 0);
+                            tp2__3.move(dp.x + turnRadius1, dp.y - turnRadius2);
+                            tp3.move(dp.x + turnRadius1, dp.y - turnRadius1);
                             tp4.move(dp.x, dp.y - turnRadius1);
 
                             af.transform(tp1, tp1);
@@ -1814,26 +1814,34 @@ public class HamiltonianPath extends JComponent {
                                 this.plannedPath.add(fp);
                                 break;
                             }
-
                             tp1 = new MyPoint(0, 0, sp.getDirection());
                             tp2 = new MyPoint(0, 0, sp.getDirection());
+                            tp2_3 = new MyPoint(0, 0, sp.getDirection());
+                            tp2__3 = new MyPoint(0, 0, sp.getDirection());
                             tp3 = new MyPoint(0, 0, sp.getDirection());
                             tp4 = new MyPoint(0, 0, sp.getDirection());
                             fp = new MyPoint(0, 0, dp.getDirection());
-                            MyPoint[] tpArray2 = { sp, tp1, tp2, tp3, tp4, fp };
+                            MyPoint[] tpArray2 = { sp, tp1, tp2, tp2_3, tp2__3, tp3, tp4, fp };
 
                             // first turn = left
                             tp1.rotateLeft90();
                             tp2.rotate180();
-                            tp3.rotate180();
+                            tp2_3.rotate180();
+                            tp2__3.rotate180();
+                            tp3.rotateRight90();
+                            tp4.rotate180();
                             //
                             tp1.move(0, -turnRadius1);
-                            tp2.move(-turnRadius2, -turnRadius1);
-                            tp3.move(-turnRadius2, dp.y - turnRadius1);
+                            tp2.move(dp.x - turnRadius1, -turnRadius1);
+                            tp2_3.move(dp.x - turnRadius1, 0);
+                            tp2__3.move(dp.x - turnRadius1, dp.y - turnRadius2);
+                            tp3.move(dp.x - turnRadius1, dp.y - turnRadius1);
                             tp4.move(dp.x, dp.y - turnRadius1);
 
                             af.transform(tp1, tp1);
                             af.transform(tp2, tp2);
+                            af.transform(tp2_3, tp2_3);
+                            af.transform(tp2__3, tp2__3);
                             af.transform(tp3, tp3);
                             af.transform(tp4, tp4);
                             af.transform(dp, fp);
@@ -1841,6 +1849,8 @@ public class HamiltonianPath extends JComponent {
                                 // this path works, go next
                                 this.plannedPath.add(tp1);
                                 this.plannedPath.add(tp2);
+                                this.plannedPath.add(tp2_3);
+                                this.plannedPath.add(tp2__3);
                                 this.plannedPath.add(tp3);
                                 this.plannedPath.add(tp4);
                                 this.plannedPath.add(fp);
