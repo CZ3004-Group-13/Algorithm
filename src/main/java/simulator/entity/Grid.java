@@ -63,7 +63,7 @@ public class Grid extends JPanel {
 
         Dimension size = cells[0][0].getSize();
 
-        int offset = (int) this.boundaryLength + size.width / 2 + 25;
+        int offset = (int) this.boundaryLength + size.width / 2 + 20;
 
         for (Cell[] row : cells) {
             for (Cell cell : row) {
@@ -234,7 +234,7 @@ public class Grid extends JPanel {
                     }
                 }
             case EAST:
-                p2.translate(-turningRadius, 0);
+                p2.translate(turningRadius, 0);
                 line = new Line2D.Double(p, p2);
                 for (Rectangle2D o : obs) {
                     if (o.intersectsLine(line)) {
@@ -245,7 +245,7 @@ public class Grid extends JPanel {
                     }
                 }
             case WEST:
-                p2.translate(turningRadius, 0);
+                p2.translate(-turningRadius, 0);
                 line = new Line2D.Double(p, p2);
                 for (Rectangle2D o : obs) {
                     if (o.intersectsLine(line)) {
