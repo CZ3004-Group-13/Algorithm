@@ -49,11 +49,13 @@ class Simulator {
             // connection.sendMsg("C", "type"); //C take pic
         }
 
+        Simulator sim = new Simulator();
+
         // need to use this utility to call the initial method that draws GUI
-        SwingUtilities.invokeLater(() -> new Simulator().createAndShowGUI());
+        SwingUtilities.invokeLater(() -> sim.createAndShowGUI(sim));
     }
 
-    public void createAndShowGUI() {
+    public void createAndShowGUI(Simulator sim) {
         jFrame = new JFrame("Simulator");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -119,19 +121,6 @@ class Simulator {
         commandTextField.setMaximumSize(new Dimension(100, commandTextField.getPreferredSize().height));
 
         // add buttons
-        JButton connectButton = new JButton("Connect to RPI");
-        connectButton.addActionListener(e -> {
-            System.out.println("Connecting");
-            if (!connection.isConnected()) {
-                connection = Connection.getConnection();
-            }
-            if (connection.isConnected()) {
-                System.out.println("Connection opened");
-                this.messages = new Messages(connection, this.grid, this.robot, this.hPath);
-                // connection.sendMsg("R", "type");
-            }
-        });
-
         JButton disconnectButton = new JButton("Disconnect from RPI");
         disconnectButton.addActionListener(e -> {
             System.out.println("Disconnecting");
@@ -174,10 +163,10 @@ class Simulator {
         drawButton.addActionListener(e -> {
             logger.log(Level.FINE, "Start Button Clicked");
 
-            hPath.getShortestPath(robot.getCurrentLocation(), grid.getObstacleFronts(), true, grid, robot);
+            hPath.getShortestPath(this.grid, this.robot, true);
             hPath.generatePlannedPath(grid, robot);
             hPath.printPlannedPath();
-            robot.generateMovements(hPath.getPlannedPath());
+            robot.generateMovements(hPath.getPlannedPath(), hPath.getOrderedObstacleIds());
             robot.printGeneratedMovements();
             grid.repaint();
         });
@@ -229,11 +218,6 @@ class Simulator {
             movementsLoop.start();
         });
 
-        JButton imageRecButton = new JButton("*image rec done*");
-        imageRecButton.addActionListener(e -> {
-            waitingImageRec = false;
-        });
-
         JButton receiveButton = new JButton("Receive message");
         receiveButton.addActionListener(e -> {
         });
@@ -241,6 +225,25 @@ class Simulator {
         JButton sendOneCommand = new JButton("Send one command");
         sendOneCommand.addActionListener(e -> {
             sendOne();
+        });
+
+        JButton imageRecButton = new JButton("*image rec done*");
+        imageRecButton.addActionListener(e -> {
+            waitingImageRec = false;
+        });
+
+        JButton connectButton = new JButton("Connect to RPI");
+        connectButton.addActionListener(e -> {
+            System.out.println("Connecting");
+            if (!connection.isConnected()) {
+                connection = Connection.getConnection();
+            }
+            if (connection.isConnected()) {
+                System.out.println("Connection opened");
+                this.messages = new Messages(connection, this.grid, this.robot, this.hPath, task1Button,
+                        imageRecButton);
+                // connection.sendMsg("R", "type");
+            }
         });
 
         // rightPanel.add(forwardButton);

@@ -335,7 +335,8 @@ public class Robot extends JComponent {
                     case "Reverse":
                         this.moveBackwardTime(timeDelta);
                         break;
-                    case "Reached Obstacle":
+                    case "Reached":
+                        System.out.println(this.distanceQueue.get(0));
                         return true;
                 }
             } else {
@@ -827,18 +828,21 @@ public class Robot extends JComponent {
         return Math.sqrt(Math.pow(Math.abs(a.getX() - b.getX()), 2) + Math.pow(Math.abs(a.getY() - b.getY()), 2));
     }
 
-    public void generateMovements(ArrayList<MyPoint> plannedPath) {
+    public void generateMovements(ArrayList<MyPoint> plannedPath, int[] orderedObsIds) {
         this.movementQueue.clear();
         this.durationQueue.clear();
         this.directionQueue.clear();
         this.distanceQueue.clear();
         boolean justTurned = false;
         double dist;
+        int obsCounter = 0;
         for (int i = 1; i < plannedPath.size(); i++) {
             MyPoint src = plannedPath.get(i - 1);
             MyPoint dest = plannedPath.get(i);
             if (dest.getDirection() == Direction.NONE) {
-                this.addToQueue("Reached", 1, Direction.NONE, -1);
+                this.addToQueue("Reached", 1, Direction.NONE,
+                        orderedObsIds[obsCounter] * this.ENVIRONMENT_SCALING_FACTOR);
+                obsCounter++;
                 continue;
             }
             if (src.getDirection() == Direction.NONE) {
@@ -966,7 +970,7 @@ public class Robot extends JComponent {
                     break;
                 case "Reached":
                     command = "R";
-                    dist = 0;
+                    dist = this.distanceQueue.get(i);
                     break;
                 default:
                     break;
@@ -1047,7 +1051,14 @@ public class Robot extends JComponent {
         }
 
         for (int ii = 0; ii < commandList.size(); ii++) {
-            commandList.set(ii, commandList.get(ii) + String.format("%.2f", distanceList.get(ii)));
+            if (commandList.get(ii).compareTo("R") == 0) {
+                commandList.set(ii, commandList.get(ii) + distanceList.get(ii).intValue());
+                if (ii == commandList.size() - 1) {
+                    commandList.set(ii, "S" + distanceList.get(ii).intValue());
+                }
+            } else {
+                commandList.set(ii, commandList.get(ii) + String.format("%.2f", distanceList.get(ii)));
+            }
         }
         return commandList;
     }

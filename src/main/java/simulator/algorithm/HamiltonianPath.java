@@ -29,6 +29,7 @@ public class HamiltonianPath extends JComponent {
     private final Polygon polygon = new Polygon();
     private final Polygon plannedPPolygon = new Polygon();
     private MyPoint[] shortestPath;
+    private int[] orderedObsIds;
 
     private ArrayList<MyPoint> plannedPath = new ArrayList<>();
 
@@ -36,19 +37,16 @@ public class HamiltonianPath extends JComponent {
         logger = Logger.getLogger(HamiltonianPath.class.getName());
     }
 
-    public MyPoint[] getShortestPath(MyPoint src, MyPoint[] inputs) {
-        return getShortestPath(src, inputs, false, null, null);
-    }
-
     // method to be called by Simulator to generate the shortest path
     // this method doesn't actually get the shortest path but will
     // call other methods in this class to do so
     // this class does handle calling other methods
-    public MyPoint[] getShortestPath(MyPoint src, MyPoint[] inputs, boolean flipObstacleDirections, Grid grid,
-            Robot robot) {
+    public MyPoint[] getShortestPath(Grid grid, Robot robot, boolean flipObstacleDirections) {
         this.reset();
         this.polygon.reset();
-
+        MyPoint src = robot.getCurrentLocation();
+        MyPoint[] inputs = grid.getObstacleFronts();
+        int[] obsIds = grid.getObstacleIDs();
         int n = inputs.length;
 
         if (flipObstacleDirections) {
@@ -96,11 +94,19 @@ public class HamiltonianPath extends JComponent {
         int[] shortestPathPointIndex = getShortestPathWithChecking(adjacencyMatrix, pointsArray, grid, robot);
 
         ////
+        // obsID = [2,4,3] ids of obstacles in same order as pointsArray
+        // pointsArray = [robot, obs2, obs4, obs3]
 
         // create new Point[] to be returned
         MyPoint[] shortestPath = new MyPoint[n + 1];
+        ArrayList<Integer> orderedObsIds = new ArrayList<>();
+        // int[] orderedObsIds = new int[n];
         for (int i = 0; i < n + 1; i++) {
             shortestPath[i] = pointsArray[shortestPathPointIndex[i]];
+            if (i == 0) {
+                continue;
+            }
+            orderedObsIds.add(obsIds[shortestPathPointIndex[i] - 1]);
         }
 
         /*
@@ -113,6 +119,7 @@ public class HamiltonianPath extends JComponent {
         this.repaint();
 
         this.shortestPath = shortestPath;
+        this.orderedObsIds = orderedObsIds.stream().mapToInt(i -> i).toArray();
         return shortestPath;
     }
 
@@ -239,17 +246,15 @@ public class HamiltonianPath extends JComponent {
         ArrayList<ArrayList<Integer>> paths = new ArrayList<>();
         ArrayList<Double> pathLengths = new ArrayList<>();
 
+        // int i = 1 here, remove origin 0 first then add back later
         for (int i = 1; i < adjacencyMatrix.length; i++) {
             pathIndex.add(i);
         }
         pathspermu = generatePerm(pathIndex);
 
         for (int ii = 0; ii < pathspermu.size(); ii++) {
-            pathspermu.get(ii).add(0, 0);
-            // for (int jj = 0 ; jj < pathspermu.get(ii).size(); jj++) {
-            // System.out.print(pathspermu.get(ii).get(jj) + " ");
-            // }
-            // System.out.println("");
+            pathspermu.get(ii).add(0, 0); // add back here
+
             MyPoint[] shortestPath = new MyPoint[adjacencyMatrix.length];
             for (int i = 0; i < adjacencyMatrix.length; i++) {
                 shortestPath[i] = pointsArray[pathspermu.get(ii).get(i)];
@@ -324,6 +329,10 @@ public class HamiltonianPath extends JComponent {
             }
             System.out.println();
         }
+    }
+
+    public int[] getOrderedObstacleIds() {
+        return this.orderedObsIds;
     }
 
     public void paintComponent(Graphics g) {

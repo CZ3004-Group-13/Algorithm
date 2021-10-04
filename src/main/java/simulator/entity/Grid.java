@@ -35,7 +35,15 @@ public class Grid extends JPanel {
         this.boundaryLength = 30 + 15;
     }
 
-    public void addObstacle(int x, int y, int z) {
+    public void reset() {
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                cells[i][j].setObstaclePresent(false);
+            }
+        }
+    }
+
+    public void addObstacle(int w, int x, int y, int z) {
         Direction d = Direction.NONE;
         switch (z) {
             case 0:
@@ -55,7 +63,30 @@ public class Grid extends JPanel {
         }
         cells[x][y].setObstaclePresent(true);
         cells[x][y].setImageDirection(d);
+        cells[x][y].setId(w);
         this.repaint();
+    }
+
+    public int[] getObstacleIDs() {
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (Cell[] row : cells) {
+            for (Cell cell : row) {
+                if (cell.isObstaclePresent() && !cell.isObstacleVisited()) {
+                    ids.add(cell.getId());
+                }
+            }
+        }
+        return ids.stream().mapToInt(i -> i).toArray();
+    }
+
+    public void setObstacleVisited(int idx) {
+        for (Cell[] row : cells) {
+            for (Cell cell : row) {
+                if (cell.getId() == idx) {
+                    cell.setObstacleVisited(true);
+                }
+            }
+        }
     }
 
     public MyPoint[] getObstacleFronts() {
@@ -67,7 +98,7 @@ public class Grid extends JPanel {
 
         for (Cell[] row : cells) {
             for (Cell cell : row) {
-                if (cell.isObstaclePresent()) {
+                if (cell.isObstaclePresent() && !cell.isObstacleVisited()) {
                     switch (cell.getImageDirection()) {
                         case NONE:
                             break;

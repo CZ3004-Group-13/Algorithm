@@ -13,8 +13,9 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
 
     private final Logger logger;
 
-    private int id;
+    private int id = -1;
     private boolean obstaclePresent = false;
+    private boolean obstacleVisited = false;
     private Direction imageDirection = Direction.NONE;
     private Point initialClickPoint;
     private Polygon imageDirectionPolygon;
@@ -100,6 +101,7 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
         initialClickPoint = e.getPoint();
         this.setObstaclePresent(!this.isObstaclePresent());
         if (this.isObstaclePresent()) {
+            this.setId(Math.round((float)Math.random()*10)); // randomly assign int id
             this.setImageDirection(Direction.NORTH);
         }
         this.repaint();
@@ -182,6 +184,19 @@ public class Cell extends JComponent implements MouseListener, MouseMotionListen
 
     public void setObstaclePresent(boolean obstaclePresent) {
         this.obstaclePresent = obstaclePresent;
+        if (!this.obstaclePresent) {
+            this.setId(-1);
+            this.setImageDirection(Direction.NONE);
+            this.setObstacleVisited(false);
+        }
+    }
+
+    public boolean isObstacleVisited() {
+        return obstacleVisited;
+    }
+
+    public void setObstacleVisited(boolean obstacleVisited) {
+        this.obstacleVisited = obstacleVisited;
     }
 
 }
