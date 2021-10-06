@@ -24,7 +24,7 @@ class Simulator {
     private final Dimension environmentActualSize = new Dimension(200, 200);
     private final Dimension robotActualSize = new Dimension(20, 20);
     private final double robotActualDistanceBetweenFrontBackWheels = 14.5;
-    private final Point robotActualStartingPoint = new Point(20, 180);
+    private final Point robotActualStartingPoint = new Point(10, 190);
     private JFrame jFrame;
     private Grid grid;
     private Robot robot;
@@ -124,6 +124,7 @@ class Simulator {
         JButton disconnectButton = new JButton("Disconnect from RPI");
         disconnectButton.addActionListener(e -> {
             System.out.println("Disconnecting");
+            System.out.println(connection.isConnected());
             connection.closeConnection();
         });
 
@@ -146,6 +147,7 @@ class Simulator {
             isPaused = false;
             waitingImageRec = false;
             hPath.reset();
+            grid.reset();
             timerLabel.setText("Time: 0.00s");
             // this is so that robot gets painted first (so that the affine transform gets
             // processed first)
@@ -194,11 +196,11 @@ class Simulator {
             System.out.println("----------Sending movements...");
             String concatCommand = "";
             for (String s : commands) {
-                if (s.compareTo("Reached") == 0) {
+                concatCommand += s + '|';
+                if (s.charAt(0) == 'R' || s.charAt(0) == 'S') {
                     // stop sending commannds for subsequent obstacle
                     break;
                 }
-                concatCommand += s + '|';
             }
             System.out.println(concatCommand);
             if (connection != null && connection.isConnected()) {
@@ -237,10 +239,11 @@ class Simulator {
             System.out.println("Connecting");
             if (!connection.isConnected()) {
                 connection = Connection.getConnection();
+                connection.openConnection(host, port);
             }
             if (connection.isConnected()) {
                 System.out.println("Connection opened");
-                this.messages = new Messages(connection, this.grid, this.robot, this.hPath, task1Button,
+                this.messages = new Messages(connection, this.grid, this.robot, this.hPath, resetButton, task1Button,
                         imageRecButton);
                 // connection.sendMsg("R", "type");
             }
@@ -388,6 +391,6 @@ class Simulator {
         String cmd = commandTextField.getText();
 
         connection.sendMsg(cmd + '|', "command");
-        robot.addCommand(cmd);
+        // robot.addCommand(cmd);
     }
 }

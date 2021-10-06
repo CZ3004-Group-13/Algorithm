@@ -32,7 +32,7 @@ public class Grid extends JPanel {
         this.envModelSize = envModelSize;
         this.cellModelSize = new Dimension((int) envModelSize.getWidth() / 20, (int) envModelSize.getHeight() / 20);
         // this.boundaryLength = cellModelSize.getWidth() * 1.5;
-        this.boundaryLength = 30 + 15;
+        this.boundaryLength = 30 + 10;
     }
 
     public void reset() {
@@ -61,9 +61,9 @@ public class Grid extends JPanel {
             default:
                 break;
         }
-        cells[x][y].setObstaclePresent(true);
-        cells[x][y].setImageDirection(d);
-        cells[x][y].setId(w);
+        cells[20 - y][x - 1].setObstaclePresent(true);
+        cells[20 - y][x - 1].setImageDirection(d);
+        cells[20 - y][x - 1].setId(w);
         this.repaint();
     }
 
@@ -94,7 +94,7 @@ public class Grid extends JPanel {
 
         Dimension size = cells[0][0].getSize();
 
-        int offset = (int) this.boundaryLength + size.width / 2 + 20;
+        int offset = (int) this.boundaryLength + size.width / 2 + 25;
 
         for (Cell[] row : cells) {
             for (Cell cell : row) {

@@ -22,7 +22,7 @@ public class Robot extends JComponent {
     private final double distanceBetweenFrontBackWheels;
     private final double distancePerTick; // the distance the robot moves per tick
     private final double angleChangePerClick;
-    private final double MAX_TURNING_ANGLE = 23.10;
+    private final double MAX_TURNING_ANGLE = 35.94;
     // private final double MAX_TURNING_ANGLE = 45;
     private final Logger logger;
     private Point startingPoint;
@@ -33,7 +33,7 @@ public class Robot extends JComponent {
     private AffineTransform rightWheelAffineTransform = new AffineTransform();
     // since the coordinate system is positive x is right, positive y is down,
     // angles work by starting from positive x and going clockwise
-    private double speed = 10 * 3; // 3 is the environment scaling factor (lazy so I just manually set here)
+    private double speed = 30 * 3; // 3 is the environment scaling factor (lazy so I just manually set here)
     private double directionInDegrees = -90;
     // need to incorporate concept of speed later
     private double turningRadius = 0;
@@ -336,7 +336,11 @@ public class Robot extends JComponent {
                         this.moveBackwardTime(timeDelta);
                         break;
                     case "Reached":
-                        System.out.println(this.distanceQueue.get(0));
+                        // System.out.println(this.distanceQueue.get(0));
+                        this.durationQueue.remove(0);
+                        this.movementQueue.remove(0);
+                        this.directionQueue.remove(0);
+                        this.distanceQueue.remove(0);
                         return true;
                 }
             } else {
@@ -957,15 +961,13 @@ public class Robot extends JComponent {
                     }
                     break;
                 case "LF":
-                    // 34 - 21 = 13
-                    commandList.add("w");
-                    distanceList.add(13.0);
+                    // commandList.add("w");
+                    // distanceList.add(13.0);
                     command = "a";
                     break;
                 case "RF":
-                    // 34 - 21 = 13
-                    commandList.add("w");
-                    distanceList.add(13.0);
+                    // commandList.add("w");
+                    // distanceList.add(13.0);
                     command = "d";
                     break;
                 case "Reached":

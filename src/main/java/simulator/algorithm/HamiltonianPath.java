@@ -264,9 +264,9 @@ public class HamiltonianPath extends JComponent {
             boolean valid = this.generatePlannedPath(grid, robot);
             if (valid) {
                 paths.add(pathspermu.get(ii));
+                double distance = this.getPathEstTotalDistance(robot);
+                pathLengths.add(distance);
             }
-            double distance = this.getPathEstTotalDistance(robot);
-            pathLengths.add(distance);
         }
 
         double smallestDistance = Double.MAX_VALUE;
