@@ -278,7 +278,7 @@ public class HamiltonianPath extends JComponent {
             }
         }
 
-        System.out.println("Index: " + idx);
+        // System.out.println("Index: " + idx);
 
         return paths.get(idx).stream().mapToInt(i -> i).toArray();
     }
@@ -320,14 +320,14 @@ public class HamiltonianPath extends JComponent {
 
     // to print out the adjacency matrix
     void printAdjacencyMatrix(double[][] adjacencyMatrix) {
-        System.out.println("Adjacency Matrix:");
+        // System.out.println("Adjacency Matrix:");
         for (double[] row : adjacencyMatrix) {
             for (double cell : row) {
                 System.out.print(
                         new DecimalFormat("000.000", DecimalFormatSymbols.getInstance(Locale.ENGLISH)).format(cell));
                 System.out.print("   ");
             }
-            System.out.println();
+            // System.out.println();
         }
     }
 
@@ -355,12 +355,12 @@ public class HamiltonianPath extends JComponent {
 
         this.plannedPath.add(robot.getCurrentLocation());
         MyPoint sp;
-        int caStep = 5;
+        int caStep = 15;
         int turnRadius2, turnRadius1;
         turnRadius2 = (int) robot.MAX_TURNING_RADIUS * 2;
         turnRadius1 = (int) robot.MAX_TURNING_RADIUS;
 
-        System.out.println("-----GENERATING PATH-----");
+        // System.out.println("-----GENERATING PATH-----");
         int i = 1;
         while (i < workingPath.size()) {
             // sp = source point (absolute point)
@@ -399,8 +399,6 @@ public class HamiltonianPath extends JComponent {
             MyPoint dp = (MyPoint) point.clone();
             // dp = destination point (here is absolute point)
 
-            // System.out.println(sp.getX() + " " + sp.getY());
-            // System.out.println(dp.getX() + " " + dp.getY());
             // preparing AffineTransform to use relative points to start point
             AffineTransform af = new AffineTransform();
             af.setToIdentity();
@@ -434,7 +432,7 @@ public class HamiltonianPath extends JComponent {
                 logger.log(Level.SEVERE, "Cannot transform");
             }
 
-            System.out.println(rDirection + " " + rOrientation);
+            // System.out.println(rDirection + " " + rOrientation);
             switch (rDirection) {
                 // ignore collision detection for the rest for now
 
@@ -498,7 +496,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
-                            System.out.println("Collision detected at FRONT + NORTH");
+                            // System.out.println("Collision detected at FRONT + NORTH");
                             isValid = false;
                             break;
                         }
@@ -578,7 +576,7 @@ public class HamiltonianPath extends JComponent {
                             ;
                             // this is where to do collision detection for other cases
 
-                            System.out.println("Collision detected at FRONT + SOUTH");
+                            // System.out.println("Collision detected at FRONT + SOUTH");
                             isValid = false;
                             break;
                         }
@@ -624,7 +622,7 @@ public class HamiltonianPath extends JComponent {
                             }
 
                             // do collision detection
-                            System.out.println("Collision detected at FRONT + EAST");
+                            // System.out.println("Collision detected at FRONT + EAST");
                             isValid = false;
                             break;
                         }
@@ -668,7 +666,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
                             // do collision detection
-                            System.out.println("Collision detected at FRONT + WEST");
+                            // System.out.println("Collision detected at FRONT + WEST");
                             isValid = false;
                             break;
                         }
@@ -718,7 +716,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
 
                             // do collision detection
-                            System.out.println("Collision detected at FRONT RIGHT + NORTH");
+                            // System.out.println("Collision detected at FRONT RIGHT + NORTH");
                             isValid = false;
                             break;
                         }
@@ -797,7 +795,7 @@ public class HamiltonianPath extends JComponent {
                             }
 
                             // do collision detection
-                            System.out.println("Collision detected at FRONT RIGHT + SOUTH");
+                            // System.out.println("Collision detected at FRONT RIGHT + SOUTH");
                             isValid = false;
                             break;
                         }
@@ -887,7 +885,7 @@ public class HamiltonianPath extends JComponent {
                             }
 
                             // do collision detection
-                            System.out.println("Collision detected at FRONT RIGHT + EAST");
+                            // System.out.println("Collision detected at FRONT RIGHT + EAST");
                             isValid = false;
                             break;
                         }
@@ -959,7 +957,7 @@ public class HamiltonianPath extends JComponent {
                             }
 
                             // do collision detection
-                            System.out.println("Collision detected at FRONT RIGHT + WEST");
+                            // System.out.println("Collision detected at FRONT RIGHT + WEST");
                             isValid = false;
                             break;
                         }
@@ -1008,7 +1006,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
 
                             // do collision detection
-                            System.out.println("Collision detected at FRONT LEFT + NORTH");
+                            // System.out.println("Collision detected at FRONT LEFT + NORTH");
                             isValid = false;
                             break;
                         }
@@ -1084,7 +1082,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
                             // do collision detection
-                            System.out.println("Collision detected at FRONT LEFT + SOUTH");
+                            // System.out.println("Collision detected at FRONT LEFT + SOUTH");
                             isValid = false;
                             break;
                         }
@@ -1157,7 +1155,7 @@ public class HamiltonianPath extends JComponent {
                             }
 
                             // do collision detection
-                            System.out.println("Collision detected at FRONT LEFT + EAST");
+                            // System.out.println("Collision detected at FRONT LEFT + EAST");
                             isValid = false;
                             break;
                         }
@@ -1245,7 +1243,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
                             // do collision detection
-                            System.out.println("Collision detected at FRONT LEFT + WEST");
+                            // System.out.println("Collision detected at FRONT LEFT + WEST");
                             isValid = false;
                             break;
                         }
@@ -1330,7 +1328,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
                             // do collision detection
-                            System.out.println("Collision detected at FRONT SLIGHT LEFT");
+                            // System.out.println("Collision detected at FRONT SLIGHT LEFT");
                             isValid = false;
                             break;
                         }
@@ -1445,7 +1443,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
                             // do collision detection
-                            System.out.println("Collision detected at FRONT SLIGHT LEFT + EAST");
+                            // System.out.println("Collision detected at FRONT SLIGHT LEFT + EAST");
                             isValid = false;
                             break;
                         }
@@ -1530,7 +1528,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at FRONT SLIGHT RIGHT");
+                            // System.out.println("Collision detected at FRONT SLIGHT RIGHT");
                             isValid = false;
                             break;
                         }
@@ -1644,7 +1642,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
                             // do collision detection
-                            System.out.println("Collision detected at FRONT SLIGHT RIGHT + WEST");
+                            // System.out.println("Collision detected at FRONT SLIGHT RIGHT + WEST");
                             isValid = false;
                             break;
                         }
@@ -1763,7 +1761,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at BACK + NORTH");
+                            // System.out.println("Collision detected at BACK + NORTH");
                             isValid = false;
                             break;
                         }
@@ -1894,7 +1892,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at BACK + SOUTH");
+                            // System.out.println("Collision detected at BACK + SOUTH");
                             isValid = false;
                             break;
                         }
@@ -1967,7 +1965,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at BACK + EAST");
+                            // System.out.println("Collision detected at BACK + EAST");
                             isValid = false;
                             break;
                         }
@@ -2040,7 +2038,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at BACK + WEST");
+                            // System.out.println("Collision detected at BACK + WEST");
                             isValid = false;
                             break;
                         }
@@ -2159,7 +2157,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at BACK RIGHT + NORTH");
+                            // System.out.println("Collision detected at BACK RIGHT + NORTH");
                             isValid = false;
                             break;
                         }
@@ -2197,7 +2195,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
-                            System.out.println("Collision detected at BACK RIGHT + SOUTH");
+                            // System.out.println("Collision detected at BACK RIGHT + SOUTH");
                             isValid = false;
                             break;
                         }
@@ -2263,7 +2261,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at BACK RIGHT + EAST");
+                            // System.out.println("Collision detected at BACK RIGHT + EAST");
                             isValid = false;
                             break;
                         }
@@ -2306,7 +2304,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
-                            System.out.println("Collision detected at BACK RIGHT + WEST");
+                            // System.out.println("Collision detected at BACK RIGHT + WEST");
                             isValid = false;
                             break;
                         }
@@ -2426,7 +2424,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at BACK LEFT + NORTH");
+                            // System.out.println("Collision detected at BACK LEFT + NORTH");
                             isValid = false;
                             break;
                         }
@@ -2464,7 +2462,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
-                            System.out.println("Collision detected at BACK LEFT + SOUTH");
+                            // System.out.println("Collision detected at BACK LEFT + SOUTH");
                             isValid = false;
                             break;
                         }
@@ -2507,7 +2505,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
-                            System.out.println("Collision detected at BACK LEFT + EAST");
+                            // System.out.println("Collision detected at BACK LEFT + EAST");
                             isValid = false;
                             break;
                         }
@@ -2574,7 +2572,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
 
-                            System.out.println("Collision detected at BACK LEFT + WEST");
+                            // System.out.println("Collision detected at BACK LEFT + WEST");
                             isValid = false;
                             break;
                         }
@@ -2621,7 +2619,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
                             // do collision detection
-                            System.out.println("Collision detected at FRONT SLIGHT LEFT");
+                            // System.out.println("Collision detected at FRONT SLIGHT LEFT");
                             isValid = false;
                             break;
                         case NONE:
@@ -2666,7 +2664,7 @@ public class HamiltonianPath extends JComponent {
                                 break;
                             }
                             // do collision detection
-                            System.out.println("Collision detected at BACK SLIGHT RIGHT");
+                            // System.out.println("Collision detected at BACK SLIGHT RIGHT");
                             isValid = false;
                             break;
                         case NONE:
@@ -2745,7 +2743,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at CENTER RIGHT + NORTH");
+                            // System.out.println("Collision detected at CENTER RIGHT + NORTH");
                             isValid = false;
                             break;
                         }
@@ -2821,7 +2819,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at CENTER RIGHT + SOUTH");
+                            // System.out.println("Collision detected at CENTER RIGHT + SOUTH");
                             isValid = false;
                             break;
                         }
@@ -3002,7 +3000,7 @@ public class HamiltonianPath extends JComponent {
                                     break;
                                 }
 
-                                System.out.println("Collision detected at CENTER RIGHT + EAST 1");
+                                // System.out.println("Collision detected at CENTER RIGHT + EAST 1");
                             } else if (dp.x < turnRadius1) {
                                 // turn left (reverse if need)
                                 if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
@@ -3050,7 +3048,7 @@ public class HamiltonianPath extends JComponent {
                                     i--;
                                     break;
                                 }
-                                System.out.println("Collision detected at CENTER RIGHT + EAST 2");
+                                // System.out.println("Collision detected at CENTER RIGHT + EAST 2");
                             } else {
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
 
@@ -3063,7 +3061,7 @@ public class HamiltonianPath extends JComponent {
                                     i--;
                                     break;
                                 }
-                                System.out.println("Collision detected at CENTER RIGHT + EAST 3");
+                                // System.out.println("Collision detected at CENTER RIGHT + EAST 3");
                             }
                             isValid = false;
                             break;
@@ -3118,7 +3116,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at CENTER RIGHT + WEST");
+                            // System.out.println("Collision detected at CENTER RIGHT + WEST");
                             isValid = false;
                             break;
                         }
@@ -3198,7 +3196,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at CENTER LEFT + NORTH");
+                            // System.out.println("Collision detected at CENTER LEFT + NORTH");
                             isValid = false;
                             break;
                         }
@@ -3274,7 +3272,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at CENTER LEFT + SOUTH");
+                            // System.out.println("Collision detected at CENTER LEFT + SOUTH");
                             isValid = false;
                             break;
                         }
@@ -3335,7 +3333,7 @@ public class HamiltonianPath extends JComponent {
                                 i--;
                                 break;
                             }
-                            System.out.println("Collision detected at CENTER LEFT + EAST");
+                            // System.out.println("Collision detected at CENTER LEFT + EAST");
                             isValid = false;
                             break;
                         }
@@ -3516,7 +3514,7 @@ public class HamiltonianPath extends JComponent {
                                     i--;
                                     break;
                                 }
-                                System.out.println("Collision detected at CENTER LEFT + WEST 1");
+                                // System.out.println("Collision detected at CENTER LEFT + WEST 1");
                                 isValid = false;
                             } else if (dp.x > -turnRadius1) {
                                 if (grid.checkIfNeedReverse(sp, (int) robot.getTwoTurnsDistance() / 2)) {
@@ -3563,7 +3561,7 @@ public class HamiltonianPath extends JComponent {
                                     i--;
                                     break;
                                 }
-                                System.out.println("Collision detected at CENTER LEFT + WEST 2");
+                                // System.out.println("Collision detected at CENTER LEFT + WEST 2");
                                 isValid = false;
                             } else {
                                 MyPoint tp1 = new MyPoint(0, 0, sp.getDirection());
@@ -3577,7 +3575,7 @@ public class HamiltonianPath extends JComponent {
                                     i--;
                                     break;
                                 }
-                                System.out.println("Collision detected at CENTER LEFT + WEST 3");
+                                // System.out.println("Collision detected at CENTER LEFT + WEST 3");
                                 isValid = false;
                             }
                             break;
@@ -3597,12 +3595,11 @@ public class HamiltonianPath extends JComponent {
             }
 
             i++;
-            // System.out.println("i: " + i + " " + workingPath.size());
             if (i == workingPath.size() || point != workingPath.get(i)) {
                 this.plannedPath.add(new MyPoint(-999, -999, Direction.NONE));
             }
         }
-        System.out.println("-----GENERATED PATH-----");
+        // System.out.println("-----GENERATED PATH-----");
         this.determinePolygonPath();
         return isValid;
     }
@@ -3612,12 +3609,12 @@ public class HamiltonianPath extends JComponent {
     }
 
     public void printPlannedPath() {
-        System.out.println("-------------");
-        System.out.println("Planned path:");
+        // System.out.println("-------------");
+        // System.out.println("Planned path:");
         for (MyPoint p : plannedPath) {
-            System.out.println(p.x + " " + p.y + " " + p.getDirection());
+            // System.out.println(p.x + " " + p.y + " " + p.getDirection());
         }
-        System.out.println("-------------");
+        // System.out.println("-------------");
     }
 
     public ArrayList<MyPoint> getPlannedPath() {

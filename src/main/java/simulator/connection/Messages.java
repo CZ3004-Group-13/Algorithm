@@ -96,11 +96,12 @@ public class Messages {
                     System.out.println("Sending DONE");
                     this.conn.sendMsg("DONE", "rpi");
                 }
+            } else {
+                String cmd = "s" + Integer.toString(5);
+                this.conn.sendMsg(cmd + '|', "command");
+                this.howManyReverse += 1;
+                this.conn.sendMsg(lastCommand + '|', "command");
             }
-            String cmd = "s" + Integer.toString(5);
-            this.conn.sendMsg(cmd + '|', "command");
-            this.howManyReverse += 1;
-            this.conn.sendMsg(lastCommand + '|', "command");
 
         } else if (msg.length() >= 3 && msg.substring(0, 1).compareTo("D") == 0) {
             // process image rec results

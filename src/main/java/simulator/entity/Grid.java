@@ -94,7 +94,7 @@ public class Grid extends JPanel {
 
         Dimension size = cells[0][0].getSize();
 
-        int offset = (int) this.boundaryLength + size.width / 2 + 25;
+        int offset = (int) this.boundaryLength + size.width / 2 + 30;
 
         for (Cell[] row : cells) {
             for (Cell cell : row) {
