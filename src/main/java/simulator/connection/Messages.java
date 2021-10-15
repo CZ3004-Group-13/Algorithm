@@ -41,7 +41,6 @@ public class Messages {
         this.imageRecCompleteButton = imageRecCompleteButton;
 
         Thread t1 = new Thread(() -> {
-            // this.messages.add(this.conn.recvMsg());
             while (true) {
                 processMessage(this.conn.recvMsg());
             }
@@ -107,18 +106,10 @@ public class Messages {
             // process image rec results
             System.out.println("Image Rec (D)");
             System.out.println(msg);
-            System.out.println(msg.substring(1, msg.length()));
             String arr[] = msg.substring(1, msg.length()).split(",");
-            System.out.println(arr[0]);
-            System.out.println(arr[1]);
-            System.out.println(arr[2]);
-            int idx = Integer.parseInt(arr[0]);
             int distance = Integer.parseInt(arr[1]);
             System.out.println(distance);
-            // this.grid.setObstacleVisited(idx);
 
-            // this.drawPath();
-            // this.sendForTask1();
             // move forwards the amount it moved back
             if (this.howManyReverse > 0) {
                 String cmd = "w" + Integer.toString(5 * howManyReverse);
@@ -139,9 +130,7 @@ public class Messages {
     private void drawPath() {
         this.hPath.getShortestPath(grid, robot, true);
         this.hPath.generatePlannedPath(grid, robot);
-        // this.hPath.printPlannedPath();
         this.robot.generateMovements(hPath.getPlannedPath(), hPath.getOrderedObstacleIds());
-        // this.robot.printGeneratedMovements();
         this.grid.repaint();
     }
 

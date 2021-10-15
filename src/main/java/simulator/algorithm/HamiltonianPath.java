@@ -109,13 +109,6 @@ public class HamiltonianPath extends JComponent {
             orderedObsIds.add(obsIds[shortestPathPointIndex[i] - 1]);
         }
 
-        /*
-         * for (Point p : shortestPath) { this.polygon.addPoint((int) p.getX(), (int)
-         * p.getY()); }
-         *
-         * Not necessary this.polygon.addPoint((int) src.getX(), (int) src.getY());
-         */
-
         this.repaint();
 
         this.shortestPath = shortestPath;
@@ -327,7 +320,6 @@ public class HamiltonianPath extends JComponent {
                         new DecimalFormat("000.000", DecimalFormatSymbols.getInstance(Locale.ENGLISH)).format(cell));
                 System.out.print("   ");
             }
-            // System.out.println();
         }
     }
 
@@ -339,10 +331,6 @@ public class HamiltonianPath extends JComponent {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
-
-        /*
-         * g2.setColor(Color.green); g2.drawPolygon(this.polygon);
-         */
 
         g2.setColor(Color.blue);
         g2.drawPolygon(this.plannedPPolygon);
@@ -432,7 +420,6 @@ public class HamiltonianPath extends JComponent {
                 logger.log(Level.SEVERE, "Cannot transform");
             }
 
-            // System.out.println(rDirection + " " + rOrientation);
             switch (rDirection) {
                 // ignore collision detection for the rest for now
 
