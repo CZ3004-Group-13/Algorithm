@@ -355,7 +355,7 @@ public class HamiltonianPath extends JComponent {
 
         this.plannedPath.add(robot.getCurrentLocation());
         MyPoint sp;
-        int caStep = 15;
+        int caStep = 12;
         int turnRadius2, turnRadius1;
         turnRadius2 = (int) robot.MAX_TURNING_RADIUS * 2;
         turnRadius1 = (int) robot.MAX_TURNING_RADIUS;
